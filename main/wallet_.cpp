@@ -3,7 +3,7 @@
 
 #include <Python.h>
 
-#include "../pyeoskit/pyobject.hpp"
+#include "pyobject.hpp"
 
 using namespace std;
 using namespace eosio;

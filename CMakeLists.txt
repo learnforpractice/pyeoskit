@@ -64,4 +64,4 @@ find_package(PythonExtensions REQUIRED)
 find_package(Cython REQUIRED)
 
 add_subdirectory(libraries)
-add_subdirectory(pyeoskit)
+add_subdirectory(main)

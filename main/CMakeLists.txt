@@ -19,4 +19,4 @@ target_include_directories( _hello
 
 python_extension_module(_hello)
 
-install(TARGETS _hello LIBRARY DESTINATION pyeoskit)
+install(TARGETS _hello LIBRARY DESTINATION main)

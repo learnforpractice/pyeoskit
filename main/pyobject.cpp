@@ -4,7 +4,7 @@
  *  Created on: Sep 8, 2017
  *      Author: newworld
  */
-#include "../pyeoskit/pyobject.hpp"
+#include "pyobject.hpp"
 
 PyArray::PyArray() { arr = array_create(); }
 PyObject* PyArray::get() {

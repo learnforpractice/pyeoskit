@@ -1,12 +1,14 @@
 from skbuild import setup
+from distutils.sysconfig import get_python_lib
+import glob
 
 setup(
-    name="hello-cython",
-    version="1.2.3",
-    description="a minimal example package (cython version)",
-    author='The scikit-build team',
+    name="pyeoskit",
+    version="0.1.0",
+    description="toolkit for pyeos",
+    author='The pyeos team',
     license="MIT",
-    packages=['hello_cython'],
+    packages=['pyeoskit'],
     # The extra '/' was *only* added to check that scikit-build can handle it.
-    package_dir={'hello_cython': 'hello/'},
+    package_dir={'pyeoskit': 'main/'},
 )
