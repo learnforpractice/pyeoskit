@@ -1,0 +1,4 @@
+[submodule "libraries/fc"]
+	path = libraries/fc
+	url = https://github.com/learnforpractice/fc
+	branch = standalone
