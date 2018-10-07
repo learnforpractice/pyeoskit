@@ -1,0 +1,7 @@
+.cproject
+.project
+.pydevproject
+_cmake_test_compile
+hello_cython.egg-info
+_skbuild
+dist
