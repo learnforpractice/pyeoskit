@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.5.0)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/libraries/fc/CMakeModules")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+include( SetupTargetMacros )
 
 set(PYTHON_LIBRARY "/Users/newworld/anaconda/lib/python3.6/config-3.6m-darwin/libpython3.6m.a")
 set(CYTHON_EXECUTABLE "/Users/newworld/anaconda/bin/cython")
@@ -59,5 +60,5 @@ find_package(Boost CONFIG REQUIRED
 find_package(PythonExtensions REQUIRED)
 find_package(Cython REQUIRED)
 
-add_subdirectory(hello)
 add_subdirectory(libraries)
+add_subdirectory(hello)
