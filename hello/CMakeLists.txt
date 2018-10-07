@@ -1,11 +1,13 @@
 
 add_cython_target(_hello CXX)
 add_cython_target(wallet CXX)
+add_cython_target(pyobject CXX)
 
-add_library(_hello MODULE ${_hello} ${wallet})
+add_library(_hello MODULE ${_hello} ${wallet} ${pyobject} wallet_.cpp pyobject.cpp)
 target_link_libraries( _hello fc wallet_plugin)
 
 target_include_directories( _hello
+            PUBLIC  "${CMAKE_CURRENT_SOURCE_DIR}" 
             PUBLIC  "${CMAKE_CURRENT_SOURCE_DIR}/include" 
             PUBLIC  "${CMAKE_SOURCE_DIR}/libraries/include" 
             PUBLIC  "${CMAKE_SOURCE_DIR}/libraries/eosiolib" 

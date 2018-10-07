@@ -9,6 +9,13 @@ using namespace eosio;
 using namespace eosio::chain;
 using namespace eosio::wallet;
 
+extern "C" PyObject* PyInit_wallet();
+
+PyObject* init_wallet() {
+   printf("+++++init wallet.\n");
+   return PyInit_wallet();
+}
+
 wallet_manager& wm() {
    static wallet_manager* wm = nullptr;
    if (!wm) {

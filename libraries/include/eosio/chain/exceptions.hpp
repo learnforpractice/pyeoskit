@@ -15,7 +15,7 @@
    FC_MULTILINE_MACRO_END
 */
 
-#if 0
+#ifndef USE_VM_API
 
 #define EOS_THROW( exc_type, FORMAT, ... ) \
     fc::exception_factory::instance().rethrow(exc_type( FC_LOG_MESSAGE( error, FORMAT, __VA_ARGS__ ) ));

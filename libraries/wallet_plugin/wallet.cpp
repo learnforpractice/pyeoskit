@@ -13,6 +13,7 @@
 #include <string>
 #include <list>
 
+#include <fc/exception/exception.hpp>
 #include <fc/container/deque.hpp>
 #include <fc/crypto/elliptic.hpp>
 #include <fc/git_revision.hpp>
@@ -30,6 +31,8 @@
 #include <eosio/chain/exceptions.hpp>
 
 #endif
+
+using namespace fc;
 
 namespace eosio { namespace wallet {
 

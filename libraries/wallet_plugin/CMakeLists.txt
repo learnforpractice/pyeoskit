@@ -16,8 +16,8 @@ endif(APPLE)
 
 add_library( wallet_plugin STATIC
              wallet_manager.cpp
-             wallet_.cpp
-             pyobject.cpp
+             wallet.cpp
+             se_wallet.cpp
              ${HEADERS} )
 
 target_link_libraries( wallet_plugin fc ${security_framework} ${corefoundation_framework} ${localauthentication_framework} ${cocoa_framework})
