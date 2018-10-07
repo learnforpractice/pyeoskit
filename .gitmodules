@@ -2,3 +2,6 @@
 	path = libraries/fc
 	url = https://github.com/learnforpractice/fc
 	branch = standalone
+[submodule "libraries/chainbase"]
+	path = libraries/chainbase
+	url = https://github.com/learnforpractice/chainbase
