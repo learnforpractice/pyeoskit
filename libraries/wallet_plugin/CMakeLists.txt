@@ -16,6 +16,8 @@ endif(APPLE)
 
 add_library( wallet_plugin STATIC
              wallet_manager.cpp
+             wallet_.cpp
+             pyobject.cpp
              ${HEADERS} )
 
 target_link_libraries( wallet_plugin fc ${security_framework} ${corefoundation_framework} ${localauthentication_framework} ${cocoa_framework})
@@ -23,4 +25,6 @@ target_include_directories( wallet_plugin
             PUBLIC  "${CMAKE_CURRENT_SOURCE_DIR}/include" 
             PUBLIC  "${CMAKE_SOURCE_DIR}/libraries/include" 
             PUBLIC  "${CMAKE_SOURCE_DIR}/libraries/eosiolib" 
+            PUBLIC  "${CMAKE_SOURCE_DIR}/libraries/chainbase/include"
+            PUBLIC "${PYTHON_INCLUDE_DIR}"
 )
