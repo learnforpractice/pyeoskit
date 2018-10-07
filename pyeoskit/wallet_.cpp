@@ -2,7 +2,8 @@
 #include <eosio/wallet_plugin/wallet_manager.hpp>
 
 #include <Python.h>
-#include "pyobject.hpp"
+
+#include "../pyeoskit/pyobject.hpp"
 
 using namespace std;
 using namespace eosio;
