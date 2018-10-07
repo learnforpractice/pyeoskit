@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.5.0)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/libraries/fc/CMakeModules")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/libraries/cmake")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 include( SetupTargetMacros )
 
@@ -32,8 +33,10 @@ HunterGate(
 
 project(hello_cython)
 
-set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fPIC --std=c++14 -stdlib=libc++" )
-set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -fPIC" )
+set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall --std=c++14 -stdlib=libc++" )
+set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall" )
+
+include(ProjectMPIR)
 
 hunter_add_package(OpenSSL)
 find_package(OpenSSL REQUIRED)
