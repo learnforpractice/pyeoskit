@@ -1,4 +1,5 @@
 import time
+import json
 
 from .http_client import HttpClient
 
@@ -344,11 +345,11 @@ class Client(HttpClient):
 
     def push_transaction(self, signed_transaction) -> dict:
         """ Attempts to push the transaction into the pending queue. """
-
+        if not isinstance(signed_transaction, dict):
+            signed_transaction = json.loads(signed_transaction)
         body = dict(
-            signed_transaction=signed_transaction,
+            signed_transaction
         )
-
         return self.exec(
             api='chain',
             endpoint='push_transaction',
