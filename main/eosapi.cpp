@@ -1,5 +1,7 @@
 #include "eosapi.hpp"
 #include "pyobject.hpp"
+#include <eosio/utilities/key_conversion.hpp>
+#include <eosio/chain/chain_id_type.hpp>
 
 static fc::microseconds abi_serializer_max_time = fc::microseconds(100*1000);
 static uint32_t tx_max_net_usage = 0;
@@ -62,18 +64,56 @@ PyObject* gen_transaction_(vector<chain::action>& v, int expiration, string& ref
 
       trx.expiration = fc::time_point::now() + fc::seconds(expiration);;
 
+/*
       fc::variant v(reference_block_id);
       chain::block_id_type id;
       fc::from_variant(v, id);
-
+*/
+      chain::block_id_type id(reference_block_id);
       trx.set_reference_block(id);
 
 //      trx.max_kcpu_usage = (tx_max_cpu_usage + 1023)/1024;
       trx.max_net_usage_words = (tx_max_net_usage + 7)/8;
       string result = fc::json::to_string(fc::variant(trx));
-      dlog(result);
       return py_new_string(result);
    } FC_LOG_AND_DROP();
 
    return py_new_none();
 }
+
+PyObject* sign_transaction_(string& trx_json_to_sign, string& str_private_key, string& chain_id) {
+   try {
+      signed_transaction trx = fc::json::from_string(trx_json_to_sign).as<signed_transaction>();
+
+      auto priv_key = fc::crypto::private_key::regenerate(*utilities::wif_to_key(str_private_key));
+
+      fc::variant v(chain_id);
+      chain::chain_id_type id(chain_id);
+//      fc::from_variant(v, id);
+
+      trx.sign(priv_key, id);
+      string s = fc::json::to_string(fc::variant(trx));
+      return py_new_string(s);
+   } FC_LOG_AND_DROP();
+   return py_new_none();
+}
+
+
+PyObject* pack_transaction_(string& _signed_trx, int compress) {
+   try {
+      signed_transaction signed_trx = fc::json::from_string(_signed_trx).as<signed_transaction>();
+      packed_transaction::compression_type type;
+      if (compress) {
+         type = packed_transaction::compression_type::zlib;
+      } else {
+         type = packed_transaction::compression_type::none;
+      }
+
+      auto packed_trx = packed_transaction(signed_trx, type);
+      string s = fc::json::to_string(packed_trx);
+      return py_new_string(s);
+   } FC_LOG_AND_DROP();
+   return py_new_none();
+}
+
+

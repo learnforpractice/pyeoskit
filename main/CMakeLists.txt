@@ -16,11 +16,11 @@ set(SRCS ${_hello}
 
 add_library(_hello MODULE ${SRCS})
 
-target_link_libraries( _hello fc wallet_plugin eosio_chain)
+target_link_libraries( _hello fc wallet_plugin eosio_chain eos_utilities)
 
 add_executable(hello ${SRCS})
 
-target_link_libraries(hello fc wallet_plugin eosio_chain ${PYTHON_LIBRARY})
+target_link_libraries(hello fc wallet_plugin eosio_chain eos_utilities ${PYTHON_LIBRARY})
 
 set(INCS   "${CMAKE_CURRENT_SOURCE_DIR}" 
            "${CMAKE_CURRENT_SOURCE_DIR}/include" 

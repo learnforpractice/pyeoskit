@@ -33,6 +33,8 @@ cdef extern from "eosapi.hpp":
         vector[char]                data
 
     object gen_transaction_(vector[action]& v, int expiration, string& reference_block_id);
+    object sign_transaction_(string& trx_json_to_sign, string& str_private_key, string& chain_id);
+    object pack_transaction_(string& _signed_trx, int compress)
 
 account_abi = {}
 
@@ -82,15 +84,23 @@ def gen_transaction(actions, int expiration, string& reference_block_id):
             per.permission = s2n(a[3][auth])
             pers.push_back(per)
         act.authorization = pers
-        act.data.resize(0)
-        act.data.resize(len(a[2]))
-        if isinstance(a[2], dict):
+
+        args = a[2]
+        if isinstance(args, dict):
             if not account in account_abi:
                 raise Exception('no abi specified!')
             abi = account_abi[account]
-            pack_args(abi, action_name, a[2])
-        else:
-            memcpy(act.data.data(), a[2], len(a[2]))
+            args = pack_args(abi, action_name, args)
+        act.data.resize(0)
+        act.data.resize(len(args))
+        memcpy(act.data.data(), args, len(args))
         v.push_back(act)
 
     return gen_transaction_(v, expiration, reference_block_id)
+
+def sign_transaction(string& trx_json_to_sign, string& str_private_key, string& chain_id):
+    return sign_transaction_(trx_json_to_sign, str_private_key, chain_id)
+
+def pack_transaction(string& _signed_trx, int compress):
+    return pack_transaction_(_signed_trx, compress)
+
