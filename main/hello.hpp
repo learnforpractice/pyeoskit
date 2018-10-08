@@ -16,6 +16,7 @@ PyObject* init__eosapi();
 extern "C" {
    PyObject* PyInit_wallet();
    PyObject* PyInit__eosapi();
+   PyObject* PyInit_pyobject();
 }
 
 #endif /* MAIN_HELLO_HPP_ */
