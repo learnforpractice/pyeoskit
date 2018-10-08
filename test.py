@@ -1,8 +1,12 @@
+import json
 import time
 from pyeoskit import eosapi
 from pyeoskit import Client
 from pyeoskit import _eosapi
+
 print(eosapi)
+info = eosapi.get_info()
+
 if False:
     info = eosapi.get_info()
     print(info)
@@ -86,13 +90,22 @@ args = {"from": 'eosio',
 r = _eosapi.pack_args(abi, 'transfer', args)
 print(r)
 
-args = {"from": 'eosio',
-        "to": 'hello',
+args = {"from": 'hello',
+        "to": 'eosio',
         "quantity": '0.0001 EOS',
         "memo": 'hello,world'
 }
-action = ['eosio.token', 'transfer', args, {'eosio':'active'}]
+action = ['eosio.token', 'transfer', args, {'hello':'active'}]
 reference_block_id = eosapi.get_info().last_irreversible_block_id
-r = eosapi.gen_transaction([action], 60*60, reference_block_id)
-print(r)
+trx = eosapi.gen_transaction([action], 60, reference_block_id)
+print(trx)
+
+trx = eosapi.sign_transaction(trx, '5JbDP55GXN7MLcNYKCnJtfKi9aD2HvHAdY7g8m67zFTAFkY1uBB', info.chain_id)
+print(trx)
+
+trx = eosapi.pack_transaction(trx, 0)
+print(trx)
+eosapi.push_transaction(trx)
+
+
 
