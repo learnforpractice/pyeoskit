@@ -1,7 +1,7 @@
 import time
 from pyeoskit import eosapi
 from pyeoskit import Client
-
+from pyeoskit import _eosapi
 print(eosapi)
 if False:
     info = eosapi.get_info()
@@ -43,14 +43,44 @@ if False:
     
     r = eosapi.abi_json_to_bin('eosio.token', 'transfer', args)
     print(r)
-binargs = '0000000000ea305500000000001aa36a010000000000000004454f53000000000b68656c6c6f2c776f726c64'
-eosapi.abi_bin_to_json('eosio.token', 'transfer', binargs)
+    binargs = '0000000000ea305500000000001aa36a010000000000000004454f53000000000b68656c6c6f2c776f726c64'
+    eosapi.abi_bin_to_json('eosio.token', 'transfer', binargs)
 
+abi = '''
+{
+   "version": "eosio::abi/1.0",
+   "types": [{
+      "new_type_name": "account_name",
+      "type": "name"
+   }],
+  "structs": [{
+      "name": "transfer",
+      "base": "",
+      "fields": [
+        {"name":"from", "type":"account_name"},
+        {"name":"to", "type":"account_name"},
+        {"name":"quantity", "type":"asset"},
+        {"name":"memo", "type":"string"}
+      ]
+    }
+  ],
+  "actions": [{
+      "name": "transfer",
+      "type": "transfer",
+      "ricardian_contract": ""
+    }],
+  "tables": [],
+  "ricardian_clauses": [],
+  "abi_extensions": []
+}
 '''
-client = Client(['http://127.0.0.1:8888'])
-info = client.get_info()
-print(info)
-'''
 
+args = {"from": 'eosio',
+        "to": 'hello',
+        "quantity": '0.0001 EOS',
+        "memo": 'hello,world'
+}
 
+r = _eosapi.pack_args(abi, 'transfer', args)
+print(r)
 

@@ -19,9 +19,11 @@ using namespace std;
 using namespace eosio;
 using namespace eosio::chain;
 
+uint64_t s2n_(string& str);
+void n2s_(uint64_t n, string& s);
 
-void pack_args(string& rawabi, uint64_t code, uint64_t action, string& _args, bytes& binargs);
-void unpack_args( string& rawabi, uint64_t code, uint64_t action, string& binargs, string& _args );
+void pack_args_(string& rawabi, uint64_t action, string& _args, string& binargs);
+void unpack_args_( string& rawabi, uint64_t action, string& binargs, string& _args );
 
 
 #endif /* MAIN_EOSAPI_HPP_ */

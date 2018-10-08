@@ -2,7 +2,9 @@ import json
 from .http_client import HttpClient
 from .client import Client, WalletClient
 from . import _hello as hello
+
 wallet = _hello.wallet
+_eosapi = _hello._eosapi
 
 class JsonStruct(object):
     def __init__(self, js):
