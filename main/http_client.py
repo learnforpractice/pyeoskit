@@ -153,7 +153,6 @@ class HttpClient(object):
         if not response:
             raise EosdNoResponse(
                 'eosd nodes have failed to respond, all retries exhausted.')
-
         result = response.data.decode('utf-8')
         if response.status != 200 or not result:
             extra = dict(result=result, response=response, request_body=body)

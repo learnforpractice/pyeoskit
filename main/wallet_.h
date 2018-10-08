@@ -33,6 +33,4 @@ PyObject* wallet_set_dir_(std::string &path_name);
 
 PyObject* sign_transaction_(void *signed_trx);
 
-PyObject* init_wallet();
-
 #endif

@@ -1,21 +1,43 @@
 
 add_cython_target(_hello CXX)
+add_cython_target(_eosapi CXX)
 add_cython_target(wallet CXX)
 add_cython_target(pyobject CXX)
 
-add_library(_hello MODULE ${_hello} ${wallet} ${pyobject} wallet_.cpp pyobject.cpp)
-target_link_libraries( _hello fc wallet_plugin)
+set(SRCS ${_hello} 
+         ${_eosapi} 
+         ${wallet} 
+         ${pyobject}
+         wallet_.cpp 
+         pyobject.cpp 
+         main.cpp 
+         eosapi.cpp
+         hello.cpp)
+
+add_library(_hello MODULE ${SRCS})
+
+target_link_libraries( _hello fc wallet_plugin eosio_chain)
+
+add_executable(hello ${SRCS})
+
+target_link_libraries(hello fc wallet_plugin eosio_chain ${PYTHON_LIBRARY})
+
+set(INCS   "${CMAKE_CURRENT_SOURCE_DIR}" 
+           "${CMAKE_CURRENT_SOURCE_DIR}/include" 
+           "${CMAKE_SOURCE_DIR}/libraries/chain/include" 
+           "${CMAKE_SOURCE_DIR}/libraries/eosiolib" 
+           "${CMAKE_SOURCE_DIR}/libraries/chainbase/include"
+           "${CMAKE_SOURCE_DIR}/libraries/wallet_plugin"
+           "${PYTHON_INCLUDE_DIR}"
+           )
 
 target_include_directories( _hello
-            PUBLIC  "${CMAKE_CURRENT_SOURCE_DIR}" 
-            PUBLIC  "${CMAKE_CURRENT_SOURCE_DIR}/include" 
-            PUBLIC  "${CMAKE_SOURCE_DIR}/libraries/include" 
-            PUBLIC  "${CMAKE_SOURCE_DIR}/libraries/eosiolib" 
-            PUBLIC  "${CMAKE_SOURCE_DIR}/libraries/chainbase/include"
-            PUBLIC  "${CMAKE_SOURCE_DIR}/libraries/wallet_plugin"
-            PUBLIC "${PYTHON_INCLUDE_DIR}"
+            PUBLIC  "${INCS}"
 )
 
+target_include_directories( hello
+            PUBLIC  "${INCS}"
+)
 
 python_extension_module(_hello)
 

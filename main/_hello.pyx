@@ -1,7 +1,9 @@
-cdef extern from "wallet_.h":
-    object init_wallet()
+cdef extern from "hello.hpp":
+    object PyInit_wallet();
+    object PyInit__eosapi();
 
-wallet = init_wallet()
+wallet = PyInit_wallet()
+_eosapi = PyInit__eosapi()
 
 cpdef void hello(str strArg):
     "Prints back 'Hello <param>', for example example: hello.hello('you')"

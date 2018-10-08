@@ -5,7 +5,7 @@ from .http_client import HttpClient
 
 class Client(HttpClient):
     def __init__(self, nodes=None, **kwargs):
-        nodes = nodes or ['http://localhost:8888']
+        nodes = nodes or ['http://127.0.0.1:8888']
         super().__init__(nodes=nodes, **kwargs)
 
     def stream_blocks(self, start_block=None, mode='irreversible'):
@@ -96,6 +96,19 @@ class Client(HttpClient):
             endpoint='get_block',
             body=body
         )
+        
+    def get_block_header_state(self, block_num_or_id):
+        """ Fetch a block header state from the blockchain. """
+
+        body = dict(
+            block_num_or_id=block_num_or_id,
+        )
+
+        return self.exec(
+            api='chain',
+            endpoint='get_block_header_state',
+            body=body
+        )
 
     def get_account(self, account_name) -> dict:
         """ Fetch a blockchain account """
@@ -110,11 +123,12 @@ class Client(HttpClient):
             body=body
         )
 
-    def get_code(self, account_name) -> dict:
+    def get_code(self, account_name, code_as_wasm=True) -> dict:
         """ Fetch smart contract code """
 
         body = dict(
             account_name=account_name,
+            code_as_wasm=code_as_wasm,
         )
 
         return self.exec(
@@ -123,8 +137,48 @@ class Client(HttpClient):
             body=body
         )
 
+    def get_abi(self, account_name) -> dict:
+        """ Fetch a blockchain account """
+
+        body = dict(
+            account_name=account_name,
+        )
+
+        return self.exec(
+            api='chain',
+            endpoint='get_abi',
+            body=body
+        )
+
+    def get_raw_code_and_abi(self, account_name) -> dict:
+        """ Fetch blockchain code and abi of an account """
+
+        body = dict(
+            account_name=account_name,
+        )
+
+        return self.exec(
+            api='chain',
+            endpoint='get_raw_code_and_abi',
+            body=body
+        )
+
+    def get_raw_abi(self, account_name, abi_hash=None) -> dict:
+        """ Fetch blockchain account abi info """
+
+        body = dict(
+            account_name=account_name,
+            abi_hash=abi_hash
+        )
+
+        return self.exec(
+            api='chain',
+            endpoint='get_raw_abi',
+            body=body
+        )
+
     def get_table_rows(self, json, code, scope, table, table_key, lower_bound,
-                       upper_bound, limit) -> dict:
+                       upper_bound, limit, key_type, index_position, encode_type='dec') -> dict:
         """ Fetch smart contract data from an account. """
 
         body = dict(
@@ -136,11 +190,98 @@ class Client(HttpClient):
             lower_bound=lower_bound,
             upper_bound=upper_bound,
             limit=limit,
+            key_type=key_type,
+            index_position=index_position,
+            encode_type=encode_type
         )
 
         return self.exec(
             api='chain',
             endpoint='get_table_rows',
+            body=body
+        )
+
+    def get_table_by_scope(self, code, table, lower_bound, upper_bound) -> dict:
+        """ Fetch smart contract data from an account. """
+
+        body = dict(
+            code=code,
+            table=table,
+            lower_bound=lower_bound,
+            upper_bound=upper_bound,
+            limit=10
+        )
+
+        return self.exec(
+            api='chain',
+            endpoint='get_table_by_scope',
+            body=body
+        )
+
+    def get_currency_balance(self, code, account, symbol) -> dict:
+        """ Get balance from an account. """
+
+        body = dict(
+            code=code,
+            account=account,
+            symbol=symbol
+        )
+
+        return self.exec(
+            api='chain',
+            endpoint='get_currency_balance',
+            body=body
+        )
+
+    def get_currency_stats(self, code, account, symbol) -> dict:
+
+        body = dict(
+            code=code,
+            symbol=symbol
+        )
+
+        return self.exec(
+            api='chain',
+            endpoint='get_currency_stats',
+            body=body
+        )
+
+    def get_producers(self, json, lower_bound) -> dict:
+
+        body = dict(
+            json=json,
+            lower_bound=lower_bound,
+            limit=50
+        )
+
+        return self.exec(
+            api='chain',
+            endpoint='get_producers',
+            body=body
+        )
+
+    def get_producer_schedule(self) -> dict:
+
+        body = dict(
+        )
+
+        return self.exec(
+            api='chain',
+            endpoint='get_producer_schedule',
+            body=body
+        )
+
+    def get_scheduled_transactions(self, json, lower_bound) -> dict:
+
+        body = dict(
+            json=json,
+            lower_bound=lower_bound,
+            limit=50
+        )
+
+        return self.exec(
+            api='chain',
+            endpoint='get_scheduled_transactions',
             body=body
         )
 
@@ -260,7 +401,7 @@ class Client(HttpClient):
 
 
 class WalletClient(HttpClient):
-    def __init__(self, host='localhost', port=8888, **kwargs):
+    def __init__(self, host='127.0.0.1', port=8888, **kwargs):
         hostname = host.split('//')[-1].split(':')[0]
         if hostname not in ['localhost', '127.0.0.1']:
             import warnings
@@ -276,4 +417,4 @@ class WalletClient(HttpClient):
 
 
 if __name__ == '__main__':
-    client = Client(['http://localhost:8888'])
+    client = Client(['http://127.0.0.1:8888'])
