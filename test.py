@@ -75,6 +75,8 @@ abi = '''
 }
 '''
 
+eosapi.set_abi('eosio.token', abi)
+
 args = {"from": 'eosio',
         "to": 'hello',
         "quantity": '0.0001 EOS',
@@ -82,5 +84,15 @@ args = {"from": 'eosio',
 }
 
 r = _eosapi.pack_args(abi, 'transfer', args)
+print(r)
+
+args = {"from": 'eosio',
+        "to": 'hello',
+        "quantity": '0.0001 EOS',
+        "memo": 'hello,world'
+}
+action = ['eosio.token', 'transfer', args, {'eosio':'active'}]
+reference_block_id = eosapi.get_info().last_irreversible_block_id
+r = eosapi.gen_transaction([action], 60*60, reference_block_id)
 print(r)
 

@@ -1,6 +1,8 @@
 #include "eosapi.hpp"
+#include "pyobject.hpp"
 
 static fc::microseconds abi_serializer_max_time = fc::microseconds(100*1000);
+static uint32_t tx_max_net_usage = 0;
 
 uint64_t s2n_(string& str) {
    try {
@@ -49,3 +51,29 @@ void unpack_args_( string& _rawabi, uint64_t action, string& _binargs, string& _
    } FC_LOG_AND_DROP();
 }
 
+PyObject* gen_transaction_(vector<chain::action>& v, int expiration, string& reference_block_id) {
+   packed_transaction::compression_type compression = packed_transaction::none;
+
+   try {
+      signed_transaction trx;
+      for(auto& action: v) {
+         trx.actions.push_back(action);
+      }
+
+      trx.expiration = fc::time_point::now() + fc::seconds(expiration);;
+
+      fc::variant v(reference_block_id);
+      chain::block_id_type id;
+      fc::from_variant(v, id);
+
+      trx.set_reference_block(id);
+
+//      trx.max_kcpu_usage = (tx_max_cpu_usage + 1023)/1024;
+      trx.max_net_usage_words = (tx_max_net_usage + 7)/8;
+      string result = fc::json::to_string(fc::variant(trx));
+      dlog(result);
+      return py_new_string(result);
+   } FC_LOG_AND_DROP();
+
+   return py_new_none();
+}

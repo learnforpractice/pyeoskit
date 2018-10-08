@@ -50,6 +50,7 @@ hunter_add_package(Boost COMPONENTS
     date_time
     system
     chrono
+    iostreams
 )
 
 find_package(Boost CONFIG REQUIRED
@@ -57,6 +58,7 @@ find_package(Boost CONFIG REQUIRED
     date_time
     system
     chrono
+    iostreams
 )
 
 

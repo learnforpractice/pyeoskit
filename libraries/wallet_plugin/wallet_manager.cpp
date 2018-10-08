@@ -9,25 +9,6 @@
 #include <boost/algorithm/string.hpp>
 
 namespace eosio {
-namespace chain {
-
-digest_type transaction::sig_digest( const chain_id_type& chain_id, const vector<bytes>& cfd )const {
-   digest_type::encoder enc;
-   fc::raw::pack( enc, chain_id );
-   fc::raw::pack( enc, *this );
-   if( cfd.size() ) {
-      fc::raw::pack( enc, digest_type::hash(cfd) );
-   } else {
-      fc::raw::pack( enc, digest_type() );
-   }
-   return enc.result();
-}
-
-
-}
-}
-
-namespace eosio {
 namespace wallet {
 
 constexpr auto file_ext = ".wallet";

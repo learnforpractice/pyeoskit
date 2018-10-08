@@ -52,8 +52,13 @@ class EosApi(object):
         self.client = Client(nodes=nodes)
 
     def __getattr__(self, attr):
-        func = getattr(self.client, attr)
-        return Function(func)
+        if hasattr(self.client, attr):
+            func = getattr(self.client, attr)
+            return Function(func)
+        elif hasattr(_eosapi, attr):
+            func = getattr(_eosapi, attr)
+            return func
+        raise Exception(f"{attr} not found")
 
 eosapi = EosApi()
 

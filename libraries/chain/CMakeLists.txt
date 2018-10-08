@@ -22,6 +22,7 @@ add_library( eosio_chain
               abi_serializer.cpp
               asset.cpp
               name.cpp
+              transaction.cpp
               ${HEADERS}
              )
 
