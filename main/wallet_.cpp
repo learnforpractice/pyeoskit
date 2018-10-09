@@ -1,4 +1,7 @@
 #include <fc/variant.hpp>
+#include <fc/io/json.hpp>
+#include <eosio/chain/transaction.hpp>
+
 #include <eosio/wallet_plugin/wallet_manager.hpp>
 
 #include <Python.h>
@@ -18,12 +21,21 @@ wallet_manager& wm() {
    return *wm;
 }
 
-void sign_transaction(signed_transaction& trx) {
-#if 0
-   const auto& public_keys = wm().get_public_keys();
-   auto required_keys_set = get_chain_controller().get_authorization_manager().get_required_keys( trx, public_keys, fc::seconds( 10 ));
-   trx = wm().sign_transaction(trx, required_keys_set, get_chain_controller().get_chain_id());
-#endif
+PyObject* sign_transaction_(string& _trx, vector<string>& _public_keys, string& chain_id) {
+   signed_transaction trx = fc::json::from_string(_trx).as<signed_transaction>();
+   flat_set<public_key_type> public_keys;
+
+   for (auto key: _public_keys) {
+      public_keys.insert(public_key_type(key));
+   }
+
+   try {
+      chain::chain_id_type id(chain_id);
+      trx = wm().sign_transaction(trx, public_keys, id);
+      string s = fc::json::to_string(trx);
+      return py_new_string(s);
+   } FC_LOG_AND_DROP();
+   return py_new_none();
 }
 
 PyObject* wallet_create_(std::string& name) {

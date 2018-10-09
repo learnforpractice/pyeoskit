@@ -3,6 +3,7 @@ import sys
 import json
 import pickle
 from .client import Client
+from .jsonstruct import JsonStruct
 
 client = Client()
 
@@ -19,6 +20,23 @@ if os.path.exists(db_path):
     _db = pickle.load(open(db_path, 'rb'))
 else:
     pickle.dump(_db, open(db_path, 'wb'))
+
+def reset():
+    global _db
+    _db = {'accounts':{}, 'abis':{}}
+    pickle.dump(_db, open(db_path, 'wb'))
+
+def set_info(info):
+    _db['chain_info'] = info
+    pickle.dump(_db, open(db_path, 'wb'))
+
+def get_info():
+    try:
+        return JsonStruct(_db['chain_info'])
+    except:
+        info = client.get_info()
+        set_info(info)
+        return JsonStruct(info)
 
 def get_abi(account):
     try:
@@ -50,12 +68,11 @@ def get_account(account):
         set_account(account, ret)
         return ret
 
-def get_active_key(account):
-    if not account in _db['accounts']:
-        return None
-    permissions = _db['accounts'][account]['permissions']
+def get_public_keys(account, key_type):
+    account_info = get_account(account)
+    permissions = account_info['permissions']
     for per in permissions:
-        if per['perm_name'] == 'active':
+        if per['perm_name'] == key_type:
             keys = []
             for key in per['required_auth']['keys']:
                 keys.append(key['key'])
