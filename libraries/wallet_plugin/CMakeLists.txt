@@ -17,7 +17,6 @@ endif(APPLE)
 add_library( wallet_plugin STATIC
              wallet_manager.cpp
              wallet.cpp
-             se_wallet.cpp
              exceptions.cpp
              ${HEADERS} )
 
