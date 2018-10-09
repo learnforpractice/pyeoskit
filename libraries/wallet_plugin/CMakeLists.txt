@@ -18,6 +18,7 @@ add_library( wallet_plugin STATIC
              wallet_manager.cpp
              wallet.cpp
              exceptions.cpp
+             ${SE_WALLET_SOURCES}
              ${HEADERS} )
 
 target_link_libraries( wallet_plugin fc ${security_framework} ${corefoundation_framework} ${localauthentication_framework} ${cocoa_framework})
