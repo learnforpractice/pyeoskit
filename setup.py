@@ -11,4 +11,11 @@ setup(
     packages=['pyeoskit'],
     # The extra '/' was *only* added to check that scikit-build can handle it.
     package_dir={'pyeoskit': 'main/'},
+    install_requires=[
+        'urllib3>=1.21.1',
+        'certifi',
+        'toolz',
+        'funcy',
+        'prettytable',
+    ],
 )
