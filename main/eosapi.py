@@ -71,11 +71,24 @@ class GetCodeFunction(object):
         ret = JsonStruct(ret)
         return ret
 
+class GetAbiFunction(object):
+    def __init__(self, function):
+        self.function = function
+        super(GetAbiFunction, self).__init__()
+
+    def __call__(self, *args):
+        ret = self.function(*args)
+        account = args[0]
+        if not db.get_abi(account):
+            db.set_abi(account, json.dumps(ret))
+        ret = JsonStruct(ret)
+        return ret
+
 class EosApi(object):
     def __init__(self):
-        self.client = Client()
+        self.client = db.client
 
-    def set_nodes(nodes):
+    def set_nodes(self, nodes):
         self.client.set_nodes(nodes)
 
     def clear_nodes(self):
@@ -88,7 +101,8 @@ class EosApi(object):
                 return GetAccountFunction(func)
             elif attr == 'get_code':
                 return GetCodeFunction(func)
-
+            elif attr == 'get_abi':
+                return GetAbiFunction(func)
             return Function(func)
         elif hasattr(_eosapi, attr):
             func = getattr(_eosapi, attr)
