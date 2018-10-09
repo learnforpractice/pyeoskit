@@ -108,6 +108,7 @@ class HttpClient(object):
 
         url = f"{self.node_url}/{self.api_version}/{api}/{endpoint}"
         body = self._body(body)
+        print(body)
         method = 'POST' if body else 'GET'
         try:
             response = self.http.urlopen(method, url, body=body)
@@ -175,10 +176,10 @@ class HttpClient(object):
 
     @staticmethod
     def _body(body):
-        if type(body) not in [str, dict, type(None)]:
+        if type(body) not in [str, dict, list, type(None)]:
             raise ValueError(
                 'Request body is of an invalid type %s' % type(body))
-        if type(body) == dict:
+        if type(body) in [dict, list]:
             return json.dumps(body)
         return body
 

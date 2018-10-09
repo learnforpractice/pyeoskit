@@ -358,10 +358,13 @@ class Client(HttpClient):
 
     def push_transactions(self, signed_transactions) -> dict:
         """ Attempts to push transactions into the pending queue. """
+        trxs = []
+        for trx in signed_transactions:
+            if not isinstance(trx, dict):
+                trx = json.loads(trx)
+            trxs.append(trx)
 
-        body = dict(
-            signed_transactions=signed_transactions,
-        )
+        body = trxs
 
         return self.exec(
             api='chain',
