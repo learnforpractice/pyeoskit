@@ -7,6 +7,7 @@ from libcpp.map cimport map
 from libcpp cimport bool
 
 import json
+from pyeoskit import db
 
 cdef extern from * :
     ctypedef long long int64_t
@@ -36,8 +37,6 @@ cdef extern from "eosapi.hpp":
     object sign_transaction_(string& trx_json_to_sign, string& str_private_key, string& chain_id);
     object pack_transaction_(string& _signed_trx, int compress)
 
-account_abi = {}
-
 def N(string& s):
     return s2n_(s)
 
@@ -48,9 +47,6 @@ def n2s(uint64_t n):
     cdef string s
     n2s_(n, s)
     return s
-
-def set_abi(account, abi):
-    account_abi[account] = abi
 
 def pack_args(string& rawabi, action, _args):
     cdef string binargs
@@ -87,9 +83,9 @@ def gen_transaction(actions, int expiration, string& reference_block_id):
 
         args = a[2]
         if isinstance(args, dict):
-            if not account in account_abi:
-                raise Exception('no abi specified!')
-            abi = account_abi[account]
+            abi = db.get_abi(account)
+            if not abi:
+                raise Exception(f"{account} has no abi info")
             args = pack_args(abi, action_name, args)
         act.data.resize(0)
         act.data.resize(len(args))
