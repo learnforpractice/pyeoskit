@@ -108,7 +108,6 @@ class HttpClient(object):
 
         url = f"{self.node_url}/{self.api_version}/{api}/{endpoint}"
         body = self._body(body)
-        print(body)
         method = 'POST' if body else 'GET'
         try:
             response = self.http.urlopen(method, url, body=body)
@@ -156,7 +155,7 @@ class HttpClient(object):
         if not response:
             raise EosdNoResponse(
                 'eosd nodes have failed to respond, all retries exhausted.')
-        result = response.data.decode('utf-8')
+        result = response.data.decode('cp437')
         if not response.status in [200, 202] or not result:
             extra = dict(result=result, response=response, request_body=body)
             logger.info('non ok response: %s',
