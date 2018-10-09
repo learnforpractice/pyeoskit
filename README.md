@@ -4,7 +4,7 @@ Python Toolkit for Eos
 ### Installing Prerequirements
 ```
 python3 -m pip install scikit-build
-python3 -m pip  install cython
+python3 -m pip install cython
 ```
 ### Downloading Source Code
 
@@ -31,8 +31,37 @@ ls dist
 python3 -m pip install dist/pyeoskit-[SUFFIX].whl
 ```
 
-# Usage
-Please See Examples in [Docs](https://github.com/learnforpractice/pyeoskit/tree/master/Docs)
+# Tutorials
+
+Sneak peek
+
+```python
+from pyeoskit import eosapi
+from pyeoskit import wallet
+
+mywallet = 'mywallet'
+psw = wallet.create(mywallet)
+print(psw)
+#PW5JwNkkPH7Ji1KfNfKXc4NHYwtEsxAh471YSiUzctwj7kVCD4Bih
+```
+
+
+```python
+from pyeoskit import eosapi
+from pyeoskit import wallet
+psw = 'PW5JwNkkPH7Ji1KfNfKXc4NHYwtEsxAh471YSiUzctwj7kVCD4Bih'
+wallet.unlock(mywallet, psw)
+wallet.import_key(mywallet, '5JbDP55GXN7MLcNYKCnJtfKi9aD2HvHAdY7g8m67zFTAFkY1uBB')
+
+args = {"from": 'hello',
+        "to": 'eosio',
+        "quantity": '0.0001 EOS',
+        "memo": 'hello,world'
+}
+eosapi.push_action('eosio.token', 'transfer', args, {'hello':'active'})
+```
+
+More examples in [Docs](https://github.com/learnforpractice/pyeoskit/tree/master/Docs)
 
 
 # Acknowledgment
