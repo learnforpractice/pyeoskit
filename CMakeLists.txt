@@ -33,8 +33,21 @@ HunterGate(
 
 project(pyeoskit)
 
-set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall --std=c++14" )
-set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall" )
+if( WIN32 )
+
+else( WIN32 ) # Apple AND Linux
+    if( APPLE )
+        # Apple Specific Options Here
+        message( STATUS "Configuring EOSIO on OS X" )
+        set( CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -Wall --std=c++14 -Wno-deprecated-declarations" )
+    else( APPLE )
+        # Linux Specific Options Here
+        message( STATUS "Configuring EOSIO on Linux" )
+
+        set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall --std=c++14 -fPIC" )
+        set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -fPIC" )
+    endif( APPLE )
+endif( WIN32 )
 
 include(ProjectMPIR)
 

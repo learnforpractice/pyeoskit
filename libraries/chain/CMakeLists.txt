@@ -23,6 +23,7 @@ add_library( eosio_chain
               asset.cpp
               name.cpp
               transaction.cpp
+              exceptions.cpp
               ${HEADERS}
              )
 
