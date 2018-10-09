@@ -53,14 +53,14 @@ class HttpClient(object):
             socket_options = HTTPConnection.default_socket_options
 
         timeout = urllib3.Timeout(
-            connect=kwargs.get('connect_timeout', 15),
-            read=kwargs.get('timeout', 30))
+            connect=kwargs.get('connect_timeout', 5),
+            read=kwargs.get('timeout', 5))
 
         self.http = urllib3.poolmanager.PoolManager(
             num_pools=kwargs.get('num_pools', 50),
             maxsize=kwargs.get('maxsize', 10),
             block=kwargs.get('pool_block', False),
-            retries=kwargs.get('http_retries', 10),
+            retries=kwargs.get('http_retries', 5),
             timeout=timeout,
             socket_options=socket_options,
             headers={'Content-Type': 'application/json'},
@@ -72,13 +72,15 @@ class HttpClient(object):
             pool_timeout=None, release_conn=None, chunked=False, body_pos=None,
             **response_kw)
         '''
-
-        self.nodes = cycle(self._nodes(nodes))
-        self.node_url = ''
-        self.next_node()
+        self.set_nodes(nodes)
 
         log_level = kwargs.get('log_level', logging.INFO)
         logger.setLevel(log_level)
+
+    def set_nodes(self, nodes):
+        self.nodes = cycle(self._nodes(nodes))
+        self.node_url = ''
+        self.next_node()
 
     def next_node(self):
         """ Switch to the next available node.
