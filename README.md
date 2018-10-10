@@ -51,6 +51,8 @@ from pyeoskit import eosapi
 from pyeoskit import wallet
 psw = 'PW5JwNkkPH7Ji1KfNfKXc4NHYwtEsxAh471YSiUzctwj7kVCD4Bih'
 wallet.unlock(mywallet, psw)
+
+#import active key of account hello
 wallet.import_key(mywallet, '5JbDP55GXN7MLcNYKCnJtfKi9aD2HvHAdY7g8m67zFTAFkY1uBB')
 
 args = {"from": 'hello',
@@ -64,7 +66,7 @@ eosapi.push_action('eosio.token', 'transfer', args, {'hello':'active'})
 More examples in [Docs](https://github.com/learnforpractice/pyeoskit/tree/master/Docs)
 
 
-# Acknowledgment
+# Acknowledgments
 [https://github.com/Netherdrake/py-eos-api](https://github.com/Netherdrake/py-eos-api)
 
 [https://github.com/eosio/eos](https://github.com/eosio/eos)

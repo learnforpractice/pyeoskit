@@ -18,14 +18,6 @@ void n2s_(uint64_t n, string& s) {
    s = name(n).to_string();
 }
 
-static variant action_abi_to_variant( const abi_def& abi, type_name action_type ) {
-   variant v;
-   auto it = std::find_if(abi.structs.begin(), abi.structs.end(), [&](auto& x){return x.name == action_type;});
-   if( it != abi.structs.end() )
-      to_variant( it->fields,  v );
-   return v;
-}
-
 void pack_args_(string& _rawabi, uint64_t action, string& _args, string& _binargs) {
    fc::variant args = fc::json::from_string(_args);
    bytes rawabi = bytes(_rawabi.data(), _rawabi.data() + _rawabi.size());
@@ -50,6 +42,13 @@ void unpack_args_( string& _rawabi, uint64_t action, string& _binargs, string& _
       abi_serializer abis( abi, abi_serializer_max_time );
       auto args = abis.binary_to_variant( abis.get_action_type( action ), binargs, abi_serializer_max_time );
       _args = fc::json::to_string(args);
+   } FC_LOG_AND_DROP();
+}
+
+void pack_abi_(string& _abi, string& out) {
+   try {
+      auto abi = fc::raw::pack(fc::json::from_string(_abi).as<abi_def>());
+      out = string(abi.begin(), abi.end());
    } FC_LOG_AND_DROP();
 }
 

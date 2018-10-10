@@ -83,7 +83,7 @@ class EosApi(object):
         elif hasattr(_eosapi, attr):
             func = getattr(_eosapi, attr)
             return func
-        raise Exception(f"{attr} not found")
+        raise Exception(attr + " not found")
 
     def push_action(self, contract, action, args, permissions):
         act = [contract, action, args, permissions]
@@ -125,4 +125,46 @@ class EosApi(object):
             trx = _eosapi.pack_transaction(trx, 0)
             trxs.append(trx)
         return self.client.push_transactions(trxs)
+
+    def get_balance(account, token_account='eosio.token'):
+        ret = self.client.get_currency_balance(token_account, account, 'EOS')
+        if ret:
+            return ret[0]/10000.0
+        return 0.0
+
+    def get_abi(self, account):
+        try:
+            return db.get_abi(account)
+        except KeyError:
+            abi = self.client.get_abi(account)
+            abi = json.dumps(abi['abi'])
+            db.set_abi(account, abi)
+            return abi
+
+    def pack_args(self, account, action, args):
+        abi = self.get_abi(account)
+        return _eosapi.pack_args(abi, action, args)
+
+    def unpack_args(self, account, action, binargs):
+        abi = self.get_abi(account)
+        return _eosapi.unpack_args(abi, action, binargs)
+
+    def set_contract(self, account, code, abi, vmtype=1, sign=True):
+        actions = []
+        setcode = {"account":account,
+                   "vmtype":vmtype,
+                   "vmversion":0,
+                   "code":code.hex()
+                   }
+        setcode = self.pack_args('eosio', 'setcode', setcode)
+        setcode = ['eosio', 'setcode', setcode, {account:'active'}]
+        actions.append(setcode)
+
+        abi = _eosapi.pack_abi(abi)
+        setabi = self.pack_args('eosio', 'setabi', {'account':account, 'abi':abi.hex()})
+        setabi = ['eosio', 'setabi', setabi, {account:'active'}]
+        actions.append(setabi)
+    
+        ret = self.push_actions(actions)
+        return ret
 

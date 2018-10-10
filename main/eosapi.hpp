@@ -26,6 +26,7 @@ void n2s_(uint64_t n, string& s);
 
 void pack_args_(string& rawabi, uint64_t action, string& _args, string& binargs);
 void unpack_args_( string& rawabi, uint64_t action, string& binargs, string& _args );
+void pack_abi_(string& _abi, string& out);
 
 PyObject* gen_transaction_(vector<chain::action>& v, int expiration, string& reference_block_id);
 PyObject* sign_transaction_(string& trx_json_to_sign, string& str_private_key, string& chain_id);
