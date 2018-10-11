@@ -141,6 +141,10 @@ class EosApi(object):
             return ret[0]/10000.0
         return 0.0
 
+    def transfer(_from, _to, _amount, _memo='', token_account='eosio.token'):
+        args = {"from":_from, "to":_to, "quantity":'%.4f EOS'%(_amount,), "memo":_memo}
+        return self.push_action(token_account, 'transfer', args, {_from:'active'})
+
     def get_abi(self, account):
         try:
             return db.get_abi(account)
