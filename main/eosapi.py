@@ -135,6 +135,22 @@ class EosApi(object):
             trxs.append(trx)
         return self.client.push_transactions(trxs)
 
+    def create_account(self, creator, account, owner_key, active_key, sign=True):
+        actions = []
+        args = {'creator': creator,
+         'name': account,
+         'owner': {'threshold': 1,
+                   'keys': [{'key': active_key,
+                             'weight': 1}],
+                   'accounts': [],
+                   'waits': []},
+         'active': {'threshold': 1,
+                    'keys': [{'key': owner_key,
+                              'weight': 1}],
+                    'accounts': [],
+                    'waits': []}}
+        return self.push_action('eosio', 'newaccount', args, {creator:'active'})
+
     def get_balance(account, token_account='eosio.token'):
         ret = self.client.get_currency_balance(token_account, account, 'EOS')
         if ret:
