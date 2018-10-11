@@ -1,6 +1,6 @@
 Python Toolkit for Eos
 
-#Releases
+# Releases
 
 [releases](https://github.com/learnforpractice/pyeoskit/releases)
 
@@ -92,7 +92,7 @@ args = {"from": 'hello',
 eosapi.push_action('eosio.token', 'transfer', args, {'hello':'active'})
 ```
 
-#### Publish Contract Example
+#### Deploying Contract Example
 
 ```python
 from pyeoskit import eosapi
