@@ -6,6 +6,7 @@ from . import db
 from .client import Client, WalletClient
 from . import _hello as hello
 from .jsonstruct import JsonStruct
+from . import config
 
 _eosapi = _hello._eosapi
 wallet = _hello.wallet
@@ -67,7 +68,10 @@ class EosApi(object):
 
     def clear_nodes(self):
         self.client.set_nodes([])
-    
+        
+    def set_default_nodes(self):
+        self.set_nodes(config.default_nodes)
+
     def get_info(self):
         block_time = datetime.datetime.strptime(db.get_info().head_block_time, '%Y-%m-%dT%H:%M:%S.%f')
         elapsed = datetime.datetime.utcnow() - block_time
@@ -151,10 +155,10 @@ class EosApi(object):
                     'waits': []}}
         return self.push_action('eosio', 'newaccount', args, {creator:'active'})
 
-    def get_balance(account, token_account='eosio.token'):
+    def get_balance(self, account, token_account='eosio.token'):
         ret = self.client.get_currency_balance(token_account, account, 'EOS')
         if ret:
-            return ret[0]/10000.0
+            return ret[0]
         return 0.0
 
     def transfer(_from, _to, _amount, _memo='', token_account='eosio.token'):
