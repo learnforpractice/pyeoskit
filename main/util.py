@@ -7,9 +7,16 @@ def create_account_on_chain(from_account, new_account, balance, public_key):
     memo = '%s-%s'%(new_account, public_key)
     return eosapi.transfer(from_account, 'signupeoseos', balance, memo)
 
+def buyrambytes(payer, receiver, _bytes):
+    args = {"payer":payer,"receiver":receiver,"bytes":_bytes}
+    return eosapi.push_action('eosio', 'buyrambytes', args, {payer:'active'})
+
+def buyram(payer, receiver, quant):
+    args = {'payer':payer, 'receiver':receiver, 'quant':'%.4f EOS'%(quant,)}
+    return eosapi.push_action('eosio', 'buyram', args, {payer:'active'})
+
 def sellram(account, _bytes):
-    r = eosapi.push_action('eosio', 'sellram', {'account':account, 'bytes':_bytes}, {account:'active'})
-    print(r)
+    return eosapi.push_action('eosio', 'sellram', {'account':account, 'bytes':_bytes}, {account:'active'})
 
 def dbw(_from, _to, net, cpu):
     args = {'from':_from, 
