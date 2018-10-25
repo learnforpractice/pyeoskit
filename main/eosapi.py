@@ -161,7 +161,7 @@ class EosApi(object):
             return ret[0]
         return "0.0000 EOS"
 
-    def transfer(_from, _to, _amount, _memo='', token_account='eosio.token'):
+    def transfer(self, _from, _to, _amount, _memo='', token_account='eosio.token'):
         args = {"from":_from, "to":_to, "quantity":'%.4f EOS'%(_amount,), "memo":_memo}
         return self.push_action(token_account, 'transfer', args, {_from:'active'})
 

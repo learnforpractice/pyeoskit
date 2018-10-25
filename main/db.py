@@ -39,7 +39,9 @@ def get_info():
         return JsonStruct(info)
 
 def get_abi(account):
-    return _db['abis'][account]
+    if account in _db['abis']:
+        return _db['abis'][account]
+    return None
 
 def set_abi(account, abi):
     _db['abis'][account] = abi
