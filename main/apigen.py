@@ -47,7 +47,7 @@ def api_codegen(api_name, api_spec):
 
 
 def load_spec(api_name):
-    with open(f"../_spec/{api_name}.json", 'r') as f:
+    with open("../_spec/{}.json".format(api_name), 'r') as f:
         data = f.read()
 
     return api_name, json.loads(data)

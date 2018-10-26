@@ -409,12 +409,12 @@ class WalletClient(HttpClient):
         hostname = host.split('//')[-1].split(':')[0]
         if hostname not in ['localhost', '127.0.0.1']:
             import warnings
-            warnings.warn(f"Using the wallet API on {hostname} might be insecure!")
+            warnings.warn("Using the wallet API on {} might be insecure!".format(hostname))
 
         protocol = 'http'
         if host.split(':')[0] == 'https' or kwargs.get('https'):
             protocol = 'https'
-        nodes = [f"{protocol}://{hostname}:{port}".rstrip(':')]
+        nodes = ["{}://{}:{}".format(protocol, hostname, port).rstrip(':')]
         super().__init__(nodes=nodes, **kwargs)
 
         # TODO: API gen wallet methods

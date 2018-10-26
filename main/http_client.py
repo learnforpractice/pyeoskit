@@ -106,7 +106,7 @@ class HttpClient(object):
             In latter case, the exception is **re-raised**.
         """
 
-        url = f"{self.node_url}/{self.api_version}/{api}/{endpoint}"
+        url = "{}/{}/{}/{}".format(self.node_url, self.api_version, api, endpoint)
         body = self._body(body)
         method = 'POST' if body else 'GET'
         try:
