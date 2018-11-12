@@ -28,7 +28,7 @@ python3 -m pip install https://github.com/learnforpractice/pyeoskit/releases/dow
 ### Installing Prerequirements
 ```
 python3 -m pip install scikit-build
-python3 -m pip install cython
+python3 -m pip install cython==0.28.5
 ```
 ### Downloading Source Code
 
