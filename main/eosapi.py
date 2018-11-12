@@ -62,9 +62,14 @@ class GetAbiFunction(object):
 class EosApi(object):
     def __init__(self):
         self.client = db.client
+        config.get_abi = self.get_abi
 
     def set_nodes(self, nodes):
         self.client.set_nodes(nodes)
+    
+    def init(self):
+        self.get_code('eosio')
+        self.get_code('eosio.token')
 
     def clear_nodes(self):
         self.client.set_nodes([])
@@ -166,13 +171,12 @@ class EosApi(object):
         return self.push_action(token_account, 'transfer', args, {_from:'active'})
 
     def get_abi(self, account):
-        try:
-            return db.get_abi(account)
-        except KeyError:
+        abi = db.get_abi(account)
+        if not abi:
             abi = self.client.get_abi(account)
             abi = json.dumps(abi['abi'])
             db.set_abi(account, abi)
-            return abi
+        return abi
 
     def pack_args(self, account, action, args):
         abi = self.get_abi(account)

@@ -8,6 +8,7 @@ from libcpp cimport bool
 
 import json
 from pyeoskit import db
+from pyeoskit import config
 
 cdef extern from * :
     ctypedef long long int64_t
@@ -94,7 +95,7 @@ def gen_transaction(actions, int expiration, string& reference_block_id):
 
         args = a[2]
         if isinstance(args, dict):
-            abi = db.get_abi(account)
+            abi = config.get_abi(account)
             if not abi:
                 raise Exception(f"{account} has no abi info")
             args = pack_args(abi, action_name, args)

@@ -23,3 +23,5 @@ nodes = []
 def set_nodes(_nodes):
     global nodes
     nodes = _nodes
+#set in eosapi.py:EosApi.__init__
+get_abi = None
