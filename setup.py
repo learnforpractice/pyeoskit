@@ -17,5 +17,6 @@ setup(
         'toolz',
         'funcy',
         'prettytable',
+        'pycrypto'
     ],
 )
