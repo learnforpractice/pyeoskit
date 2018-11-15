@@ -17,6 +17,7 @@ setup(
         'toolz',
         'funcy',
         'prettytable',
-        'pycrypto'
+        'pycrypto',
+        'requests_unixsocket'
     ],
 )

@@ -8,6 +8,8 @@ from itertools import cycle
 from json import JSONDecodeError
 from urllib.parse import urlparse
 
+import requests_unixsocket
+
 import certifi
 import urllib3
 from .exceptions import (
@@ -77,6 +79,8 @@ class HttpClient(object):
         log_level = kwargs.get('log_level', logging.INFO)
         logger.setLevel(log_level)
 
+        self.session = requests_unixsocket.Session()
+
     def set_nodes(self, nodes):
         self.nodes = cycle(self._nodes(nodes))
         self.node_url = ''
@@ -105,36 +109,47 @@ class HttpClient(object):
             node fail-over, unless we are broadcasting a transaction.
             In latter case, the exception is **re-raised**.
         """
-
-        url = "{}/{}/{}/{}".format(self.node_url, self.api_version, api, endpoint)
         body = self._body(body)
         method = 'POST' if body else 'GET'
-        try:
-            response = self.http.urlopen(method, url, body=body)
-        except (MaxRetryError,
-                ConnectionResetError,
-                ReadTimeoutError,
-                RemoteDisconnected,
-                ProtocolError) as e:
-
-            if _ret_cnt >= self.max_retries:
+        if self.node_url.startswith('unix://'):
+            url = "http+{}/{}/{}/{}".format(self.node_url, self.api_version, api, endpoint)
+            try:
+                if body:
+                    r = self.session.post(url, data = body)
+                else:
+                    r = self.session.get(url)
+                return json.loads(r.text)
+            except Exception as e:
+                extra = dict(err=e, url=url, body=body, method=method)
+                logger.info('Request error', extra=extra)
                 raise e
-
-            # try switching nodes before giving up
-            time.sleep(_ret_cnt)
-            self.next_node()
-            logging.debug('Switched node to %s due to exception: %s' %
-                          (self.hostname, e.__class__.__name__))
-            return self.exec(api, endpoint, body, _ret_cnt=_ret_cnt + 1)
-        except Exception as e:
-            extra = dict(err=e, url=url, body=body, method=method)
-            logger.info('Request error', extra=extra)
-            raise e
-
         else:
-            return self._return(
-                response=response,
-                body=body)
+            url = "{}/{}/{}/{}".format(self.node_url, self.api_version, api, endpoint)
+            try:
+                response = self.http.urlopen(method, url, body=body)
+            except (MaxRetryError,
+                    ConnectionResetError,
+                    ReadTimeoutError,
+                    RemoteDisconnected,
+                    ProtocolError) as e:
+    
+                if _ret_cnt >= self.max_retries:
+                    raise e
+    
+                # try switching nodes before giving up
+                time.sleep(_ret_cnt)
+                self.next_node()
+                logging.debug('Switched node to %s due to exception: %s' %
+                              (self.hostname, e.__class__.__name__))
+                return self.exec(api, endpoint, body, _ret_cnt=_ret_cnt + 1)
+            except Exception as e:
+                extra = dict(err=e, url=url, body=body, method=method)
+                logger.info('Request error', extra=extra)
+                raise e
+            else:
+                return self._return(
+                    response=response,
+                    body=body)
 
     @staticmethod
     def _return(response=None, body=None):
@@ -190,7 +205,8 @@ class HttpClient(object):
 
 
 if __name__ == '__main__':
-    h = HttpClient(["http://localhost:8888", "http://localhost:8899"])
-    print(h.exec('chain', 'get_block', {"block_num_or_id": 5}))
+    unix_socket = 'unix://%2FUsers%2Fnewworld%2Fdev%2Fpyeos%2Fbuild%2Fprograms%2Fdata-dir%2Fpyeos.sock'
+    h = HttpClient([unix_socket, "http://localhost:8888", "http://localhost:8899"])
+    print(h.exec('chain', 'get_block', {"block_num_or_id": 1}))
     print(h.exec('chain', 'get_info'))
     # h.exec('get_block', '{"block_num_or_id":5}')
