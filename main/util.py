@@ -25,7 +25,7 @@ def dbw(_from, _to, net, cpu):
             'stake_cpu_quantity':'%.4f EOS'%(cpu,), 
             'transfer':False
             }
-    eosapi.push_action('eosio', 'delegatebw', args, {_from:'active'})
+    return eosapi.push_action('eosio', 'delegatebw', args, {_from:'active'})
 
 def undbw(_from, _to, net, cpu):
     args = {'from':_from, 
@@ -34,4 +34,4 @@ def undbw(_from, _to, net, cpu):
             'unstake_cpu_quantity':'%.4f EOS'%(cpu,), 
             'transfer':False
             }
-    eosapi.push_action('eosio', 'undelegatebw', args, {_from:'active'})
+    return eosapi.push_action('eosio', 'undelegatebw', args, {_from:'active'})

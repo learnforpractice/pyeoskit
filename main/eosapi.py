@@ -160,11 +160,11 @@ class EosApi(object):
                     'waits': []}}
         return self.push_action('eosio', 'newaccount', args, {creator:'active'})
 
-    def get_balance(self, account, token_account='eosio.token'):
-        ret = self.client.get_currency_balance(token_account, account, 'EOS')
+    def get_balance(self, account, token_account='eosio.token', token_name='EOS'):
+        ret = self.client.get_currency_balance(token_account, account, token_name)
         if ret:
-            return ret[0]
-        return "0.0000 EOS"
+            return float(ret[0].split(' ')[0])
+        return 0.0
 
     def transfer(self, _from, _to, _amount, _memo='', token_account='eosio.token'):
         args = {"from":_from, "to":_to, "quantity":'%.4f EOS'%(_amount,), "memo":_memo}
