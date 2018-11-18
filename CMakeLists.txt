@@ -79,8 +79,8 @@ find_package(Boost 1.67.0 COMPONENTS
     system 
     chrono
     filesystem
-    zlib
-    bzlib2
+#    zlib
+#    bzlib2
 )
 
 message(STATUS "${Boost_LIBRARY_DIRS}++++++++++++++++"${Boost_LIBRARIES})
