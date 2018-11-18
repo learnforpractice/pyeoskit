@@ -9,6 +9,8 @@ include( SetupTargetMacros )
 #set(CYTHON_EXECUTABLE "/Users/newworld/anaconda/bin/cython")
 #set(PYTHON_INCLUDE_DIR "/Users/newworld/anaconda/include/python3.6m")
 
+set(CYTHON_EXECUTABLE "${CMAKE_SOURCE_DIR}/cython")
+
 set(HUNTER_CONFIGURATION_TYPES Release)
 set(HUNTER_JOBS_NUMBER 4)
 set(HUNTER_CACHE_SERVERS "https://github.com/ethereum/hunter-cache")

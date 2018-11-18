@@ -39,18 +39,11 @@ def get_info():
         return JsonStruct(info)
 
 def get_abi(account):
-    try:
+    if account in _db['abis']:
         return _db['abis'][account]
-    except:
-        ret = client.get_code(account)
-        abi = ret['abi']
-        abi = json.dumps(abi)
-        set_abi(account, abi)
-        return abi
+    return None
 
 def set_abi(account, abi):
-    if isinstance(abi, dict):
-        abi = json.dumps(abi)
     _db['abis'][account] = abi
     pickle.dump(_db, open(db_path, 'wb'))
 

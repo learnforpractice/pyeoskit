@@ -8,6 +8,7 @@ from libcpp cimport bool
 
 import json
 from pyeoskit import db
+from pyeoskit import config
 
 cdef extern from * :
     ctypedef long long int64_t
@@ -16,6 +17,8 @@ cdef extern from * :
 cdef extern from "eosapi.hpp":
     void pack_args_(string& rawabi, uint64_t action, string& _args, string& binargs)
     void unpack_args_(string& rawabi, uint64_t action, string& binargs, string& _args)
+    void pack_abi_(string& _abi, string& out);
+
     uint64_t s2n_(string& s);
     void n2s_(uint64_t n, string& s);
 
@@ -56,12 +59,21 @@ def pack_args(string& rawabi, action, _args):
     cdef string args
     args = json.dumps(_args)
     pack_args_(rawabi, N(action), args, binargs)
-    return <bytes>binargs
+    if binargs.size():
+        return <bytes>binargs
+    raise Exception('pack error')
 
 def unpack_args(string& rawabi, action, string& binargs):
     cdef string _args
     unpack_args_(rawabi, N(action), binargs, _args)
-    return json.loads(_args)
+    if _args.size():
+        return json.loads(_args)
+    raise Exception("unpack error!")
+
+def pack_abi(string& _abi):
+    cdef string out
+    pack_abi_(_abi, out)
+    return <bytes>out
 
 def gen_transaction(actions, int expiration, string& reference_block_id):
     cdef vector[action] v
@@ -86,7 +98,7 @@ def gen_transaction(actions, int expiration, string& reference_block_id):
 
         args = a[2]
         if isinstance(args, dict):
-            abi = db.get_abi(account)
+            abi = config.get_abi(account)
             if not abi:
                 raise Exception(f"{account} has no abi info")
             args = pack_args(abi, action_name, args)
