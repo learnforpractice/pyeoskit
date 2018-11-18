@@ -4,6 +4,14 @@ set(prefix "${CMAKE_BINARY_DIR}/deps")
 set(MPIR_LIBRARY "${prefix}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}mpir${CMAKE_STATIC_LIBRARY_SUFFIX}")
 set(MPIR_INCLUDE_DIR "${prefix}/include")
 
+if (WIN32)
+
+elseif(APPLE)
+
+else()
+set(BUILD_FLAGS "-fPIC")
+endif()
+
 ExternalProject_Add(mpir
     PREFIX "${prefix}"
     DOWNLOAD_NAME mpir-cmake.tar.gz
@@ -15,6 +23,8 @@ ExternalProject_Add(mpir
         -DCMAKE_INSTALL_LIBDIR=lib
         -DCMAKE_BUILD_TYPE=Release
         -DMPIR_GMP=On
+        -DCMAKE_CXX_FLAGS=${BUILD_FLAGS}
+        -DCMAKE_C_FLAGS=${BUILD_FLAGS}
     BUILD_BYPRODUCTS "${MPIR_LIBRARY}"
 )
 
