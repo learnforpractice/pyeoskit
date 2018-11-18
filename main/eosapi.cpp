@@ -48,7 +48,7 @@ void unpack_args_( std::string& _rawabi, uint64_t action, std::string& _binargs,
 void pack_abi_(std::string& _abi, std::string& out) {
    try {
       auto abi = fc::raw::pack(fc::json::from_string(_abi).as<abi_def>());
-      out = string(abi.begin(), abi.end());
+      out = std::string(abi.begin(), abi.end());
    } FC_LOG_AND_DROP();
 }
 
