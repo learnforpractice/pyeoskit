@@ -21,7 +21,7 @@ namespace eosio {
          where the integer represents number of decimals. Number of decimals must be larger than zero.
        */
 
-      static constexpr uint64_t string_to_symbol_c(uint8_t precision, const char* str) {
+      static uint64_t string_to_symbol_c(uint8_t precision, const char* str) {
          uint32_t len = 0;
          while (str[len]) ++len;
 
@@ -61,7 +61,7 @@ namespace eosio {
       class symbol {
          public:
 
-            static constexpr uint8_t max_precision = 18;
+            static const uint8_t max_precision = 18;
 
             explicit symbol(uint8_t p, const char* s): m_value(string_to_symbol(p, s)) {
                EOS_ASSERT(valid(), symbol_type_exception, "invalid symbol: ${s}", ("s",s));

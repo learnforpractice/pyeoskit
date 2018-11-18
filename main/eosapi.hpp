@@ -21,14 +21,17 @@ using namespace std;
 using namespace eosio;
 using namespace eosio::chain;
 
-uint64_t s2n_(string& str);
-void n2s_(uint64_t n, string& s);
+uint64_t s2n_(std::string& str);
+void n2s_(uint64_t n, std::string& s);
 
-void pack_args_(string& rawabi, uint64_t action, string& _args, string& binargs);
-void unpack_args_( string& rawabi, uint64_t action, string& binargs, string& _args );
+void pack_args_(std::string& rawabi, uint64_t action, std::string& _args, std::string& binargs);
+void unpack_args_( std::string& rawabi, uint64_t action, std::string& binargs, std::string& _args );
 
-PyObject* gen_transaction_(vector<chain::action>& v, int expiration, string& reference_block_id);
-PyObject* sign_transaction_(string& trx_json_to_sign, string& str_private_key, string& chain_id);
-PyObject* pack_transaction_(string& _signed_trx, int compress);
+PyObject* gen_transaction_(vector<chain::action>& v, int expiration, std::string& reference_block_id);
+PyObject* sign_transaction_(std::string& trx_json_to_sign, std::string& str_private_key, std::string& chain_id);
+PyObject* pack_transaction_(std::string& _signed_trx, int compress);
+
+PyObject* create_key_();
+PyObject* get_public_key_(std::string& wif_key);
 
 #endif /* MAIN_EOSAPI_HPP_ */

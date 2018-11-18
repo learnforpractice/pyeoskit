@@ -10,7 +10,11 @@
 
 namespace eosio { namespace chain { namespace config {
 
+#if defined(_MSC_VER)
+typedef uint64_t uint128_t;
+#else
 typedef __uint128_t uint128_t;
+#endif
 
 const static auto default_code_update_interval    = 10*60; //10 minutes;
 

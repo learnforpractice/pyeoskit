@@ -34,6 +34,14 @@ HunterGate(
 project(pyeoskit)
 
 if( WIN32 )
+#looks like this flag can have different default on some machines.
+SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /SAFESEH:NO")
+SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SAFESEH:NO")
+
+# Probably cmake has a bug and vcxproj generated for executable in Debug conf. has disabled debug info
+set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} /DEBUG")
+
+set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DLIEF_DISABLE_FROZEN=on" )
 
 else( WIN32 ) # Apple AND Linux
     if( APPLE )
@@ -58,23 +66,21 @@ find_package(OpenSSL REQUIRED)
 hunter_add_package(ZLIB)
 find_package(ZLIB CONFIG REQUIRED)
 
-hunter_add_package(Boost COMPONENTS 
-    filesystem
-    date_time
-    system
-    chrono
+
+set(BOOST_ROOT "C:/boost_1_67_0")
+
+find_package(Boost 1.67.0 COMPONENTS
     iostreams
+    date_time
+    system 
+    chrono
+    filesystem
+    zlib
+    bzlib2
 )
 
-find_package(Boost CONFIG REQUIRED
-    filesystem
-    date_time
-    system
-    chrono
-    iostreams
-)
-
-
+message(STATUS "${Boost_LIBRARY_DIRS}++++++++++++++++"${Boost_LIBRARIES})
+ 
 find_package(PythonExtensions REQUIRED)
 find_package(Cython REQUIRED)
 

@@ -37,6 +37,9 @@ cdef extern from "eosapi.hpp":
     object sign_transaction_(string& trx_json_to_sign, string& str_private_key, string& chain_id);
     object pack_transaction_(string& _signed_trx, int compress)
 
+    object create_key_()
+    object get_public_key_(string& wif_key)
+
 def N(string& s):
     return s2n_(s)
 
@@ -99,4 +102,10 @@ def sign_transaction(string& trx_json_to_sign, string& str_private_key, string& 
 
 def pack_transaction(string& _signed_trx, int compress):
     return pack_transaction_(_signed_trx, compress)
+
+def create_key():
+    return create_key_()
+
+def get_public_key(string& wif_key):
+    return get_public_key_(wif_key)
 
