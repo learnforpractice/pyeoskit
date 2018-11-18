@@ -9,7 +9,9 @@ include( SetupTargetMacros )
 #set(CYTHON_EXECUTABLE "/Users/newworld/anaconda/bin/cython")
 #set(PYTHON_INCLUDE_DIR "/Users/newworld/anaconda/include/python3.6m")
 
+if (NOT WIN32)
 set(CYTHON_EXECUTABLE "${CMAKE_SOURCE_DIR}/cython")
+endif(NOT WIN32)
 
 set(HUNTER_CONFIGURATION_TYPES Release)
 set(HUNTER_JOBS_NUMBER 4)
