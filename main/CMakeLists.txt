@@ -17,13 +17,7 @@ set(SRCS ${_hello}
 add_library(_hello MODULE ${SRCS})
 
 if (WIN32)
-
-set(EXTRA_LIBS Userenv.lib CRYPT32.lib
-    C:/boost_1_67_0/lib64-msvc-14.0/libboost_iostreams-vc141-mt-x64-1_67.lib
-    C:/boost_1_67_0/lib64-msvc-14.0/libboost_bzip2-vc141-mt-x64-1_67.lib
-    C:/boost_1_67_0/lib64-msvc-14.0/libboost_zlib-vc141-mt-x64-1_67.lib
-)
-
+set(EXTRA_LIBS Userenv.lib CRYPT32.lib)
 endif(WIN32)
 
 target_link_libraries( _hello fc wallet_plugin eosio_chain eos_utilities ${EXTRA_LIBS})
@@ -31,7 +25,7 @@ target_link_libraries( _hello fc wallet_plugin eosio_chain eos_utilities ${EXTRA
 add_executable(hello ${SRCS})
 
 target_link_libraries(hello fc wallet_plugin eosio_chain eos_utilities 
-${PYTHON_LIBRARY} ${EXTRA_LIBS} )
+${PYTHON_LIBRARY} ${EXTRA_LIBS})
 
 set(INCS   "${CMAKE_CURRENT_SOURCE_DIR}" 
            "${CMAKE_CURRENT_SOURCE_DIR}/include" 
