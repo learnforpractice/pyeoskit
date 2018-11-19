@@ -86,16 +86,19 @@ namespace eosio { namespace chain {
       built_in_types.emplace("uint32",                    pack_unpack<uint32_t>());
       built_in_types.emplace("int64",                     pack_unpack<int64_t>());
       built_in_types.emplace("uint64",                    pack_unpack<uint64_t>());
+#if !defined(_MSC_VER)
       built_in_types.emplace("int128",                    pack_unpack<int128_t>());
       built_in_types.emplace("uint128",                   pack_unpack<uint128_t>());
+#endif
       built_in_types.emplace("varint32",                  pack_unpack<fc::signed_int>());
       built_in_types.emplace("varuint32",                 pack_unpack<fc::unsigned_int>());
 
       // TODO: Add proper support for floating point types. For now this is good enough.
       built_in_types.emplace("float32",                   pack_unpack<float>());
       built_in_types.emplace("float64",                   pack_unpack<double>());
+#if !defined(_MSC_VER)
       built_in_types.emplace("float128",                  pack_unpack<uint128_t>());
-
+#endif
       built_in_types.emplace("time_point",                pack_unpack<fc::time_point>());
       built_in_types.emplace("time_point_sec",            pack_unpack<fc::time_point_sec>());
       built_in_types.emplace("block_timestamp_type",      pack_unpack<block_timestamp_type>());

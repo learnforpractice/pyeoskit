@@ -176,8 +176,23 @@ namespace eosio { namespace chain {
    using weight_type         = uint16_t;
    using block_num_type      = uint32_t;
    using share_type          = int64_t;
+
+#if defined(_MSC_VER)
+typedef struct {
+    uint64_t high;
+    uint64_t low;
+} uint128_t;
+
+typedef struct {
+    int64_t high;
+    int64_t low;
+} int128_t;
+
+#else
    using int128_t            = __int128;
    using uint128_t           = unsigned __int128;
+#endif
+
    using bytes               = vector<char>;
 
 

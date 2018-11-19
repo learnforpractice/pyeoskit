@@ -71,7 +71,7 @@ hunter_add_package(ZLIB)
 find_package(ZLIB CONFIG REQUIRED)
 
 
-set(BOOST_ROOT "C:/boost_1_67_0")
+#set(BOOST_ROOT "C:/boost_1_67_0")
 
 find_package(Boost 1.67.0 COMPONENTS
     iostreams

@@ -19,9 +19,9 @@ add_library(_hello MODULE ${SRCS})
 if (WIN32)
 
 set(EXTRA_LIBS Userenv.lib CRYPT32.lib
-    C:/boost_1_67_0/lib64-msvc-14.0/libboost_iostreams-vc140-mt-x64-1_67.lib
-    C:/boost_1_67_0/lib64-msvc-14.0/libboost_bzip2-vc140-mt-x64-1_67.lib
-    C:/boost_1_67_0/lib64-msvc-14.0/libboost_zlib-vc140-mt-x64-1_67.lib
+    C:/boost_1_67_0/lib64-msvc-14.0/libboost_iostreams-vc141-mt-x64-1_67.lib
+    C:/boost_1_67_0/lib64-msvc-14.0/libboost_bzip2-vc141-mt-x64-1_67.lib
+    C:/boost_1_67_0/lib64-msvc-14.0/libboost_zlib-vc141-mt-x64-1_67.lib
 )
 
 endif(WIN32)
