@@ -2,40 +2,79 @@ Python Toolkit for Eos
 
 # Releases
 
-[releases](https://github.com/learnforpractice/pyeoskit/releases)
+[v0.3.0 releases](https://github.com/learnforpractice/pyeoskit/releases)
 
 #### Installing Release on macOS
 
 ```
-python3 -m pip install https://github.com/learnforpractice/pyeoskit/releases/download/v0.1/pyeoskit-0.1.0-cp36-cp36m-macosx_10_9_x86_64.whl
+python3 -m pip install https://github.com/learnforpractice/pyeoskit/releases/download/v0.3.0/pyeoskit-0.3.0-cp36-cp36m-macosx_10_9_x86_64.whl
 ```
 
 #### Installing Release on Ubuntu
 
 ```
-python3 -m pip install https://github.com/learnforpractice/pyeoskit/releases/download/v0.1/pyeoskit-0.1.0-cp36-cp36m-linux_x86_64_ubuntu.whl
+python3 -m pip install https://github.com/learnforpractice/pyeoskit/releases/download/v0.3.0/pyeoskit-0.3.0-cp36-cp36m-linux_x86_64.whl
 ```
 
-#### Installing Release on Centos
+#### Installing Release on Windows
 
 ```
-python3 -m pip install https://github.com/learnforpractice/pyeoskit/releases/download/v0.1/pyeoskit-0.1.0-cp36-cp36m-linux_x86_64.1_centos.whl
+python3 -m pip install https://github.com/learnforpractice/pyeoskit/releases/download/v0.3.0/pyeoskit-0.3.0-cp36-cp36m-win_amd64.whl
 ```
 
 
 # Building from Source Code
 
-### Installing Prerequirements
+### Installing Prerequirements(macOS X and linux)
+
 ```
 python3 -m pip install scikit-build
 python3 -m pip install cython==0.28.5
 ```
+
+### Installing Prerequirements(Windows)
+
+#### Installing Visual Studio
+```
+https://visualstudio.microsoft.com/zh-hans/thank-you-downloading-visual-studio/?sku=Community&rel=15
+```
+
+#### Installing Windows-10-sdk
+```
+https://developer.microsoft.com/en-us/windows/downloads/windows-10-sdk
+```
+
+#### Installing Python
+
+```
+https://www.python.org/downloads/
+```
+
+#### Installing boost
+```
+https://sourceforge.net/projects/boost/files/boost-binaries/1.67.0/boost_1_67_0-msvc-14.1-64.exe/download
+```
+
+#### Installing Python packages
+```
+python -m pip install scikit-build
+python3 -m pip install cython==0.28.5
+```
+
 ### Downloading Source Code
 
 ```
 git clone https://www.github.com/learnforpractice/pyeoskit
 cd pyeoskit
 git submodule update --init --recursive
+```
+
+### Building on Windows
+```
+set PATH=%PATH%;"C:\Program Files (x86)\Windows Kits\10\bin\10.0.17763.0\x64"
+set LIB=%LIB%;C:\local\boost_1_67_0\lib64-msvc-14.1"
+set BOOST_ROOT=C:\boost_1_67_0
+python setup.py sdist bdist_wheel -G "NMake Makefiles"
 ```
 
 ### Building on macOS
