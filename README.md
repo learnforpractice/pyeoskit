@@ -19,7 +19,7 @@ python3 -m pip install https://github.com/learnforpractice/pyeoskit/releases/dow
 #### Installing Release on Windows
 
 ```
-python3 -m pip install https://github.com/learnforpractice/pyeoskit/releases/download/v0.3.0/pyeoskit-0.3.0-cp36-cp36m-win_amd64.whl
+python -m pip install https://github.com/learnforpractice/pyeoskit/releases/download/v0.3.0/pyeoskit-0.3.0-cp36-cp36m-win_amd64.whl
 ```
 
 
