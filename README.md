@@ -73,7 +73,7 @@ git submodule update --init --recursive
 ```
 set PATH=%PATH%;"C:\Program Files (x86)\Windows Kits\10\bin\10.0.17763.0\x64"
 set LIB=%LIB%;C:\local\boost_1_67_0\lib64-msvc-14.1"
-set BOOST_ROOT=C:\boost_1_67_0
+set BOOST_ROOT=C:\local\boost_1_67_0
 python setup.py sdist bdist_wheel -G "NMake Makefiles"
 ```
 
