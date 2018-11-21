@@ -403,6 +403,18 @@ class Client(HttpClient):
             body=body
         )
 
+    def get_key_accounts(self, public_key) -> dict:
+        """ Retrieve accounts has the specified key. """
+        body = dict(
+            public_key=public_key,
+        )
+
+        return self.exec(
+            api='history',
+            endpoint='get_key_accounts',
+            body=body
+        )
+
 
 class WalletClient(HttpClient):
     def __init__(self, host='127.0.0.1', port=8888, **kwargs):

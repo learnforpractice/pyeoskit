@@ -58,7 +58,7 @@ https://sourceforge.net/projects/boost/files/boost-binaries/1.67.0/boost_1_67_0-
 #### Installing Python packages
 ```
 python -m pip install scikit-build
-python3 -m pip install cython==0.28.5
+python -m pip install cython==0.28.5
 ```
 
 ### Downloading Source Code
