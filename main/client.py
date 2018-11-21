@@ -247,12 +247,14 @@ class Client(HttpClient):
             body=body
         )
 
-    def get_producers(self, json, lower_bound) -> dict:
-
+    def get_producers(self, json, lower_bound, limit) -> dict:
+        """
+        Example: eosapi.get_producers(True, "", 100)
+        """
         body = dict(
             json=json,
             lower_bound=lower_bound,
-            limit=50
+            limit=limit
         )
 
         return self.exec(
@@ -415,6 +417,27 @@ class Client(HttpClient):
             body=body
         )
 
+    def get_controlled_accounts(self, controlling_account) -> dict:
+        """ Retrieve accounts has the specified key. """
+        body = dict(
+            controlling_account=controlling_account,
+        )
+
+        return self.exec(
+            api='history',
+            endpoint='get_controlled_accounts',
+            body=body
+        )
+
+    def get_db_size(self) -> dict:
+        """ Retrieve accounts has the specified key. """
+        body = dict()
+
+        return self.exec(
+            api='db_size',
+            endpoint='get',
+            body=body
+        )
 
 class WalletClient(HttpClient):
     def __init__(self, host='127.0.0.1', port=8888, **kwargs):

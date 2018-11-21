@@ -206,10 +206,13 @@ class EosApi(object):
         return ret
 
     def create_key(self):
+        """ Retrieve a pair of public key / private key. """
         return _eosapi.create_key()
 
     def get_public_key(self, priv):
         return _eosapi.get_public_key(priv)
+    
+    
 
 def get_keys(account_name, perm_name, keys):
     for per in eosapi.get_account(account_name).permissions:
