@@ -205,3 +205,22 @@ class EosApi(object):
         ret = self.push_actions(actions)
         return ret
 
+    def create_key(self):
+        return _eosapi.create_key()
+
+    def get_public_key(self, priv):
+        return _eosapi.get_public_key(priv)
+
+def get_keys(account_name, perm_name, keys):
+    for per in eosapi.get_account(account_name).permissions:
+        if perm_name != per['perm_name']:
+            continue
+        for key in per['required_auth']['keys']:
+            keys.append(key)
+        for account in per['required_auth']['accounts']:
+           actor = account['permission']['actor']
+           per = account['permission']['permission']
+           get_keys(actor, per, keys)
+
+
+
