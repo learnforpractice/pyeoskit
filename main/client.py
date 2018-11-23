@@ -234,7 +234,7 @@ class Client(HttpClient):
             body=body
         )
 
-    def get_currency_stats(self, code, account, symbol) -> dict:
+    def get_currency_stats(self, code, symbol) -> dict:
 
         body = dict(
             code=code,
