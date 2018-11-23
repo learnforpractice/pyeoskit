@@ -113,8 +113,9 @@ class EosApi(object):
 
         keys = []
         for account in permissions:
-            keys.extend(db.get_public_keys(account, permissions[account]))
-
+            public_keys = self.get_available_public_keys(account, permissions[account])
+            keys.extend(public_keys)
+        print(keys)
         trx = wallet.sign_transaction(trx, keys, self.get_info().chain_id)
         trx = _eosapi.pack_transaction(trx, 0)
         return self.client.push_transaction(trx)
@@ -126,7 +127,8 @@ class EosApi(object):
         for a in actions:
             permissions = a[3]
             for account in permissions:
-                keys.extend(db.get_public_keys(account, permissions[account]))
+                public_keys = self.get_available_public_keys(account, permissions[account])
+                keys.extend(public_keys)
         trx = wallet.sign_transaction(trx, keys, self.get_info().chain_id)
         trx = _eosapi.pack_transaction(trx, 0)
 
@@ -141,11 +143,21 @@ class EosApi(object):
             for a in aa:
                 permissions = a[3]
                 for account in permissions:
-                    keys.extend(db.get_public_keys(account, permissions[account]))
+                    public_keys = self.get_available_public_keys(account, permissions[account])
+                    keys.extend(key)
             trx = wallet.sign_transaction(trx, keys, self.get_info().chain_id)
             trx = _eosapi.pack_transaction(trx, 0)
             trxs.append(trx)
         return self.client.push_transactions(trxs)
+
+    def get_available_public_keys(self, account, permission):
+        wallet_public_keys = wallet.get_public_keys()
+        account_public_keys = self.get_public_keys(account, permission)
+        keys = []
+        for key in account_public_keys:
+            if key in wallet_public_keys:
+                keys.append(key)
+        return keys
 
     def create_account(self, creator, account, owner_key, active_key, sign=True):
         actions = []
@@ -204,7 +216,7 @@ class EosApi(object):
         setabi = self.pack_args('eosio', 'setabi', {'account':account, 'abi':abi.hex()})
         setabi = ['eosio', 'setabi', setabi, {account:'active'}]
         actions.append(setabi)
-    
+
         ret = self.push_actions(actions)
         return ret
 
@@ -214,19 +226,33 @@ class EosApi(object):
 
     def get_public_key(self, priv):
         return _eosapi.get_public_key(priv)
-    
-    
 
-def get_keys(account_name, perm_name, keys):
-    for per in eosapi.get_account(account_name).permissions:
-        if perm_name != per['perm_name']:
-            continue
-        for key in per['required_auth']['keys']:
-            keys.append(key)
-        for account in per['required_auth']['accounts']:
-           actor = account['permission']['actor']
-           per = account['permission']['permission']
-           get_keys(actor, per, keys)
+    def get_public_keys(self, account_name, perm_name):
+        keys = []
+        for public_key in self.get_keys(account_name, perm_name):
+            keys.append(public_key['key'])
+        return keys
+
+    def get_keys(self, account_name, perm_name):
+        keys = []
+        self._get_keys(account_name, perm_name, keys)
+        return keys
+
+    def _get_keys(self, account_name, perm_name, keys):
+        """get public keys limited by threshold"""
+        for per in self.get_account(account_name).permissions:
+            if perm_name != per['perm_name']:
+                continue
+            for key in per['required_auth']['keys']:
+                keys.append(key)
+            threshold = per['required_auth']['threshold']
+            for account in per['required_auth']['accounts']:
+               actor = account['permission']['actor']
+               per = account['permission']['permission']
+               weight = account['weight']
+               threshold -= weight
+               if threshold >= 0:
+                   self._get_keys(actor, per, keys)
 
 
 
