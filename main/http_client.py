@@ -82,9 +82,17 @@ class HttpClient(object):
         self.session = requests_unixsocket.Session()
 
     def set_nodes(self, nodes):
-        self.nodes = cycle(self._nodes(nodes))
+        self.nodes_cache = self._nodes(nodes)
+        self.nodes = cycle(self.nodes_cache)
         self.node_url = ''
         self.next_node()
+
+    def get_nodes(self):
+        return self.nodes_cache
+
+    def add_node(self, url):
+        self.nodes_cache.insert(0, url)
+        self.set_nodes(self.nodes_cache)
 
     def next_node(self):
         """ Switch to the next available node.

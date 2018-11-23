@@ -71,6 +71,12 @@ class EosApi(object):
         self.get_code('eosio')
         self.get_code('eosio.token')
 
+    def add_node(self, url):
+        return self.client.add_node(url)
+
+    def get_nodes(self):
+        return self.client.get_nodes()
+
     def clear_nodes(self):
         self.client.set_nodes([])
         
@@ -78,13 +84,10 @@ class EosApi(object):
         self.set_nodes(config.default_nodes)
 
     def get_info(self):
-        block_time = datetime.datetime.strptime(db.get_info().head_block_time, '%Y-%m-%dT%H:%M:%S.%f')
-        elapsed = datetime.datetime.utcnow() - block_time
-        if elapsed.total_seconds() >= 60:
-            info = self.client.get_info()
-            db.set_info(info)
+        info = self.client.get_info()
+        db.set_info(info)
         return db.get_info()
-    
+
     def get_chain_id(self):
         pass
 
