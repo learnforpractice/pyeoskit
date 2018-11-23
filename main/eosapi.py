@@ -106,6 +106,9 @@ class EosApi(object):
             return func
         raise Exception(attr + " not found")
 
+    def gen_transaction(self, actions, expiration, reference_block_id):
+        return _eosapi.gen_transaction(actions, expiration, reference_block_id)
+
     def push_action(self, contract, action, args, permissions):
         act = [contract, action, args, permissions]
         reference_block_id = self.get_info().last_irreversible_block_id
