@@ -250,9 +250,11 @@ class EosApi(object):
                actor = account['permission']['actor']
                per = account['permission']['permission']
                weight = account['weight']
+               self._get_keys(actor, per, keys)
+
                threshold -= weight
-               if threshold >= 0:
-                   self._get_keys(actor, per, keys)
+               if threshold <= 0:
+                   break
 
 
 
