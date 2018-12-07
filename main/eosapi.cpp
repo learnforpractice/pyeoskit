@@ -133,8 +133,12 @@ PyObject* create_key_() {
 }
 
 PyObject* get_public_key_(std::string& wif_key) {
-   private_key_type priv(wif_key);
+   try {
+      private_key_type priv(wif_key);
 
-   std::string pub_key = std::string(priv.get_public_key());
-   return py_new_string(pub_key);
+      std::string pub_key = std::string(priv.get_public_key());
+      return py_new_string(pub_key);
+   } FC_LOG_AND_DROP();
+   return py_new_none();
 }
+
