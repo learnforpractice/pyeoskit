@@ -184,8 +184,8 @@ class EosApi(object):
             return float(ret[0].split(' ')[0])
         return 0.0
 
-    def transfer(self, _from, _to, _amount, _memo='', token_account='eosio.token'):
-        args = {"from":_from, "to":_to, "quantity":'%.4f EOS'%(_amount,), "memo":_memo}
+    def transfer(self, _from, _to, _amount, _memo='', token_account='eosio.token', symbol='EOS'):
+        args = {"from":_from, "to":_to, "quantity":'%.4f %s'%(_amount,symbol), "memo":_memo}
         return self.push_action(token_account, 'transfer', args, {_from:'active'})
 
     def get_abi(self, account):
