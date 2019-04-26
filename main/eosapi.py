@@ -26,11 +26,14 @@ class GetAccountFunction(object):
         super(GetAccountFunction, self).__init__()
 
     def __call__(self, *args):
-        ret = self.function(*args)
-        account = args[0]
-        db.set_account(account, ret)
-        ret = JsonStruct(ret)
-        return ret
+        try:
+            ret = self.function(*args)        
+            account = args[0]
+            db.set_account(account, ret)
+            ret = JsonStruct(ret)
+            return ret
+        except Exception as e:
+            pass
 
 class GetCodeFunction(object):
     def __init__(self, function):
@@ -40,7 +43,7 @@ class GetCodeFunction(object):
     def __call__(self, *args):
         ret = self.function(*args)
         account = args[0]
-        if not db.get_abi(account):
+        if not db.get_abi(account) and 'abi' in ret:
             db.set_abi(account, json.dumps(ret['abi']))
 
         ret = JsonStruct(ret)
@@ -87,7 +90,7 @@ class EosApi(object):
         info = self.client.get_info()
         db.set_info(info)
         return db.get_info()
-
+    
     def get_chain_id(self):
         pass
 
@@ -178,6 +181,39 @@ class EosApi(object):
                     'waits': []}}
         return self.push_action('eosio', 'newaccount', args, {creator:'active'})
 
+    def create_account2(self, creator, account, owner_key, active_key, ram_bytes, stake_net, stake_cpu, sign=True):
+        actions = []
+        args = {'creator': creator,
+         'name': account,
+         'owner': {'threshold': 1,
+                   'keys': [{'key': active_key,
+                             'weight': 1}],
+                   'accounts': [],
+                   'waits': []},
+         'active': {'threshold': 1,
+                    'keys': [{'key': owner_key,
+                              'weight': 1}],
+                    'accounts': [],
+                    'waits': []}}
+        args = self.pack_args('eosio', 'newaccount', args)
+        act = ['eosio', 'newaccount', args, {creator:'active'}]
+        actions.append(act)
+
+        args = {'payer':creator, 'receiver':account, 'bytes':ram_bytes}
+        args = self.pack_args('eosio', 'buyrambytes', args)
+        act = ['eosio', 'buyrambytes', args, {creator:'active'}]
+        actions.append(act)
+
+        args = {'from': creator,
+         'receiver': account,
+         'stake_net_quantity': '%0.4f EOS'%(stake_net,),
+         'stake_cpu_quantity': '%0.4f EOS'%(stake_cpu,),
+         'transfer': 1}
+        args = self.pack_args('eosio', 'delegatebw', args)
+        act = ['eosio', 'delegatebw', args, {creator:'active'}]
+        actions.append(act)
+        self.push_actions(actions)
+
     def get_balance(self, account, token_account='eosio.token', token_name='EOS'):
         ret = self.client.get_currency_balance(token_account, account, token_name)
         if ret:
@@ -219,7 +255,7 @@ class EosApi(object):
         setabi = self.pack_args('eosio', 'setabi', {'account':account, 'abi':abi.hex()})
         setabi = ['eosio', 'setabi', setabi, {account:'active'}]
         actions.append(setabi)
-
+    
         ret = self.push_actions(actions)
         return ret
 
