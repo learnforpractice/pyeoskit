@@ -28,6 +28,7 @@ cdef extern from "wallet_.h":
     object wallet_unlock_(string& name, string& password);
     object wallet_import_key_(string& name, string& wif_key, bool save);
     object sign_transaction_(string& trx, vector[string]& _public_keys, string& chain_id);
+    object sign_digest_(string& _digest, string& _public_key)
 
 def create(string& name) :
     return wallet_create_(name)
@@ -71,3 +72,6 @@ def sign_transaction(string& trx, _public_keys, string& chain_id):
     for key in _public_keys:
         public_keys.push_back(key)
     return sign_transaction_(trx, public_keys, chain_id);
+
+def sign_digest(string& digest, string& public_key):
+    return sign_digest_(digest, public_key)

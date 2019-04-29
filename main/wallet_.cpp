@@ -22,17 +22,29 @@ wallet_manager& wm() {
 }
 
 PyObject* sign_transaction_(string& _trx, vector<string>& _public_keys, string& chain_id) {
-   signed_transaction trx = fc::json::from_string(_trx).as<signed_transaction>();
-   flat_set<public_key_type> public_keys;
-
-   for (auto key: _public_keys) {
-      public_keys.insert(public_key_type(key));
-   }
-
    try {
+      signed_transaction trx = fc::json::from_string(_trx).as<signed_transaction>();
+      flat_set<public_key_type> public_keys;
+
+      for (auto key: _public_keys) {
+         public_keys.insert(public_key_type(key));
+      }
+
       chain::chain_id_type id(chain_id);
       trx = wm().sign_transaction(trx, public_keys, id);
       string s = fc::json::to_string(trx);
+      return py_new_string(s);
+   } FC_LOG_AND_DROP();
+   return py_new_none();
+}
+
+PyObject* sign_digest_(string& _digest, string& _public_key) {
+   try {
+      chain::digest_type digest = fc::json::from_string(_digest).as<chain::digest_type>();
+      public_key_type public_key = public_key_type(_public_key);
+
+      chain::signature_type sig = wm().sign_digest(digest, public_key);
+      string s = string(sig);
       return py_new_string(s);
    } FC_LOG_AND_DROP();
    return py_new_none();
