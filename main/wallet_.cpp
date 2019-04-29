@@ -40,7 +40,7 @@ PyObject* sign_transaction_(string& _trx, vector<string>& _public_keys, string& 
 
 PyObject* sign_digest_(string& _digest, string& _public_key) {
    try {
-      chain::digest_type digest = fc::json::from_string(_digest).as<chain::digest_type>();
+      chain::digest_type digest(_digest);
       public_key_type public_key = public_key_type(_public_key);
 
       chain::signature_type sig = wm().sign_digest(digest, public_key);
