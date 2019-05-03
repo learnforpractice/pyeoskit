@@ -179,7 +179,7 @@ class HttpClient(object):
             raise EosdNoResponse(
                 'eosd nodes have failed to respond, all retries exhausted.')
         result = response.data.decode('cp437')
-        if not response.status in [200, 202] or not result:
+        if not response.status in [200, 202, 201] or not result:
             extra = dict(result=result, response=response, request_body=body)
             logger.info('non ok response: %s',
                         response.status,
