@@ -47,6 +47,10 @@ def set_code(account, code):
     _db['codes'][account] = code
     pickle.dump(_db, open(db_path, 'wb'))
 
+def remove_code(account):
+    if account in _db['codes']:
+        del _db['codes'][account]
+
 def get_abi(account):
     if account in _db['abis']:
         return _db['abis'][account]
@@ -55,6 +59,10 @@ def get_abi(account):
 def set_abi(account, abi):
     _db['abis'][account] = abi
     pickle.dump(_db, open(db_path, 'wb'))
+
+def remove_abi(account):
+    if account in _db['abis']:
+        del _db['abis'][account]
 
 def set_account(account, info):
     if not isinstance(info, dict):

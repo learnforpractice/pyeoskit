@@ -351,6 +351,8 @@ class EosApi(object):
         actions.append(setabi)
     
         ret = self.push_actions(actions)
+        db.remove_code(account)
+        db.remove_abi(account)
         return ret
 
     def create_key(self):
