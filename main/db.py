@@ -14,7 +14,7 @@ if not os.path.exists(db_path):
     os.mkdir(db_path)
 db_path = os.path.join(db_path, 'db.pkl')
 
-_db = {'accounts':{}, 'abis':{}}
+_db = {'accounts':{}, 'abis':{}, 'codes':{}}
 
 if os.path.exists(db_path):
     _db = pickle.load(open(db_path, 'rb'))
@@ -23,7 +23,7 @@ else:
 
 def reset():
     global _db
-    _db = {'accounts':{}, 'abis':{}}
+    _db = {'accounts':{}, 'abis':{}, 'codes':{}}
     pickle.dump(_db, open(db_path, 'wb'))
 
 def set_info(info):
@@ -37,6 +37,15 @@ def get_info():
         info = client.get_info()
         set_info(info)
         return JsonStruct(info)
+
+def get_code(account):
+    if account in _db['codes']:
+        return _db['codes'][account]
+    return None
+
+def set_code(account, code):
+    _db['codes'][account] = code
+    pickle.dump(_db, open(db_path, 'wb'))
 
 def get_abi(account):
     if account in _db['abis']:

@@ -125,13 +125,17 @@ class GetCodeFunction(object):
         super(GetCodeFunction, self).__init__()
 
     def __call__(self, *args):
-        ret = self.function(*args)
         account = args[0]
-        if not db.get_abi(account) and 'abi' in ret:
-            db.set_abi(account, json.dumps(ret['abi']))
-
-        ret = JsonStruct(ret)
-        return ret
+        code = db.get_code(account)
+        if not code:
+            code = self.function(account)
+            if code:
+                db.set_code(account, code)
+                if 'abi' in code and not db.get_abi(account):
+                    db.set_abi(account, json.dumps(code['abi']))
+        if code:
+            code = JsonStruct(code)
+            return code
 
 class GetAbiFunction(object):
     def __init__(self, function):
