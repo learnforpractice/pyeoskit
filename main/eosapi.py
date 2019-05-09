@@ -238,7 +238,7 @@ class EosApi(object):
                 permissions = a[3]
                 for account in permissions:
                     public_keys = self.get_available_public_keys(account, permissions[account])
-                    keys.extend(key)
+                    keys.extend(public_keys)
             trx = wallet.sign_transaction(trx, keys, self.get_info().chain_id)
             trx = _eosapi.pack_transaction(trx, 0)
             trxs.append(trx)
