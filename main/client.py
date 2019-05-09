@@ -438,7 +438,7 @@ class Client(HttpClient):
         )
 
     def net_connect(self, address) -> dict:
-        """ Retrieve accounts has the specified key. """
+        """ Connect to a node address. """
         body = json.dumps(address)
 
         return self.exec(
@@ -448,7 +448,7 @@ class Client(HttpClient):
         )
 
     def net_disconnect(self, address) -> dict:
-        """ Retrieve accounts has the specified key. """
+        """ Disconnect from a node address. """
         body = json.dumps(address)
 
         return self.exec(
@@ -458,7 +458,7 @@ class Client(HttpClient):
         )
 
     def net_status(self, address) -> dict:
-        """ Retrieve accounts has the specified key. """
+        """ Retrieve connection status. """
         body = json.dumps(address)
 
         return self.exec(
@@ -468,7 +468,7 @@ class Client(HttpClient):
         )
 
     def net_connections(self) -> dict:
-        """ Retrieve accounts has the specified key. """
+        """ Get node connections. """
         body = dict()
 
         return self.exec(
@@ -477,6 +477,15 @@ class Client(HttpClient):
             body=body
         )
 
+    def get_supported_apis(self) -> dict:
+        """ Retrieve supported apis. """
+        body = dict()
+
+        return self.exec(
+            api='node',
+            endpoint='get_supported_apis',
+            body=body
+        )
 
 class WalletClient(HttpClient):
     def __init__(self, host='127.0.0.1', port=8888, **kwargs):
