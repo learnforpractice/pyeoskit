@@ -253,56 +253,45 @@ class EosApi(object):
                 keys.append(key)
         return keys
 
-    def create_account(self, creator, account, owner_key, active_key, sign=True):
+    def create_account(self, creator, account, owner_key, active_key, ram_bytes=0.0, stake_net=0.0, stake_cpu=0.0, sign=True):
         actions = []
-        args = {'creator': creator,
-         'name': account,
-         'owner': {'threshold': 1,
-                   'keys': [{'key': active_key,
-                             'weight': 1}],
+        args = {
+        'creator': creator,
+        'name': account,
+        'owner': {'threshold': 1,
+                   'keys': [{'key': active_key, 'weight': 1}],
                    'accounts': [],
-                   'waits': []},
-         'active': {'threshold': 1,
-                    'keys': [{'key': owner_key,
-                              'weight': 1}],
+                   'waits': []
+                },
+        'active': {'threshold': 1,
+                    'keys': [{'key': owner_key, 'weight': 1}],
                     'accounts': [],
-                    'waits': []}}
-        return self.push_action('eosio', 'newaccount', args, {creator:'active'})
-
-    def create_account2(self, creator, account, owner_key, active_key, ram_bytes, stake_net, stake_cpu, sign=True):
-        actions = []
-        args = {'creator': creator,
-         'name': account,
-         'owner': {'threshold': 1,
-                   'keys': [{'key': active_key,
-                             'weight': 1}],
-                   'accounts': [],
-                   'waits': []},
-         'active': {'threshold': 1,
-                    'keys': [{'key': owner_key,
-                              'weight': 1}],
-                    'accounts': [],
-                    'waits': []}}
+                    'waits': []
+                }
+        }
         args = self.pack_args('eosio', 'newaccount', args)
         act = ['eosio', 'newaccount', args, {creator:'active'}]
         actions.append(act)
 
-        args = {'payer':creator, 'receiver':account, 'bytes':ram_bytes}
-        args = self.pack_args('eosio', 'buyrambytes', args)
-        act = ['eosio', 'buyrambytes', args, {creator:'active'}]
-        actions.append(act)
+        if ram_bytes:
+            args = {'payer':creator, 'receiver':account, 'bytes':ram_bytes}
+            args = self.pack_args('eosio', 'buyrambytes', args)
+            act = ['eosio', 'buyrambytes', args, {creator:'active'}]
+            actions.append(act)
 
-        args = {
-            'from': creator,
-            'receiver': account,
-            'stake_net_quantity': '%0.4f %s'%(stake_net, config.main_token),
-            'stake_cpu_quantity': '%0.4f %s'%(stake_cpu, config.main_token),
-            'transfer': 1
-        }
+        if stake_net or stake_cpu:
+            args = {
+                'from': creator,
+                'receiver': account,
+                'stake_net_quantity': '%0.4f %s'%(stake_net, config.main_token),
+                'stake_cpu_quantity': '%0.4f %s'%(stake_cpu, config.main_token),
+                'transfer': 1
+            }
 
-        args = self.pack_args('eosio', 'delegatebw', args)
-        act = ['eosio', 'delegatebw', args, {creator:'active'}]
-        actions.append(act)
+            args = self.pack_args('eosio', 'delegatebw', args)
+            act = ['eosio', 'delegatebw', args, {creator:'active'}]
+            actions.append(act)
+
         self.push_actions(actions)
 
     def get_balance(self, account, token_account='eosio.token', token_name=''):
