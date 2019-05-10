@@ -1,4 +1,5 @@
 from . import eosapi
+from . import config
 
 def create_account_on_chain(from_account, new_account, balance, public_key):
     assert len(new_account) == 12
@@ -12,7 +13,7 @@ def buyrambytes(payer, receiver, _bytes):
     return eosapi.push_action('eosio', 'buyrambytes', args, {payer:'active'})
 
 def buyram(payer, receiver, quant):
-    args = {'payer':payer, 'receiver':receiver, 'quant':'%.4f EOS'%(quant,)}
+    args = {'payer':payer, 'receiver':receiver, 'quant':'%.4f %s'%(quant, config.main_token)}
     return eosapi.push_action('eosio', 'buyram', args, {payer:'active'})
 
 def sellram(account, _bytes):
@@ -21,8 +22,8 @@ def sellram(account, _bytes):
 def dbw(_from, _to, net, cpu):
     args = {'from':_from, 
             'receiver':_to, 
-            'stake_net_quantity':'%.4f EOS'%(net,), 
-            'stake_cpu_quantity':'%.4f EOS'%(cpu,), 
+            'stake_net_quantity':'%.4f %s'%(net, config.main_token), 
+            'stake_cpu_quantity':'%.4f %s'%(cpu, config.main_token), 
             'transfer':False
             }
     return eosapi.push_action('eosio', 'delegatebw', args, {_from:'active'})
@@ -30,8 +31,8 @@ def dbw(_from, _to, net, cpu):
 def undbw(_from, _to, net, cpu):
     args = {'from':_from, 
             'receiver':_to, 
-            'unstake_net_quantity':'%.4f EOS'%(net,), 
-            'unstake_cpu_quantity':'%.4f EOS'%(cpu,), 
+            'unstake_net_quantity':'%.4f %s'%(net, config.main_token), 
+            'unstake_cpu_quantity':'%.4f %s'%(cpu, config.main_token), 
             'transfer':False
             }
     return eosapi.push_action('eosio', 'undelegatebw', args, {_from:'active'})
