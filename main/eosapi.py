@@ -292,23 +292,30 @@ class EosApi(object):
         act = ['eosio', 'buyrambytes', args, {creator:'active'}]
         actions.append(act)
 
-        args = {'from': creator,
-         'receiver': account,
-         'stake_net_quantity': '%0.4f EOS'%(stake_net,),
-         'stake_cpu_quantity': '%0.4f EOS'%(stake_cpu,),
-         'transfer': 1}
+        args = {
+            'from': creator,
+            'receiver': account,
+            'stake_net_quantity': '%0.4f %s'%(stake_net, config.main_token),
+            'stake_cpu_quantity': '%0.4f %s'%(stake_cpu, config.main_token),
+            'transfer': 1
+        }
+
         args = self.pack_args('eosio', 'delegatebw', args)
         act = ['eosio', 'delegatebw', args, {creator:'active'}]
         actions.append(act)
         self.push_actions(actions)
 
-    def get_balance(self, account, token_account='eosio.token', token_name='EOS'):
+    def get_balance(self, account, token_account='eosio.token', token_name=''):
+        if not token_name:
+            token_name = config.main_token
         ret = self.client.get_currency_balance(token_account, account, token_name)
         if ret:
             return float(ret[0].split(' ')[0])
         return 0.0
 
-    def transfer(self, _from, _to, _amount, _memo='', token_account='eosio.token', symbol='EOS'):
+    def transfer(self, _from, _to, _amount, _memo='', token_account='eosio.token', token_name=''):
+        if not token_name:
+            token_name = config.main_token
         args = {"from":_from, "to":_to, "quantity":'%.4f %s'%(_amount,symbol), "memo":_memo}
         return self.push_action(token_account, 'transfer', args, {_from:'active'})
 

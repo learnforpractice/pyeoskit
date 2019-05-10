@@ -25,3 +25,4 @@ def set_nodes(_nodes):
     nodes = _nodes
 #set in eosapi.py:EosApi.__init__
 get_abi = None
+main_token = 'EOS'
