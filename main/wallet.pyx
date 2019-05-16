@@ -73,5 +73,10 @@ def sign_transaction(string& trx, _public_keys, string& chain_id):
         public_keys.push_back(key)
     return sign_transaction_(trx, public_keys, chain_id);
 
-def sign_digest(string& digest, string& public_key):
+def sign_digest(_digest, string& public_key):
+    cdef string digest
+    if isinstance(_digest, str):
+        digest = bytes.fromhex(_digest)
+    else:
+        digest = _digest
     return sign_digest_(digest, public_key)
