@@ -40,7 +40,7 @@ PyObject* sign_transaction_(string& _trx, vector<string>& _public_keys, string& 
 
 PyObject* sign_digest_(string& _digest, string& _public_key) {
    try {
-      chain::digest_type digest(_digest);
+      chain::digest_type digest(_digest.c_str(), _digest.size());
       public_key_type public_key = public_key_type(_public_key);
 
       chain::signature_type sig = wm().sign_digest(digest, public_key);
