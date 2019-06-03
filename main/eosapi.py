@@ -291,7 +291,7 @@ class EosApi(object):
             args = self.pack_args('eosio', 'delegatebw', args)
             act = ['eosio', 'delegatebw', args, {creator:'active'}]
             actions.append(act)
-        self.push_actions(actions)
+        return self.push_actions(actions)
 
     def get_balance(self, account, token_account='eosio.token', token_name=''):
         if not token_name:
