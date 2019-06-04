@@ -20,8 +20,7 @@ if (WIN32)
     set(EXTRA_LIBS Userenv.lib CRYPT32.lib)
 endif(WIN32)
 
-if (APPLE)
-else()
+if (UNIX AND NOT APPLE)
     set(EXTRA_LIBS util)
 endif()
 
