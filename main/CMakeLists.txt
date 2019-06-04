@@ -17,8 +17,13 @@ set(SRCS ${_hello}
 add_library(_hello MODULE ${SRCS})
 
 if (WIN32)
-set(EXTRA_LIBS Userenv.lib CRYPT32.lib)
+    set(EXTRA_LIBS Userenv.lib CRYPT32.lib)
 endif(WIN32)
+
+if (APPLE)
+else()
+    set(EXTRA_LIBS util)
+endif()
 
 target_link_libraries( _hello fc wallet_plugin eosio_chain eos_utilities ${EXTRA_LIBS})
 
