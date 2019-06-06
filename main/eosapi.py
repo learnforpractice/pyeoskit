@@ -228,11 +228,11 @@ class EosApi(object):
 
         return self.client.push_transaction(trx)
 
-    def push_transactions(self, aaa):
+    def push_transactions(self, aaa, expiration=60):
         reference_block_id = self.get_info().last_irreversible_block_id
         trxs = []
         for aa in aaa:
-            trx = _eosapi.gen_transaction(aa, 60, reference_block_id)
+            trx = _eosapi.gen_transaction(aa, expiration, reference_block_id)
             keys = []
             for a in aa:
                 permissions = a[3]
