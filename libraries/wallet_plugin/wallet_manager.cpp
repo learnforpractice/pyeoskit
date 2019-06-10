@@ -4,7 +4,7 @@
  */
 #include <eosio/wallet_plugin/wallet_manager.hpp>
 #include <eosio/wallet_plugin/wallet.hpp>
-#include <eosio/wallet_plugin/se_wallet.hpp>
+//#include <eosio/wallet_plugin/se_wallet.hpp>
 #include <eosio/chain/exceptions.hpp>
 #include <boost/algorithm/string.hpp>
 
@@ -27,10 +27,12 @@ bool valid_filename(const string& name) {
 }
 
 wallet_manager::wallet_manager() {
+#if 0
 #ifdef __APPLE__
    try {
       wallets.emplace("SecureEnclave", std::make_unique<se_wallet>());
    } catch(fc::exception& ) {}
+#endif
 #endif
 }
 
