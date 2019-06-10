@@ -70,18 +70,9 @@ find_package(OpenSSL REQUIRED)
 hunter_add_package(ZLIB)
 find_package(ZLIB CONFIG REQUIRED)
 
+set(Boost_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/libraries/boost_1_67_0/includes")
+set(Boost_LIBRARIES boost_1_67_0)
 
-#set(BOOST_ROOT "C:/boost_1_67_0")
-
-find_package(Boost 1.67.0 COMPONENTS
-    iostreams
-    date_time
-    system 
-    chrono
-    filesystem
-#    zlib
-#    bzlib2
-)
 
 message(STATUS "${Boost_LIBRARY_DIRS}++++++++++++++++"${Boost_LIBRARIES})
  
