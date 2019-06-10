@@ -2,7 +2,7 @@ Python Toolkit for Eos
 
 # Releases
 
-[v0.3.0 releases](https://github.com/learnforpractice/pyeoskit/releases)
+[v0.6.0 releases](https://github.com/learnforpractice/pyeoskit/releases)
 
 #### Installing Release on macOS
 
