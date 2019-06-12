@@ -246,11 +246,14 @@ class EosApi(object):
 
     def get_available_public_keys(self, account, permission):
         wallet_public_keys = wallet.get_public_keys()
-        account_public_keys = self.get_public_keys(account, permission)
+        threshold, account_public_keys = self.get_keys(account, permission)
         keys = []
         for key in account_public_keys:
-            if key in wallet_public_keys:
-                keys.append(key)
+            if key['key'] in wallet_public_keys:
+                keys.append(key['key'])
+                threshold -= key['weight']
+                if threshold <= 0:
+                    break
         return keys
 
     def create_account(self, creator, account, owner_key, active_key, ram_bytes=0.0, stake_net=0.0, stake_cpu=0.0, sign=True):
@@ -365,11 +368,11 @@ class EosApi(object):
 
     def get_keys(self, account_name, perm_name):
         keys = []
-        self._get_keys(account_name, perm_name, keys)
-        return keys
+        threshold = self._get_keys(account_name, perm_name, keys)
+        return (threshold, keys)
 
     def _get_keys(self, account_name, perm_name, keys):
-        """get public keys limited by threshold"""
+        threshold = 1
         for per in self.get_account(account_name).permissions:
             if perm_name != per['perm_name']:
                 continue
@@ -381,10 +384,6 @@ class EosApi(object):
                per = account['permission']['permission']
                weight = account['weight']
                self._get_keys(actor, per, keys)
-
-               threshold -= weight
-               if threshold <= 0:
-                   break
-
+        return threshold
 
 
