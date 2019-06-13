@@ -200,6 +200,13 @@ class EosApi(object):
     def gen_transaction(self, actions, expiration, reference_block_id):
         return _eosapi.gen_transaction(actions, expiration, reference_block_id)
 
+    def push_transaction(self, trx, compress=0):
+        trx = _eosapi.pack_transaction(trx, compress)
+        return self.client.push_transaction(trx)
+
+    def pack_transaction(self, trx, compress=0):
+        return _eosapi.pack_transaction(trx, compress)
+
     def push_action(self, contract, action, args, permissions):
         act = [contract, action, args, permissions]
         reference_block_id = self.get_info().last_irreversible_block_id
