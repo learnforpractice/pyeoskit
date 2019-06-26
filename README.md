@@ -50,11 +50,6 @@ https://developer.microsoft.com/en-us/windows/downloads/windows-10-sdk
 https://www.python.org/downloads/
 ```
 
-#### Installing boost
-```
-https://sourceforge.net/projects/boost/files/boost-binaries/1.67.0/boost_1_67_0-msvc-14.1-64.exe/download
-```
-
 #### Installing Python packages
 ```
 python -m pip install scikit-build
@@ -72,8 +67,6 @@ git submodule update --init --recursive
 ### Building on Windows
 ```
 set PATH=%PATH%;"C:\Program Files (x86)\Windows Kits\10\bin\10.0.17763.0\x64"
-set LIB=%LIB%;C:\local\boost_1_67_0\lib64-msvc-14.1"
-set BOOST_ROOT=C:\local\boost_1_67_0
 python setup.py sdist bdist_wheel -G "NMake Makefiles"
 ```
 
