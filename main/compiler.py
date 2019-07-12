@@ -10,6 +10,7 @@ from pyeoskit._hello import _eosapi
 
 db.reset()
 config.main_token = 'UUOS'
+default_vm_type=1
 
 if os.path.exists('test.wallet'):
     os.remove('test.wallet')
@@ -18,21 +19,10 @@ psw = wallet.create('test')
 wallet.import_key('test', '5KH8vwQkP4QoTwgBtCV5ZYhKmv8mx56WeNrw9AZuhNRXTrPzgYc')
 wallet.import_key('test', '5JMXaLz5xnVvwrnvAGaZKQZFCDdeU6wjmuJY1rDnXiUZz7Gyi1o')
 
-def publish_contract(account_name, code, abi):
-    m = hashlib.sha256()
-    code = compile(code, "contract", 'exec')
-    code = marshal.dumps(code)
-    m.update(code)
-    code_hash = m.hexdigest()
-    r = eosapi.get_code(account_name)
-    if code_hash != r['code_hash']:
-        eosapi.set_contract(account_name, code, abi, 1)
-    return True
-
 #eosapi.set_nodes(['https://nodes.uuos.network:8443'])
 eosapi.set_nodes(['http://127.0.0.1:8888'])
 
-def run_test_code(code, account_name='helloworld11'):
+def run_test_code(code, abi='', account_name='helloworld11'):
     publish_contract(account_name, code, abi)
     try:
         r = eosapi.push_action(account_name, 'sayhello', b'hello,world', {account_name:'active'})
@@ -82,7 +72,7 @@ class cpp_compiler(object):
         if not cpp_file.endswith('.cpp'):
             raise 'Not a cpp file'
 
-    def compile_cpp_file(self):
+    def compile_cpp_file(self, opt='O3'):
         tmp_path = self.cpp_file[:-4]
         #%system rm test.obj test.wasm
         #%system eosio-cpp -I/usr/local/Cellar/eosio.cdt/1.6.1/opt/eosio.cdt/include/eosiolib/capi -I/usr/local/Cellar/eosio.cdt/1.6.1/opt/eosio.cdt/include/eosiolib/core -O3 -contract test -o test.obj -c test.cpp
@@ -123,7 +113,7 @@ class cpp_compiler(object):
         '-c',
         f'-I{eosio_cdt_path}/include/eosiolib/capi',
         f'-I{eosio_cdt_path}/include/eosiolib/core',
-        '-O3',
+        f'-{opt}',
         '--std=c++17',
         ]
         for include in self.includes:
@@ -161,11 +151,11 @@ class cpp_compiler(object):
             return None
         return open(f'{tmp_path}.wasm', 'rb').read()
 
-def compile_cpp_file(src_path, includes=[], entry='apply'):
+def compile_cpp_file(src_path, includes=[], entry='apply', opt='O3'):
     compiler = cpp_compiler(src_path, includes, entry)
-    return compiler.compile_cpp_file()
+    return compiler.compile_cpp_file(opt)
 
-def compile_cpp_src(account_name, code, includes = [], entry='apply'):
+def compile_cpp_src(account_name, code, includes = [], entry='apply', opt='O3'):
     if not os.path.exists('tmp'):
         os.mkdir('tmp')
     src_path = os.path.join('tmp', account_name+'.cpp')
@@ -179,17 +169,7 @@ def compile_cpp_src(account_name, code, includes = [], entry='apply'):
                     return open(wasm_file, 'rb').read()
     with open(src_path, 'w') as f:
         f.write(code)
-    return compile_cpp_file(src_path, includes, entry)
-
-def publish_cpp_contract(account_name, code, abi='', includes = [], entry='apply'):
-    code = compile_cpp_src(account_name, code, includes, entry=entry)
-    code = open(f'tmp/{account_name}.wasm', 'rb').read()
-    m = hashlib.sha256()
-    m.update(code)
-    code_hash = m.hexdigest()
-    r = eosapi.get_code(account_name)
-    if code_hash != r['code_hash']:
-        r = eosapi.set_contract(account_name, code, abi, 0)
+    return compile_cpp_file(src_path, includes, entry, opt=opt)
 
 def publish_cpp_contract_from_file(account_name, file_name, includes = [], entry='apply'):
     code = compile_cpp_file(file_name, includes, entry=entry)
@@ -205,3 +185,32 @@ def publish_cpp_contract_from_file(account_name, file_name, includes = [], entry
         r = eosapi.set_contract(account_name, code, abi, 0)
     return True
 #print(find_include_path())
+
+def publish_cpp_contract(account_name, code, abi='', includes = [], entry='apply', opt='O3'):
+    code = compile_cpp_src(account_name, code, includes, entry=entry, opt=opt)
+    code = open(f'tmp/{account_name}.wasm', 'rb').read()
+    m = hashlib.sha256()
+    m.update(code)
+    code_hash = m.hexdigest()
+    r = eosapi.get_code(account_name)
+    if code_hash != r['code_hash']:
+        r = eosapi.set_contract(account_name, code, abi, 0)
+    return True
+
+def publish_py_contract(account_name, code, abi, vm_type=1, includes = [], entry='apply'):
+    m = hashlib.sha256()
+    code = compile(code, "contract", 'exec')
+    code = marshal.dumps(code)
+    m.update(code)
+    code_hash = m.hexdigest()
+    r = eosapi.get_code(account_name)
+    if code_hash != r['code_hash']:
+        eosapi.set_contract(account_name, code, abi, 1)
+    return True
+
+def publish_contract(account_name, code, abi, vm_type=1, includes = [], entry='apply'):
+    if vm_type == 1:
+        return publish_py_contract(account_name, code, abi, 1)
+    else:
+        return publish_cpp_contract(account_name, code, abi, includes, entry)
+
