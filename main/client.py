@@ -316,6 +316,21 @@ class Client(HttpClient):
             body=body
         )
 
+    def call_contract(self, code, action, args) -> dict:
+        """ Convert bin hex back into Abi json definition. """
+
+        body = dict(
+            code=code,
+            action=action,
+            binargs=args,
+        )
+
+        return self.exec(
+            api='chain',
+            endpoint='call_contract',
+            body=body
+        )
+
     def get_required_keys(self, transaction, available_keys) -> dict:
         """ get_required_keys """
 
