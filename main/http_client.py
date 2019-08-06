@@ -126,7 +126,10 @@ class HttpClient(object):
                     r = self.session.post(url, data = body)
                 else:
                     r = self.session.get(url)
+                if not r.status_code in [200, 202, 201]:
+                    raise HttpAPIError(r.status_code, r.text)
                 return json.loads(r.text)
+
             except Exception as e:
                 extra = dict(err=e, url=url, body=body, method=method)
                 logger.info('Request error', extra=extra)
