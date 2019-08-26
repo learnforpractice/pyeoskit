@@ -1,4 +1,5 @@
 default_nodes = [
+'https://public.eosinfra.io',
 'https://mainnet.eoscalgary.io',
 'https://api.eosnewyork.io',
 'https://api.eosdetroit.io',
