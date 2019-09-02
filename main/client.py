@@ -327,7 +327,7 @@ class Client(HttpClient):
         )
 
         return self.exec(
-            api='chain',
+            api='contract',
             endpoint='call_contract',
             body=body
         )
