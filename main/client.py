@@ -316,6 +316,7 @@ class Client(HttpClient):
             body=body
         )
 
+
     def call_contract(self, code, action, args) -> dict:
         """ Convert bin hex back into Abi json definition. """
 
@@ -501,6 +502,49 @@ class Client(HttpClient):
             endpoint='get_supported_apis',
             body=body
         )
+
+    def enable_debug(self, enable) -> dict:
+        """ Retrieve supported apis. """
+        body = json.dumps(enable)
+
+        return self.exec(
+            api='debug',
+            endpoint='enable_debug',
+            body=body
+        )
+
+    def is_debug_enabled(self) -> dict:
+        """  """
+        body = dict()
+
+        return self.exec(
+            api='debug',
+            endpoint='is_debug_enabled',
+            body=body
+        )
+
+    def add_debug_contract(self, name, shared_lib_path) -> dict:
+        """  """
+        body = dict(
+            name=name,
+            path=shared_lib_path
+        )
+        return self.exec(
+            api='debug',
+            endpoint='add_debug_contract',
+            body=body
+        )
+
+    def clear_debug_contract(self, name) -> dict:
+        """ """
+        body = json.dumps(name)
+
+        return self.exec(
+            api='debug',
+            endpoint='clear_debug_contract',
+            body=body
+        )
+
 
 class WalletClient(HttpClient):
     def __init__(self, host='127.0.0.1', port=8888, **kwargs):
