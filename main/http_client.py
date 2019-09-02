@@ -8,6 +8,7 @@ from itertools import cycle
 from json import JSONDecodeError
 from urllib.parse import urlparse
 
+import requests
 import requests_unixsocket
 
 import certifi
@@ -46,7 +47,7 @@ class HttpClient(object):
 
     def __init__(self, nodes, **kwargs):
         self.api_version = kwargs.get('api_version', 'v1')
-        self.max_retries = kwargs.get('max_retries', 10)
+        self.max_retries = kwargs.get('max_retries', 2)
 
         if kwargs.get('tcp_keepalive', True):
             socket_options = HTTPConnection.default_socket_options + \
@@ -62,7 +63,7 @@ class HttpClient(object):
             num_pools=kwargs.get('num_pools', 50),
             maxsize=kwargs.get('maxsize', 10),
             block=kwargs.get('pool_block', False),
-            retries=kwargs.get('http_retries', 5),
+            retries=kwargs.get('http_retries', 1),
             timeout=timeout,
             socket_options=socket_options,
             headers={'Content-Type': 'application/json'},
@@ -79,7 +80,9 @@ class HttpClient(object):
         log_level = kwargs.get('log_level', logging.INFO)
         logger.setLevel(log_level)
 
-        self.session = requests_unixsocket.Session()
+        self.session_unix = requests_unixsocket.Session()
+        self.session = requests.Session()
+        self.timeout = 5
 
     def set_nodes(self, nodes):
         self.nodes_cache = self._nodes(nodes)
@@ -109,7 +112,7 @@ class HttpClient(object):
     def hostname(self):
         return urlparse(self.node_url).hostname
 
-    def exec(self, api, endpoint, body=None, _ret_cnt=0):
+    def _exec(self, api, endpoint, body=None, _ret_cnt=0):
         """ Execute a method against eosd RPC.
 
         Warnings:
@@ -161,6 +164,35 @@ class HttpClient(object):
                 return self._return(
                     response=response,
                     body=body)
+
+    def exec(self, api, endpoint, body=None, _ret_cnt=0):
+        """ Execute a method against eosd RPC.
+
+        Warnings:
+            This command will auto-retry in case of node failure, as well as handle
+            node fail-over, unless we are broadcasting a transaction.
+            In latter case, the exception is **re-raised**.
+        """
+        body = self._body(body)
+        method = 'POST' if body else 'GET'
+        if self.node_url.startswith('unix://'):
+            session = self.session_unix
+            url = "http+{}/{}/{}/{}".format(self.node_url, self.api_version, api, endpoint)
+        else:
+            session = self.session
+            url = "{}/{}/{}/{}".format(self.node_url, self.api_version, api, endpoint)
+        try:
+            if body:
+                r = session.post(url, data = body, timeout=self.timeout)
+            else:
+                r = session.get(url, timeout=self.timeout)
+            if not r.status_code in [200, 202, 201]:
+                raise HttpAPIError(r.status_code, r.text)
+            return json.loads(r.text)
+        except Exception as e:
+            extra = dict(err=e, url=url, body=body, method=method)
+            logger.info('Request error', extra=extra)
+            raise e
 
     @staticmethod
     def _return(response=None, body=None):
