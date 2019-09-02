@@ -100,7 +100,10 @@ class Function(object):
     def __call__(self, *args):
         ret = self.function(*args)
         try:
-            return JsonStruct(ret)
+            if isinstance(ret, dict):
+                return JsonStruct(ret)
+            else:
+                return ret
         except json.JSONDecodeError:
             return ret
 
