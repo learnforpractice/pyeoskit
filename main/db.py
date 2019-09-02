@@ -17,7 +17,10 @@ db_path = os.path.join(db_path, 'db.pkl')
 _db = {'accounts':{}, 'abis':{}, 'codes':{}}
 
 if os.path.exists(db_path):
-    _db = pickle.load(open(db_path, 'rb'))
+    try:
+        _db = pickle.load(open(db_path, 'rb'))
+    except:
+        pickle.dump(_db, open(db_path, 'wb'))
 else:
     pickle.dump(_db, open(db_path, 'wb'))
 
