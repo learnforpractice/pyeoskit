@@ -545,6 +545,203 @@ class Client(HttpClient):
             body=body
         )
 
+    def pause(self):
+        body = None
+        return self.exec(
+            api='producer',
+            endpoint='pause',
+            body=body
+        )
+
+    def resume(self):
+        body = None
+        return self.exec(
+            api='producer',
+            endpoint='resume',
+            body=body
+        )
+
+    def paused(self):
+        body = None
+        return self.exec(
+            api='producer',
+            endpoint='paused',
+            body=body
+        )
+
+    def get_runtime_options(self):
+        body = None
+        return self.exec(
+            api='producer',
+            endpoint='get_runtime_options',
+            body=body
+        )
+
+    def update_runtime_options(self, max_transaction_time, 
+                                    max_irreversible_block_age,
+                                    produce_time_offset_us,
+                                    last_block_time_offset_us,
+                                    max_scheduled_transaction_time_per_block_ms,
+                                    subjective_cpu_leeway_us,
+                                    incoming_defer_ratio) -> dict:
+        '''
+            struct runtime_options {
+                fc::optional<int32_t> max_transaction_time;
+                fc::optional<int32_t> max_irreversible_block_age;
+                fc::optional<int32_t> produce_time_offset_us;
+                fc::optional<int32_t> last_block_time_offset_us;
+                fc::optional<int32_t> max_scheduled_transaction_time_per_block_ms;
+                fc::optional<int32_t> subjective_cpu_leeway_us;
+                fc::optional<double>  incoming_defer_ratio;
+            };
+        '''
+        body = dict(
+            max_transaction_time=max_transaction_time, 
+            max_irreversible_block_age=max_irreversible_block_age,
+            produce_time_offset_us=produce_time_offset_us,
+            last_block_time_offset_us=last_block_time_offset_us,
+            max_scheduled_transaction_time_per_block_ms=max_scheduled_transaction_time_per_block_ms,
+            subjective_cpu_leeway_us=subjective_cpu_leeway_us,
+            incoming_defer_ratio=incoming_defer_ratio
+        )
+
+        return self.exec(
+            api='producer',
+            endpoint='update_runtime_options',
+            body=body
+        )
+
+    def add_greylist_accounts(self, accounts) -> dict:
+        """ """
+        body = dict(
+            accounts=accounts
+        )
+
+        return self.exec(
+            api='producer',
+            endpoint='add_greylist_accounts',
+            body=body
+        )
+
+    def remove_greylist_accounts(self, accounts) -> dict:
+        """ """
+        body = dict(
+            accounts=accounts
+        )
+
+        return self.exec(
+            api='producer',
+            endpoint='remove_greylist_accounts',
+            body=body
+        )
+
+    def get_greylist(self) -> dict:
+        """ """
+        body = None
+
+        return self.exec(
+            api='producer',
+            endpoint='get_greylist',
+            body=body
+        )
+
+    def get_whitelist_blacklist(self) -> dict:
+        """ """
+        body = None
+
+        return self.exec(
+            api='producer',
+            endpoint='get_whitelist_blacklist',
+            body=body
+        )
+
+    def set_whitelist_blacklist(self, actor_whitelist, actor_blacklist, contract_whitelist, contract_blacklist, action_blacklist, key_blacklist) -> dict:
+        '''
+        fc::optional< flat_set<account_name> > actor_whitelist;
+        fc::optional< flat_set<account_name> > actor_blacklist;
+        fc::optional< flat_set<account_name> > contract_whitelist;
+        fc::optional< flat_set<account_name> > contract_blacklist;
+        fc::optional< flat_set< std::pair<account_name, action_name> > > action_blacklist;
+        fc::optional< flat_set<public_key_type> > key_blacklist;
+        '''
+        body = dict(
+            actor_whitelist=actor_whitelist,
+            actor_blacklist=actor_blacklist,
+            contract_whitelist=contract_whitelist,
+            contract_blacklist=contract_blacklist,
+            action_blacklist=action_blacklist,
+            key_blacklist=key_blacklist
+        )
+        return self.exec(
+            api='producer',
+            endpoint='set_whitelist_blacklist',
+            body=body
+        )
+
+    def get_integrity_hash(self) -> dict:
+        """  """
+        body = None
+        return self.exec(
+            api='producer',
+            endpoint='get_integrity_hash',
+            body=body
+        )
+
+    def create_snapshot(self, head_block_id, snapshot_name) -> dict:
+        """  """
+        body = dict(
+            head_block_id=head_block_id,
+            snapshot_name=snapshot_name,
+        )
+        return self.exec(
+            api='producer',
+            endpoint='create_snapshot',
+            body=body
+        )
+
+    def schedule_protocol_feature_activations(self, protocol_features) -> dict:
+        """  """
+        body = dict(
+            protocol_features_to_activate=protocol_features,
+        )
+        return self.exec(
+            api='producer',
+            endpoint='schedule_protocol_feature_activations',
+            body=body
+        )
+
+    def get_scheduled_protocol_feature_activations(self) -> dict:
+        """  """
+        body = dict()
+        return self.exec(
+            api='producer',
+            endpoint='get_scheduled_protocol_feature_activations',
+            body=body
+        )
+
+    def get_supported_protocol_features(self) -> dict:
+        """  """
+        body = dict()
+        return self.exec(
+            api='producer',
+            endpoint='get_supported_protocol_features',
+            body=body
+        )
+
+    def get_account_ram_corrections(self, lower_bound='', upper_bound='', limit=10) -> dict:
+        """  """
+        body = dict(
+            lower_bound=lower_bound,
+            upper_bound=upper_bound,
+            limit=limit,
+        )
+        return self.exec(
+            api='producer',
+            endpoint='get_account_ram_corrections',
+            body=body
+        )
+
+
 
 class WalletClient(HttpClient):
     def __init__(self, host='127.0.0.1', port=8888, **kwargs):
