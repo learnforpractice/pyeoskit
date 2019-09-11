@@ -210,7 +210,7 @@ class EosApi(object):
     def pack_transaction(self, trx, compress=0):
         return _eosapi.pack_transaction(trx, compress)
 
-    def push_action(self, contract, action, args, permissions):
+    def push_action(self, contract, action, args, permissions, compress=0):
         act = [contract, action, args, permissions]
         reference_block_id = self.get_info().last_irreversible_block_id
         trx = _eosapi.gen_transaction([act], 60, reference_block_id)
@@ -221,10 +221,10 @@ class EosApi(object):
             keys.extend(public_keys)
 #        print(keys)
         trx = wallet.sign_transaction(trx, keys, self.get_info().chain_id)
-        trx = _eosapi.pack_transaction(trx, 0)
+        trx = _eosapi.pack_transaction(trx, compress)
         return self.client.push_transaction(trx)
 
-    def push_actions(self, actions):
+    def push_actions(self, actions, compress=0):
         reference_block_id = self.get_info().last_irreversible_block_id
         trx = _eosapi.gen_transaction(actions, 60, reference_block_id)
         keys = []
@@ -234,7 +234,7 @@ class EosApi(object):
                 public_keys = self.get_available_public_keys(account, permissions[account])
                 keys.extend(public_keys)
         trx = wallet.sign_transaction(trx, keys, self.get_info().chain_id)
-        trx = _eosapi.pack_transaction(trx, 0)
+        trx = _eosapi.pack_transaction(trx, compress)
 
         return self.client.push_transaction(trx)
 
@@ -309,9 +309,12 @@ class EosApi(object):
     def get_balance(self, account, token_account='eosio.token', token_name=''):
         if not token_name:
             token_name = config.main_token
-        ret = self.client.get_currency_balance(token_account, account, token_name)
-        if ret:
-            return float(ret[0].split(' ')[0])
+        try:
+            ret = self.client.get_currency_balance(token_account, account, token_name)
+            if ret:
+                return float(ret[0].split(' ')[0])
+        except Exception as e:
+            return 0.0
         return 0.0
 
     def transfer(self, _from, _to, _amount, _memo='', token_account='eosio.token', token_name=''):
@@ -358,7 +361,7 @@ class EosApi(object):
         setabi = ['eosio', 'setabi', setabi, {account:'active'}]
         actions.append(setabi)
     
-        ret = self.push_actions(actions)
+        ret = self.push_actions(actions, compress=1)
         db.remove_code(account)
         db.remove_abi(account)
         return ret
