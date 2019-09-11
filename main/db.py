@@ -76,10 +76,14 @@ def set_account(account, info):
 def get_account(account):
     try:
         return _db['accounts'][account]
-    except:
-        ret = client.get_account(account)
-        set_account(account, ret)
-        return ret
+    except KeyError:
+        try:
+            ret = client.get_account(account)
+            set_account(account, ret)
+            return ret
+        except Exception as e:
+            print(e)
+            return None
 
 def get_public_keys(account, key_type):
     account_info = get_account(account)
