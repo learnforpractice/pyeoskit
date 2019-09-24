@@ -17,6 +17,7 @@ extern "C" {
    PyObject* PyInit_wallet();
    PyObject* PyInit__eosapi();
    PyObject* PyInit_pyobject();
+   PyObject* PyInit_block_log();
 }
 
 #endif /* MAIN_HELLO_HPP_ */

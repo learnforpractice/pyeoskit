@@ -6,7 +6,8 @@
 #include <fc/variant.hpp>
 #include <fc/string.hpp>
 #include <fc/optional.hpp>
-#include <fc/exception/exception.hpp>
+//#include <fc/exception/exception.hpp>
+#include <eosio/chain/exceptions.hpp>
 
 namespace eosio { namespace chain {
 

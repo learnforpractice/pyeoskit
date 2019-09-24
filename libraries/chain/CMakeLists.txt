@@ -24,6 +24,10 @@ add_library( eosio_chain
               name.cpp
               transaction.cpp
               exceptions.cpp
+              block_header.cpp
+              block_log.cpp
+              genesis_state.cpp
+              genesis_state_root_key.cpp
               ${HEADERS}
              )
 

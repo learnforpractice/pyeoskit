@@ -5,7 +5,7 @@
 #pragma once
 //#include <eosio/chain/wasm_interface.hpp>
 #include <fc/time.hpp>
-
+#include <eosio/chain/types.hpp>
 #pragma GCC diagnostic ignored "-Wunused-variable"
 
 namespace eosio { namespace chain { namespace config {

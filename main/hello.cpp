@@ -3,6 +3,7 @@
 extern "C" {
    PyObject* PyInit_wallet();
    PyObject* PyInit__eosapi();
+   PyObject* PyInit_block_log();
 }
 
 PyObject* init_wallet() {
@@ -12,4 +13,8 @@ PyObject* init_wallet() {
 
 PyObject* init__eosapi() {
    return PyInit__eosapi();
+}
+
+PyObject* init_block_log() {
+   return PyInit_block_log();
 }
