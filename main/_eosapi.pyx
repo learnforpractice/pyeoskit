@@ -67,7 +67,8 @@ def unpack_args(string& rawabi, action, string& binargs):
     cdef string _args
     unpack_args_(rawabi, N(action), binargs, _args)
     if _args.size():
-        return json.loads(_args)
+        return <bytes>_args;
+#        return json.loads(_args)
     raise Exception("unpack error!")
 
 def pack_abi(string& _abi):
