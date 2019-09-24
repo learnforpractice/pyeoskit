@@ -19,20 +19,20 @@ def buyram(payer, receiver, quant):
 def sellram(account, _bytes):
     return eosapi.push_action('eosio', 'sellram', {'account':account, 'bytes':_bytes}, {account:'active'})
 
-def dbw(_from, _to, net, cpu):
+def dbw(_from, _to, net, cpu, transfer=False):
     args = {'from':_from, 
             'receiver':_to, 
             'stake_net_quantity':'%.4f %s'%(net, config.main_token), 
             'stake_cpu_quantity':'%.4f %s'%(cpu, config.main_token), 
-            'transfer':False
+            'transfer':transfer
             }
     return eosapi.push_action('eosio', 'delegatebw', args, {_from:'active'})
 
-def undbw(_from, _to, net, cpu):
+def undbw(_from, _to, net, cpu, transfer=False):
     args = {'from':_from, 
             'receiver':_to, 
             'unstake_net_quantity':'%.4f %s'%(net, config.main_token), 
             'unstake_cpu_quantity':'%.4f %s'%(cpu, config.main_token), 
-            'transfer':False
+            'transfer':transfer
             }
     return eosapi.push_action('eosio', 'undelegatebw', args, {_from:'active'})
