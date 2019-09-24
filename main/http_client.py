@@ -112,7 +112,7 @@ class HttpClient(object):
     def hostname(self):
         return urlparse(self.node_url).hostname
 
-    def _exec(self, api, endpoint, body=None, _ret_cnt=0):
+    def exec(self, api, endpoint, body=None, _ret_cnt=0):
         """ Execute a method against eosd RPC.
 
         Warnings:
@@ -141,21 +141,6 @@ class HttpClient(object):
             url = "{}/{}/{}/{}".format(self.node_url, self.api_version, api, endpoint)
             try:
                 response = self.http.urlopen(method, url, body=body)
-            except (MaxRetryError,
-                    ConnectionResetError,
-                    ReadTimeoutError,
-                    RemoteDisconnected,
-                    ProtocolError) as e:
-    
-                if _ret_cnt >= self.max_retries:
-                    raise e
-    
-                # try switching nodes before giving up
-                time.sleep(_ret_cnt)
-                self.next_node()
-                logging.debug('Switched node to %s due to exception: %s' %
-                              (self.hostname, e.__class__.__name__))
-                return self.exec(api, endpoint, body, _ret_cnt=_ret_cnt + 1)
             except Exception as e:
                 extra = dict(err=e, url=url, body=body, method=method)
                 logger.info('Request error', extra=extra)
@@ -165,7 +150,7 @@ class HttpClient(object):
                     response=response,
                     body=body)
 
-    def exec(self, api, endpoint, body=None, _ret_cnt=0):
+    def _exec(self, api, endpoint, body=None, _ret_cnt=0):
         """ Execute a method against eosd RPC.
 
         Warnings:
