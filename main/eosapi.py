@@ -160,7 +160,10 @@ class EosApi(object):
 
     def set_nodes(self, nodes):
         self.client.set_nodes(nodes)
-    
+
+    def enable_decode(self, json_format):
+        self.client.return_json = json_format
+
     def init(self):
         self.get_code('eosio')
         self.get_code('eosio.token')

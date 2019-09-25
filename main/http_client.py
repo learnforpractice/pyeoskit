@@ -48,6 +48,7 @@ class HttpClient(object):
     def __init__(self, nodes, **kwargs):
         self.api_version = kwargs.get('api_version', 'v1')
         self.max_retries = kwargs.get('max_retries', 2)
+        self.json_decode = kwargs.get('json_decode', True)
 
         if kwargs.get('tcp_keepalive', True):
             socket_options = HTTPConnection.default_socket_options + \
@@ -131,7 +132,11 @@ class HttpClient(object):
                     r = self.session.get(url)
                 if not r.status_code in [200, 202, 201]:
                     raise HttpAPIError(r.status_code, r.text)
-                return json.loads(r.text)
+
+                if self.json_decode:
+                    return json.loads(r.text)
+                else:
+                    return r.text
 
             except Exception as e:
                 extra = dict(err=e, url=url, body=body, method=method)
@@ -179,8 +184,7 @@ class HttpClient(object):
             logger.info('Request error', extra=extra)
             raise e
 
-    @staticmethod
-    def _return(response=None, body=None):
+    def _return(self, response=None, body=None):
         """ Process the response status code and body (json).
 
         Note:
@@ -196,8 +200,7 @@ class HttpClient(object):
         """
 
         if not response:
-            raise EosdNoResponse(
-                'eosd nodes have failed to respond, all retries exhausted.')
+            raise EosdNoResponse('eosd nodes have failed to respond, all retries exhausted.')
         result = response.data.decode('cp437')
         if not response.status in [200, 202, 201] or not result:
             extra = dict(result=result, response=response, request_body=body)
@@ -207,13 +210,11 @@ class HttpClient(object):
             raise HttpAPIError(response.status, result)
 
         try:
-            response_json = json.loads(result)
+            if self.json_decode:
+                result = json.loads(result)
         except JSONDecodeError as e:
             extra = dict(response=response, request_body=body, err=e)
             logger.info('failed to parse response', extra=extra)
-        else:
-            result = response_json
-
         return result
 
     @staticmethod
