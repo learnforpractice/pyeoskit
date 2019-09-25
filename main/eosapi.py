@@ -162,7 +162,7 @@ class EosApi(object):
         self.client.set_nodes(nodes)
 
     def enable_decode(self, json_format):
-        self.client.return_json = json_format
+        self.client.json_decode = json_format
 
     def init(self):
         self.get_code('eosio')
