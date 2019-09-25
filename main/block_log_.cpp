@@ -5,8 +5,8 @@
 
 using namespace eosio::chain;
 
-int block_on_action(int block, PyObject* trx);
-int block_on_raw_action(int block, string act);
+int block_log_on_transaction(int block, PyObject* trx);
+int block_log_on_raw_transaction(int block, string& act);
 
 #define FC_LOG_AND_RETURN( ... )  \
    catch( const boost::interprocess::bad_alloc& ) {\
@@ -30,15 +30,60 @@ int block_on_raw_action(int block, string act);
       return; \
    }
 
-void block_log_parse_transactions_(string& path, int start_block, int end_block) {
-   eosio::chain::block_log log(path);
+
+#define FC_LOG_AND_RETURN_FALSE( ... )  \
+   catch( const boost::interprocess::bad_alloc& ) {\
+      throw;\
+   } catch( fc::exception& er ) { \
+      wlog( "${details}", ("details",er.to_detail_string()) ); \
+      return false; \
+   } catch( const std::exception& e ) {  \
+      fc::exception fce( \
+                FC_LOG_MESSAGE( warn, "rethrow ${what}: ",FC_FORMAT_ARG_PARAMS( __VA_ARGS__  )("what",e.what()) ), \
+                fc::std_exception_code,\
+                BOOST_CORE_TYPEID(e).name(), \
+                e.what() ) ; \
+      wlog( "${details}", ("details",fce.to_detail_string()) ); \
+      return false; \
+   } catch( ... ) {  \
+      fc::unhandled_exception e( \
+                FC_LOG_MESSAGE( warn, "rethrow", FC_FORMAT_ARG_PARAMS( __VA_ARGS__) ), \
+                std::current_exception() ); \
+      wlog( "${details}", ("details",e.to_detail_string()) ); \
+      return false; \
+   }
+
+void *block_log_new(string& path) {
+   eosio::chain::block_log *block_log_ptr = new eosio::chain::block_log(path);
+   return (void *)block_log_ptr;
+}
+
+void block_log_free(void *block_log_ptr) {
+   if (block_log_ptr == nullptr) {
+      return;
+   }
+   delete (eosio::chain::block_log*)block_log_ptr;
+}
+
+uint32_t block_log_get_first_block_num_(void *block_log_ptr) {
+   eosio::chain::block_log &log = *(eosio::chain::block_log*)block_log_ptr;
+   return log.first_block_num();
+}
+
+PyObject* block_log_get_head_block_(void *block_log_ptr) {
+   eosio::chain::block_log &log = *(eosio::chain::block_log*)block_log_ptr;
+   return python::json::to_string(fc::variant(log.head()));
+}
+
+bool block_log_parse_transactions_(void *block_log_ptr, int start_block, int end_block) {
+   eosio::chain::block_log &log = *(eosio::chain::block_log*)block_log_ptr;
    for (int i=start_block;i<=end_block;i++) {
       signed_block_ptr block;
       try {
          block = log.read_block_by_num(i);
          if (!block) {
             wlog("bad block number ${n}", ("n", i));
-            break;
+            return false;
          }
          for (auto& tr : block->transactions) {
             if (!tr.trx.contains<packed_transaction>()) {
@@ -47,17 +92,18 @@ void block_log_parse_transactions_(string& path, int start_block, int end_block)
             packed_transaction& pt = tr.trx.get<packed_transaction>();
             signed_transaction st = pt.get_signed_transaction();
             PyObject* json = python::json::to_string(fc::variant(st));
-            int ret = block_on_action(i, json);
+            int ret = block_log_on_transaction(i, json);
             if (!ret) {
-               return;
+               return false;
             }
          }
-      } FC_LOG_AND_RETURN();
+      } FC_LOG_AND_RETURN_FALSE();
    }
+   return true;
 }
 
-void block_log_get_transactions_(string& path, int block_num) {
-   eosio::chain::block_log log(path);
+void block_log_get_transactions_(void *block_log_ptr, int block_num) {
+   eosio::chain::block_log &log = *(eosio::chain::block_log*)block_log_ptr;
 
    signed_block_ptr block;
    try {
@@ -73,7 +119,7 @@ void block_log_get_transactions_(string& path, int block_num) {
          packed_transaction& pt = tr.trx.get<packed_transaction>();
          signed_transaction st = pt.get_signed_transaction();
          PyObject* json = python::json::to_string(fc::variant(st));
-         int ret = block_on_action(block_num, json);
+         int ret = block_log_on_transaction(block_num, json);
          if (!ret) {
             return;
          }
@@ -82,8 +128,8 @@ void block_log_get_transactions_(string& path, int block_num) {
 
 }
 
-void block_log_parse_raw_transactions_(string& path, int start, int end) {
-   eosio::chain::block_log log(path);
+void block_log_parse_raw_transactions_(void *block_log_ptr, int start, int end) {
+   eosio::chain::block_log &log = *(eosio::chain::block_log*)block_log_ptr;
 
    signed_block_ptr block;
    for (int block_num=start;block_num<end;block_num++) {
@@ -102,7 +148,7 @@ void block_log_parse_raw_transactions_(string& path, int start, int end) {
             for (auto& act: st.actions) {
                auto v = fc::raw::pack(act);
                string raw_act(v.begin(), v.end());
-               int ret = block_on_raw_action(block_num, raw_act);
+               int ret = block_log_on_raw_transaction(block_num, raw_act);
                if (!ret) {
                   return;
                }
@@ -113,8 +159,8 @@ void block_log_parse_raw_transactions_(string& path, int start, int end) {
 }
 
 
-PyObject* block_log_get_block_(string& path, int block_num) {
-   eosio::chain::block_log log(path);
+PyObject* block_log_get_block_(void *block_log_ptr, int block_num) {
+   eosio::chain::block_log &log = *(eosio::chain::block_log*)block_log_ptr;
    signed_block_ptr block;
    try {
       block = log.read_block_by_num(block_num);
