@@ -12,26 +12,40 @@ cdef extern from "block_log_.hpp":
     object block_log_get_head_block_(void *block_log_ptr);
     bool block_log_parse_transactions_(void *block_log_ptr, int start_block, int end_block);
     void block_log_get_transactions_(void *block_log_ptr, int block_num);
-    void block_log_parse_raw_transactions_(void *block_log_ptr, int start, int end);
+
+    void block_log_parse_actions_(void *block_log_ptr, int start, int end)
+    void block_log_parse_raw_actions_(void *block_log_ptr, int start, int end)
+
     object block_log_get_block_(void *block_log_ptr, int block_num);
 
-g_callback = None
+g_transaction_callback = None
 cdef extern int block_log_on_transaction(int block, object trx):
-    global g_callback
-    if g_callback:
+    global g_transaction_callback
+    if g_transaction_callback:
         try:
-            g_callback(block, trx)
+            g_transaction_callback(block, trx)
         except:
             traceback.print_exc()
             return 0
     return 1
 
-raw_transaction_cb = None
-cdef extern int block_log_on_raw_transaction(int block, string& act):
-    global raw_transaction_cb
-    if raw_transaction_cb:
+g_raw_action_cb = None
+cdef extern int block_log_on_raw_action(int block, string& act):
+    global g_raw_action_cb
+    if g_raw_action_cb:
         try:
-            raw_transaction_cb(block, <bytes>(&act[0]))
+            g_raw_action_cb(block, <bytes>(&act[0]))
+        except:
+            traceback.print_exc()
+            return 0
+    return 1
+
+g_action_cb = None
+cdef extern int block_log_on_action(int block, string& act):
+    global g_action_cb
+    if g_action_cb:
+        try:
+            g_action_cb(block, <bytes>(&act[0]))
         except:
             traceback.print_exc()
             return 0
@@ -61,6 +75,22 @@ cdef class BlockParser:
         print(block_num, trx)
 
     def parse_transactions(self, int start_block, int end_block):
-        global g_callback
-        g_callback = self.on_transaction
+        global g_transaction_callback
+        g_transaction_callback = self.on_transaction
         return block_log_parse_transactions_(self.c_block_log_ptr, start_block, end_block)
+
+    def on_action(self, block_num, trx):
+        print(block_num, trx)
+
+    def on_raw_action(self, block_num, trx):
+        print(block_num, trx)
+
+    def parse_actions(self, int start_block, int end_block):
+        global g_action_cb
+        g_action_cb = self.on_action
+        return block_log_parse_actions_(self.c_block_log_ptr, start_block, end_block)
+
+    def parse_raw_actions(self, int start_block, int end_block):
+        global g_raw_action_cb
+        g_raw_action_cb = self.on_raw_action
+        return block_log_parse_raw_actions_(self.c_block_log_ptr, start_block, end_block)

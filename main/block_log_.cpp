@@ -1,12 +1,16 @@
 #include <eosio/chain/block_log.hpp>
 #include <eosio/chain/transaction.hpp>
+
+#include <fc/io/json.hpp>
+
 #include "block_log_.hpp"
 #include "json.hpp"
 
 using namespace eosio::chain;
 
 int block_log_on_transaction(int block, PyObject* trx);
-int block_log_on_raw_transaction(int block, string& act);
+int block_log_on_raw_action(int block, string& act);
+int block_log_on_action(int block, string& act);
 
 #define FC_LOG_AND_RETURN( ... )  \
    catch( const boost::interprocess::bad_alloc& ) {\
@@ -128,11 +132,40 @@ void block_log_get_transactions_(void *block_log_ptr, int block_num) {
 
 }
 
-void block_log_parse_raw_transactions_(void *block_log_ptr, int start, int end) {
+void block_log_parse_actions_(void *block_log_ptr, int start, int end) {
    eosio::chain::block_log &log = *(eosio::chain::block_log*)block_log_ptr;
 
    signed_block_ptr block;
-   for (int block_num=start;block_num<end;block_num++) {
+   for (int block_num=start;block_num<=end;block_num++) {
+      try {
+         block = log.read_block_by_num(block_num);
+         if (!block) {
+            wlog("bad block number ${n}", ("n", block_num));
+            return;
+         }
+         for (auto& tr : block->transactions) {
+            if (!tr.trx.contains<packed_transaction>()) {
+               continue;
+            }
+            packed_transaction& pt = tr.trx.get<packed_transaction>();
+            signed_transaction st = pt.get_signed_transaction();
+            for (auto& act: st.actions) {
+               auto s = fc::json::to_string(act);
+               int ret = block_log_on_action(block_num, s);
+               if (!ret) {
+                  return;
+               }
+            }
+         }
+      } FC_LOG_AND_RETURN();
+   }
+}
+
+void block_log_parse_raw_actions_(void *block_log_ptr, int start, int end) {
+   eosio::chain::block_log &log = *(eosio::chain::block_log*)block_log_ptr;
+
+   signed_block_ptr block;
+   for (int block_num=start;block_num<=end;block_num++) {
       try {
          block = log.read_block_by_num(block_num);
          if (!block) {
@@ -148,7 +181,7 @@ void block_log_parse_raw_transactions_(void *block_log_ptr, int start, int end) 
             for (auto& act: st.actions) {
                auto v = fc::raw::pack(act);
                string raw_act(v.begin(), v.end());
-               int ret = block_log_on_raw_transaction(block_num, raw_act);
+               int ret = block_log_on_raw_action(block_num, raw_act);
                if (!ret) {
                   return;
                }
