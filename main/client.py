@@ -545,6 +545,21 @@ class Client(HttpClient):
             body=body
         )
 
+    def set_logger_level(self, logger='default', level='info') -> dict:
+        """
+        logger: default
+        level: debug, info, warn, error, off
+        """
+        body = dict(
+            logger=logger,
+            level = level
+        )
+        return self.exec(
+            api='debug',
+            endpoint='set_logger_level',
+            body=body
+        )
+
     def pause(self):
         body = None
         return self.exec(
@@ -741,7 +756,49 @@ class Client(HttpClient):
             body=body
         )
 
+    def set_filter_on(self, filter_in) -> dict:
+        """
+        receiver:action:actor
+        * to pass all action
+        """
+        body = json.dumps(filter_in)
+        return self.exec(
+            api='action_publisher',
+            endpoint='set_filter_on',
+            body=body
+        )
 
+    def set_filter_out(self, filter_out) -> dict:
+        """
+        receiver:action:actor
+        * to pass all action
+        """
+        body = json.dumps(filter_out)
+        return self.exec(
+            api='action_publisher',
+            endpoint='set_filter_out',
+            body=body
+        )
+
+    def clear_filter_on(self) -> dict:
+        """
+        """
+        body = None
+        return self.exec(
+            api='action_publisher',
+            endpoint='clear_filter_on',
+            body=body
+        )
+
+    def clear_filter_out(self) -> dict:
+        """
+        """
+        body = None
+        return self.exec(
+            api='action_publisher',
+            endpoint='clear_filter_out',
+            body=body
+        )
 
 class WalletClient(HttpClient):
     def __init__(self, host='127.0.0.1', port=8888, **kwargs):
