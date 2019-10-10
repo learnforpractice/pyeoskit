@@ -384,11 +384,13 @@ class EosApi(object):
 
     def get_keys(self, account_name, perm_name):
         keys = []
-        threshold = self._get_keys(account_name, perm_name, keys)
+        threshold = self._get_keys(account_name, perm_name, keys, 3)
         return (threshold, keys)
 
-    def _get_keys(self, account_name, perm_name, keys):
+    def _get_keys(self, account_name, perm_name, keys, depth):
         threshold = 1
+        if depth <= 0:
+            return threshold
         for per in self.get_account(account_name).permissions:
             if perm_name != per['perm_name']:
                 continue
@@ -399,7 +401,7 @@ class EosApi(object):
                actor = account['permission']['actor']
                per = account['permission']['permission']
                weight = account['weight']
-               self._get_keys(actor, per, keys)
+               self._get_keys(actor, per, keys, depth-1)
         return threshold
 
 
