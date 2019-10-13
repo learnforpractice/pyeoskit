@@ -348,11 +348,11 @@ class EosApi(object):
         abi = self.get_abi(account)
         return _eosapi.unpack_args(abi, action, binargs)
 
-    def set_contract(self, account, code, abi, vmtype=1, sign=True):
+    def set_contract(self, account, code, abi, vmtype=1, vmversion=0, sign=True):
         actions = []
         setcode = {"account":account,
                    "vmtype":vmtype,
-                   "vmversion":0,
+                   "vmversion":vmversion,
                    "code":code.hex()
                    }
         setcode = self.pack_args('eosio', 'setcode', setcode)
@@ -368,6 +368,9 @@ class EosApi(object):
         db.remove_code(account)
         db.remove_abi(account)
         return ret
+
+    def publish_contract(self, account, code, abi, vmtype=1, vmversion=0, sign=True):
+        self.set_contract(account, code, abi, vmtype, vmversion, sign)
 
     def create_key(self):
         """ Retrieve a pair of public key / private key. """
