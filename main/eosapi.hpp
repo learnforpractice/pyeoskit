@@ -35,4 +35,7 @@ PyObject* pack_transaction_(std::string& _signed_trx, int compress);
 PyObject* create_key_();
 PyObject* get_public_key_(std::string& wif_key);
 
+void from_base58_( std::string& pub_key, std::string& raw_pub_key );
+void to_base58_( std::string& raw_pub_key, std::string& pub_key );
+
 #endif /* MAIN_EOSAPI_HPP_ */

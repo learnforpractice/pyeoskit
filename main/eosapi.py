@@ -269,7 +269,7 @@ class EosApi(object):
                     break
         return keys
 
-    def create_account(self, creator, account, owner_key, active_key, ram_bytes=0.0, stake_net=0.0, stake_cpu=0.0, sign=True):
+    def create_account(self, creator, account, owner_key, active_key, ram_bytes=0, stake_net=0.0, stake_cpu=0.0, sign=True):
         actions = []
         args = {
         'creator': creator,
@@ -348,7 +348,7 @@ class EosApi(object):
         abi = self.get_abi(account)
         return _eosapi.unpack_args(abi, action, binargs)
 
-    def set_contract(self, account, code, abi, vmtype=1, vmversion=0, sign=True):
+    def set_contract(self, account, code, abi, vmtype=1, vmversion=0, sign=True, compress=0):
         actions = []
         setcode = {"account":account,
                    "vmtype":vmtype,
@@ -364,13 +364,13 @@ class EosApi(object):
         setabi = ['eosio', 'setabi', setabi, {account:'active'}]
         actions.append(setabi)
     
-        ret = self.push_actions(actions, compress=1)
+        ret = self.push_actions(actions, compress)
         db.remove_code(account)
         db.remove_abi(account)
         return ret
 
-    def publish_contract(self, account, code, abi, vmtype=1, vmversion=0, sign=True):
-        self.set_contract(account, code, abi, vmtype, vmversion, sign)
+    def publish_contract(self, account, code, abi, vmtype=1, vmversion=0, sign=True, compress=0):
+        self.set_contract(account, code, abi, vmtype, vmversion, sign, compress)
 
     def create_key(self):
         """ Retrieve a pair of public key / private key. """

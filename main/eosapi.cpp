@@ -142,3 +142,12 @@ PyObject* get_public_key_(std::string& wif_key) {
    return py_new_none();
 }
 
+void from_base58_( std::string& pub_key, std::string& raw_pub_key ) {
+   auto v = fc::from_base58(pub_key);
+   raw_pub_key = string(v.data(), v.size());
+}
+
+void to_base58_( std::string& raw_pub_key, std::string& pub_key ) {
+   std::vector<char> v(raw_pub_key.c_str(), raw_pub_key.c_str()+raw_pub_key.size());
+   pub_key = fc::to_base58( v );
+}

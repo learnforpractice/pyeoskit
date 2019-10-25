@@ -43,6 +43,9 @@ cdef extern from "eosapi.hpp":
     object create_key_()
     object get_public_key_(string& wif_key)
 
+    void from_base58_( string& pub_key, string& raw_pub_key );
+    void to_base58_( string& raw_pub_key, string& pub_key );
+
 def N(string& s):
     return s2n_(s)
 
@@ -122,3 +125,12 @@ def create_key():
 def get_public_key(string& wif_key):
     return get_public_key_(wif_key)
 
+def from_base58(string& pub_key):
+    cdef string raw_pub_key
+    from_base58_(pub_key, raw_pub_key)
+    return <bytes>raw_pub_key
+
+def to_base58(string& raw_pub_key):
+    cdef string pub_key
+    to_base58_(raw_pub_key, pub_key)
+    return pub_key
