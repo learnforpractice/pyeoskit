@@ -2,6 +2,16 @@
 #include "pyobject.hpp"
 #include <eosio/utilities/key_conversion.hpp>
 #include <eosio/chain/chain_id_type.hpp>
+#include <fc/io/json.hpp>
+
+#include <fc/crypto/sha256.hpp>
+#include <fc/crypto/signature.hpp>
+#include <fc/crypto/sha1.hpp>
+#include <fc/io/raw.hpp>
+
+#include <vector>
+
+using namespace std;
 
 static fc::microseconds abi_serializer_max_time = fc::microseconds(100*1000);
 static uint32_t tx_max_net_usage = 0;
@@ -143,11 +153,24 @@ PyObject* get_public_key_(std::string& wif_key) {
 }
 
 void from_base58_( std::string& pub_key, std::string& raw_pub_key ) {
-   auto v = fc::from_base58(pub_key);
-   raw_pub_key = string(v.data(), v.size());
+   try {
+      auto v = fc::from_base58(pub_key);
+      raw_pub_key = string(v.data(), v.size());
+   } FC_LOG_AND_DROP();
 }
 
 void to_base58_( std::string& raw_pub_key, std::string& pub_key ) {
-   std::vector<char> v(raw_pub_key.c_str(), raw_pub_key.c_str()+raw_pub_key.size());
-   pub_key = fc::to_base58( v );
+   try {
+      std::vector<char> v(raw_pub_key.c_str(), raw_pub_key.c_str()+raw_pub_key.size());
+      pub_key = fc::to_base58( v );
+   } FC_LOG_AND_DROP();
+}
+
+void recover_key_( string& _digest, string& _sig, string& _pub ) {
+   try {
+//      ilog("+++++${n}", ("n", _sig));
+      auto digest = fc::sha256(_digest);
+      auto s = fc::crypto::signature(_sig);
+      _pub = string(fc::crypto::public_key( s, digest, false ));
+   } FC_LOG_AND_DROP();
 }

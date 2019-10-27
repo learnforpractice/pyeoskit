@@ -38,4 +38,6 @@ PyObject* get_public_key_(std::string& wif_key);
 void from_base58_( std::string& pub_key, std::string& raw_pub_key );
 void to_base58_( std::string& raw_pub_key, std::string& pub_key );
 
+void recover_key_( string& _digest, string& _sig, string& _pub );
+
 #endif /* MAIN_EOSAPI_HPP_ */

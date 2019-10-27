@@ -46,6 +46,8 @@ cdef extern from "eosapi.hpp":
     void from_base58_( string& pub_key, string& raw_pub_key );
     void to_base58_( string& raw_pub_key, string& pub_key );
 
+    void recover_key_( string& _digest, string& _sig, string& _pub );
+
 def N(string& s):
     return s2n_(s)
 
@@ -134,3 +136,8 @@ def to_base58(string& raw_pub_key):
     cdef string pub_key
     to_base58_(raw_pub_key, pub_key)
     return pub_key
+
+def recover_key(string& digest, string& sig):
+    cdef string pub
+    recover_key_( digest, sig, pub );
+    return pub
