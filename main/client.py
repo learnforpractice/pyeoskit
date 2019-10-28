@@ -431,6 +431,18 @@ class Client(HttpClient):
             body=body
         )
 
+    def get_key_accounts_ex(self, public_key) -> dict:
+        """ Retrieve accounts has the specified key. """
+        body = dict(
+            public_key=public_key,
+        )
+
+        return self.exec(
+            api='history',
+            endpoint='get_key_accounts_ex',
+            body=body
+        )
+
     def get_controlled_accounts(self, controlling_account) -> dict:
         """ Retrieve accounts has the specified key. """
         body = dict(
