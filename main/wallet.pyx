@@ -27,6 +27,7 @@ cdef extern from "wallet_.h":
     object wallet_lock_(string& name);
     object wallet_unlock_(string& name, string& password);
     object wallet_import_key_(string& name, string& wif_key, bool save);
+    object wallet_remove_key_(string& name, string& password, const string& pub_key);
     object sign_transaction_(string& trx, vector[string]& _public_keys, string& chain_id);
     object sign_digest_(string& _digest, string& _public_key)
 
@@ -65,6 +66,9 @@ def unlock(string& name, string& password):
 
 def import_key(string& name, string& wif_key, save=True):
     return wallet_import_key_(name, wif_key, save)
+
+def remove_key(string& name, string& password, const string& pub_key):
+    return wallet_remove_key_(name, password, pub_key)
 
 def sign_transaction(string& trx, _public_keys, string& chain_id):
     cdef vector[string] public_keys
