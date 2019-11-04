@@ -127,9 +127,9 @@ class HttpClient(object):
             url = "http+{}/{}/{}/{}".format(self.node_url, self.api_version, api, endpoint)
             try:
                 if body:
-                    r = self.session.post(url, data = body)
+                    r = self.session_unix.post(url, data = body)
                 else:
-                    r = self.session.get(url)
+                    r = self.session_unix.get(url)
                 if not r.status_code in [200, 202, 201]:
                     raise HttpAPIError(r.status_code, r.text)
 
