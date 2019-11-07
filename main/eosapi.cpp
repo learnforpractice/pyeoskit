@@ -125,6 +125,15 @@ PyObject* pack_transaction_(std::string& _signed_trx, int compress) {
    return py_new_none();
 }
 
+PyObject* unpack_transaction_(std::string& trx) {
+   try {
+      vector<char> s(trx.c_str(), trx.c_str()+trx.size());
+      auto st = fc::raw::unpack<transaction>(s);
+      std::string ss = fc::json::to_string(st);
+      return py_new_string(ss);
+   } FC_LOG_AND_DROP();
+   return py_new_none();
+}
 
 PyObject* create_key_() {
    auto pk    = private_key_type::generate();

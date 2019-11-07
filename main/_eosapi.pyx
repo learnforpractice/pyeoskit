@@ -39,6 +39,7 @@ cdef extern from "eosapi.hpp":
     object gen_transaction_(vector[action]& v, int expiration, string& reference_block_id);
     object sign_transaction_(string& trx_json_to_sign, string& str_private_key, string& chain_id);
     object pack_transaction_(string& _signed_trx, int compress)
+    object unpack_transaction_(string& trx)
 
     object create_key_()
     object get_public_key_(string& wif_key)
@@ -120,6 +121,9 @@ def sign_transaction(string& trx_json_to_sign, string& str_private_key, string& 
 
 def pack_transaction(string& _signed_trx, int compress):
     return pack_transaction_(_signed_trx, compress)
+
+def unpack_transaction(string& trx):
+    return unpack_transaction_(trx)
 
 def create_key():
     return create_key_()

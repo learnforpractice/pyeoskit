@@ -213,6 +213,9 @@ class EosApi(object):
     def pack_transaction(self, trx, compress=0):
         return _eosapi.pack_transaction(trx, compress)
 
+    def unpack_transaction(self, trx):
+        return _eosapi.unpack_transaction(trx)
+
     def push_action(self, contract, action, args, permissions, compress=0):
         act = [contract, action, args, permissions]
         reference_block_id = self.get_info().last_irreversible_block_id

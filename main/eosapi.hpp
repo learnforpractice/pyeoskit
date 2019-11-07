@@ -40,4 +40,6 @@ void to_base58_( std::string& raw_pub_key, std::string& pub_key );
 
 void recover_key_( string& _digest, string& _sig, string& _pub );
 
+PyObject* unpack_transaction_(std::string& trx);
+
 #endif /* MAIN_EOSAPI_HPP_ */
