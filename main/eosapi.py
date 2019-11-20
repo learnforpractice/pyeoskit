@@ -278,12 +278,12 @@ class EosApi(object):
         'creator': creator,
         'name': account,
         'owner': {'threshold': 1,
-                   'keys': [{'key': active_key, 'weight': 1}],
+                   'keys': [{'key': owner_key, 'weight': 1}],
                    'accounts': [],
                    'waits': []
                 },
         'active': {'threshold': 1,
-                    'keys': [{'key': owner_key, 'weight': 1}],
+                    'keys': [{'key': active_key, 'weight': 1}],
                     'accounts': [],
                     'waits': []
                 }
