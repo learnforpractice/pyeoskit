@@ -406,11 +406,12 @@ class Client(HttpClient):
             body=body
         )
 
-    def get_transaction(self, id) -> dict:
+    def get_transaction(self, id, block_num_hint=0) -> dict:
         """ Retrieve a transaction from the blockchain. """
 
         body = dict(
             id=id,
+            block_num_hint=block_num_hint
         )
 
         return self.exec(
