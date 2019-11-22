@@ -23,8 +23,11 @@ class JsonStruct(object):
     def __repr__(self):
         return json.dumps(self, default=lambda x: x._dict, sort_keys=False, indent=4, separators=(',', ': '))
 
-    def __getitem__(self, o):
-        return self._dict[o]
+    def __getitem__(self, key):
+        ret = self._dict[key]
+        if isinstance(ret, dict):
+            ret = JsonStruct(ret)
+        return ret
 
     def __contains__(self, o):
         return o in self._dict
