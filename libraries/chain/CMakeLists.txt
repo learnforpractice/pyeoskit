@@ -28,6 +28,7 @@ add_library( eosio_chain
               block_log.cpp
               genesis_state.cpp
               genesis_state_root_key.cpp
+              chain_id_type.cpp
               ${HEADERS}
              )
 

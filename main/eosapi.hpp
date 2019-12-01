@@ -17,6 +17,8 @@
 #include <eosio/chain/abi_serializer.hpp>
 #include <fc/io/json.hpp>
 
+#include "cpp_object.hpp"
+
 using namespace std;
 using namespace eosio;
 using namespace eosio::chain;

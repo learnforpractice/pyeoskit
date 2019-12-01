@@ -15,6 +15,10 @@ cdef extern from * :
     ctypedef unsigned long long uint64_t
 
 cdef extern from "eosapi.hpp":
+
+    void pack_cpp_object_(int _type, string& msg, string& packed_message)
+    void unpack_cpp_object_(int _type, string& packed_message, string& msg)
+
     void pack_args_(string& rawabi, uint64_t action, string& _args, string& binargs)
     void unpack_args_(string& rawabi, uint64_t action, string& binargs, string& _args)
     void pack_abi_(string& _abi, string& out);
@@ -145,3 +149,14 @@ def recover_key(string& digest, string& sig):
     cdef string pub
     recover_key_( digest, sig, pub );
     return pub
+
+def pack_cpp_object(int _type, string& msg):
+    cdef string packed_message
+    pack_cpp_object_(_type, msg, packed_message)
+    return <bytes>packed_message
+
+def unpack_cpp_object(int _type, string& packed_message):
+    cdef string msg
+    unpack_cpp_object_(_type, packed_message, msg)
+    return <bytes>msg
+

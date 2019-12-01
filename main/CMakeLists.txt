@@ -16,7 +16,8 @@ set(SRCS ${_hello}
          pyobject.cpp
          main.cpp 
          eosapi.cpp
-         hello.cpp)
+         hello.cpp
+         cpp_object.cpp)
 
 add_library(_hello MODULE ${SRCS})
 
@@ -36,6 +37,7 @@ ${PYTHON_LIBRARY} ${EXTRA_LIBS})
 
 set(INCS   "${CMAKE_CURRENT_SOURCE_DIR}" 
            "${CMAKE_CURRENT_SOURCE_DIR}/include" 
+           "${CMAKE_SOURCE_DIR}/include" 
            "${CMAKE_SOURCE_DIR}/libraries/chain/include" 
            "${CMAKE_SOURCE_DIR}/libraries/eosiolib" 
            "${CMAKE_SOURCE_DIR}/libraries/chainbase/include"

@@ -11,3 +11,8 @@ __version__='0.6.0'
 wallet = _hello.wallet
 
 eosapi = eosapi.EosApi()
+
+__all__ = (
+    'eosapi',
+    'wallet',
+)
