@@ -52,8 +52,8 @@ https://www.python.org/downloads/
 
 #### Installing Python packages
 ```
-python -m pip install scikit-build
-python -m pip install cython==0.28.5
+python3 -m pip install scikit-build
+python3 -m pip install cython==0.28.5
 ```
 
 ### Downloading Source Code
