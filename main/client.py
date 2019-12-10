@@ -138,6 +138,19 @@ class Client(HttpClient):
             body=body
         )
 
+    def get_code_hash(self, account_name) -> dict:
+        """ Fetch smart contract code """
+
+        body = dict(
+            account_name=account_name,
+        )
+
+        return self.exec(
+            api='chain',
+            endpoint='get_code_hash',
+            body=body
+        )
+
     def get_abi(self, account_name) -> dict:
         """ Fetch a blockchain account """
 
