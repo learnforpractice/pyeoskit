@@ -85,6 +85,20 @@ class Client(HttpClient):
             body=body
         )
 
+    def get_activated_protocol_features(self, lower_bound=0, upper_bound=0xffffffff, limit=10, search_by_block_num=False, reverse=False):
+        body = dict(
+            lower_bound=lower_bound,
+            upper_bound=upper_bound,
+            limit = limit,
+            search_by_block_num = search_by_block_num,
+            reverse = reverse,
+        )
+        return self.exec(
+            api='chain',
+            endpoint='get_activated_protocol_features',
+            body=body
+        )
+
     def get_block(self, block_num_or_id) -> dict:
         """ Fetch a block from the blockchain. """
 
