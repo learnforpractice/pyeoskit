@@ -57,8 +57,8 @@ class HttpClient(object):
             socket_options = HTTPConnection.default_socket_options
 
         timeout = urllib3.Timeout(
-            connect=kwargs.get('connect_timeout', 5),
-            read=kwargs.get('timeout', 5))
+            connect=kwargs.get('connect_timeout', 10),
+            read=kwargs.get('timeout', 10))
 
         self.http = urllib3.poolmanager.PoolManager(
             num_pools=kwargs.get('num_pools', 50),
