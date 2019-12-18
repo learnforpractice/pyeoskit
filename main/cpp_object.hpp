@@ -14,5 +14,6 @@ enum {
     request_message_type,
     sync_request_message_type,
     signed_block_type,         // which = 7
-    packed_transaction_type
+    packed_transaction_type,
+    genesis_state_type,
 };

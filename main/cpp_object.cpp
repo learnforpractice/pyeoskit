@@ -5,11 +5,13 @@
 #include <fc/io/json.hpp>
 #include <fc/io/raw.hpp>
 #include <fc/variant.hpp>
+#include <eosio/chain/genesis_state.hpp>
 
 #include "cpp_object.hpp"
 
 using namespace std;
 using namespace eosio;
+using namespace eosio::chain;
 
 template<typename T>
 static void pack_cpp_object(string& msg, string& packed_message)
@@ -31,49 +33,42 @@ static void unpack_cpp_object(string& packed_message, string& msg) {
     }FC_LOG_AND_DROP();
 }
 
+#define PACK_CPP_OBJECT(obj) \
+    case obj ## _type: \
+        pack_cpp_object<obj>(msg, packed_message); \
+        break;
+
+#define UNPACK_CPP_OBJECT(obj) \
+    case obj ## _type: \
+        unpack_cpp_object<obj>(packed_message, msg); \
+        break;
+
 void pack_cpp_object_(int type, string& msg, string& packed_message) {
-    if (type == handshake_message_type) {
-        pack_cpp_object<handshake_message>(msg, packed_message);
-    } else if (type == chain_size_message_type) {
-        pack_cpp_object<chain_size_message>(msg, packed_message);
-    } else if (type == go_away_message_type) {
-        pack_cpp_object<go_away_message>(msg, packed_message);
-    } else if (type == time_message_type) {
-        pack_cpp_object<time_message>(msg, packed_message);
-    } else if (type == notice_message_type) {
-        pack_cpp_object<notice_message>(msg, packed_message);
-    } else if (type == request_message_type) {
-        pack_cpp_object<request_message>(msg, packed_message);
-    } else if (type == sync_request_message_type ) {
-        pack_cpp_object<sync_request_message>(msg, packed_message);
-    } else if (type == signed_block_type) {
-        pack_cpp_object<signed_block>(msg, packed_message);
-    } else if (type == packed_transaction_type) {
-        pack_cpp_object<packed_transaction>(msg, packed_message);
+    switch(type) {
+        PACK_CPP_OBJECT(handshake_message)
+        PACK_CPP_OBJECT(chain_size_message)
+        PACK_CPP_OBJECT(go_away_message)
+        PACK_CPP_OBJECT(time_message)
+        PACK_CPP_OBJECT(notice_message)
+        PACK_CPP_OBJECT(request_message)
+        PACK_CPP_OBJECT(sync_request_message)
+        PACK_CPP_OBJECT(signed_block)
+        PACK_CPP_OBJECT(packed_transaction)
+        PACK_CPP_OBJECT(genesis_state)
     }
 }
 
 void unpack_cpp_object_(int type, string& packed_message, string& msg) {
-    if (type == handshake_message_type) {
-        unpack_cpp_object<handshake_message>(packed_message, msg);
-    } else if (type == chain_size_message_type) {
-        unpack_cpp_object<chain_size_message>(packed_message, msg);
-    } else if (type == go_away_message_type) {
-        unpack_cpp_object<go_away_message>(packed_message, msg);
-    } else if (type == time_message_type) {
-        unpack_cpp_object<time_message>(packed_message, msg);
-    } else if (type == notice_message_type) {
-        unpack_cpp_object<notice_message>(packed_message, msg);
-    } else if (type == request_message_type) {
-        unpack_cpp_object<request_message>(packed_message, msg);
-    } else if (type == sync_request_message_type ) {
-        unpack_cpp_object<sync_request_message>(packed_message, msg);
-    } else if (type == signed_block_type) {
-        unpack_cpp_object<signed_block>(packed_message, msg);
-    } else if (type == packed_transaction_type) {
-        unpack_cpp_object<packed_transaction>(packed_message, msg);
-    } else {
-        unpack_cpp_object<eosio::select_ids<fc::sha256>>(packed_message, msg);
+    switch(type) {
+        UNPACK_CPP_OBJECT(handshake_message)
+        UNPACK_CPP_OBJECT(chain_size_message)
+        UNPACK_CPP_OBJECT(go_away_message)
+        UNPACK_CPP_OBJECT(time_message)
+        UNPACK_CPP_OBJECT(notice_message)
+        UNPACK_CPP_OBJECT(request_message)
+        UNPACK_CPP_OBJECT(sync_request_message)
+        UNPACK_CPP_OBJECT(signed_block)
+        UNPACK_CPP_OBJECT(packed_transaction)
+        UNPACK_CPP_OBJECT(genesis_state)
     }
 }
-
