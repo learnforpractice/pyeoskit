@@ -413,6 +413,9 @@ class EosApi(object):
                self._get_keys(actor, per, keys, depth-1)
         return threshold
 
+    def recover_key(self, digest, sign):
+        return _eosapi.recover_key(digest, sign)
+
     def pack_cpp_object(self, obj_type, json_str):
         return _eosapi.pack_cpp_object(obj_type, json_str)
     
