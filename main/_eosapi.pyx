@@ -52,6 +52,7 @@ cdef extern from "eosapi.hpp":
     void to_base58_( string& raw_pub_key, string& pub_key );
 
     void recover_key_( string& _digest, string& _sig, string& _pub );
+    void sign_digest_(string& _priv_key, string& _digest, string& out);
 
 def N(string& s):
     return s2n_(s)
@@ -160,3 +161,7 @@ def unpack_cpp_object(int _type, string& packed_message):
     unpack_cpp_object_(_type, packed_message, msg)
     return <bytes>msg
 
+def sign_digest(string& _priv_key, string& _digest):
+    cdef string out
+    sign_digest_(_priv_key, _digest, out)
+    return out

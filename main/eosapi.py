@@ -422,5 +422,14 @@ class EosApi(object):
     def unpack_cpp_object(self, obj_type, raw_data):
         return _eosapi.unpack_cpp_object(obj_type, raw_data)
 
-
-
+    def sign_digest(self, priv_key, digest):
+        if isinstance(digest, str):
+            if not len(digest) == 64:
+                raise Exception('digest should be a hex str with 64 charactors or a bytes with a size of 32 long')
+            digest = bytes.fromhex(digest)
+        elif isinstance(digest, bytes):
+            if not len(digest) == 32:
+                raise Exception('digest should be a hex str with 64 charactors or a bytes with a size of 32 long')
+        else:
+            raise Exception('digest should be a hex str with 64 charactors or a bytes with a size of 32 long')
+        return _eosapi.sign_digest(priv_key, digest)

@@ -44,4 +44,6 @@ void recover_key_( string& _digest, string& _sig, string& _pub );
 
 PyObject* unpack_transaction_(std::string& trx);
 
+void sign_digest_(string& _priv_key, string& _digest, string& out);
+
 #endif /* MAIN_EOSAPI_HPP_ */
