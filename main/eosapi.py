@@ -161,6 +161,9 @@ class EosApi(object):
     def set_nodes(self, nodes):
         self.client.set_nodes(nodes)
 
+    def set_node(self, node_url):
+        self.client.set_nodes([node_url])
+
     def enable_decode(self, json_format):
         self.client.json_decode = json_format
 
