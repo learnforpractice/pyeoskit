@@ -74,6 +74,11 @@ uint32_t block_log_get_first_block_num_(void *block_log_ptr) {
    return log.first_block_num();
 }
 
+PyObject* block_log_read_block_by_num_(void *block_log_ptr, uint32_t block_num) {
+   eosio::chain::block_log &log = *(eosio::chain::block_log*)block_log_ptr;
+   return python::json::to_string(fc::variant(log.read_block_by_num(block_num)));
+}
+
 PyObject* block_log_get_head_block_(void *block_log_ptr) {
    eosio::chain::block_log &log = *(eosio::chain::block_log*)block_log_ptr;
    return python::json::to_string(fc::variant(log.head()));

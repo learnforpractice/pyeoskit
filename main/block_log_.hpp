@@ -8,6 +8,7 @@ using namespace std;
 void *block_log_new(string& path);
 void block_log_free(void *block_log_ptr);
 uint32_t block_log_get_first_block_num_(void *block_log_ptr);
+PyObject* block_log_read_block_by_num_(void *block_log_ptr, uint32_t block_num);
 PyObject* block_log_get_head_block_(void *block_log_ptr);
 bool block_log_parse_transactions_(void *block_log_ptr, int start_block, int end_block);
 void block_log_get_transactions_(void *block_log_ptr, int block_num);

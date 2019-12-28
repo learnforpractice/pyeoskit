@@ -8,7 +8,10 @@ import traceback
 cdef extern from "block_log_.hpp":
     void *block_log_new(string& path);
     void block_log_free(void *block_log_ptr);
+
     unsigned int block_log_get_first_block_num_(void *block_log_ptr);
+    object block_log_read_block_by_num_(void *block_log_ptr, unsigned int block_num);
+
     object block_log_get_head_block_(void *block_log_ptr);
     bool block_log_parse_transactions_(void *block_log_ptr, int start_block, int end_block);
     void block_log_get_transactions_(void *block_log_ptr, int block_num);
@@ -53,9 +56,11 @@ cdef extern int block_log_on_action(int block, string& act):
 
 cdef class BlockParser:
     cdef void *c_block_log_ptr
+    cdef string c_block_log_path
 
     def __cinit__(self, string& path):
         self.c_block_log_ptr = block_log_new(path)
+        self.c_block_log_path = path
 
     def __dealloc__(self):
         block_log_free(self.c_block_log_ptr)
@@ -65,8 +70,18 @@ cdef class BlockParser:
         block_log_free(self.c_block_log_ptr)
         self.c_block_log_ptr = <void *>0
 
-    def get_first_block_num(self, ):
+    def get_first_block_num(self):
         return block_log_get_first_block_num_(self.c_block_log_ptr)
+
+    def get_head_block_num(self):
+        first_block_num = self.get_first_block_num()
+        block_log_path = self.c_block_log_path
+        blocks_index_path = os.path.join(block_log_path, 'blocks.index')
+        block_count = os.path.getsize(blocks_index_path)//8
+        return first_block_num + block_count - 1
+
+    def read_block_by_num(self, block_num):
+        return block_log_read_block_by_num_(self.c_block_log_ptr, block_num)
 
     def get_head_block(self):
         return block_log_get_head_block_(self.c_block_log_ptr)
