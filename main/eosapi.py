@@ -326,11 +326,11 @@ class EosApi(object):
             return 0.0
         return 0.0
 
-    def transfer(self, _from, _to, _amount, _memo='', token_account='eosio.token', token_name=''):
+    def transfer(self, _from, _to, _amount, _memo='', token_account='eosio.token', token_name='', permission='active'):
         if not token_name:
             token_name = config.main_token
         args = {"from":_from, "to":_to, "quantity":'%.4f %s'%(_amount,token_name), "memo":_memo}
-        return self.push_action(token_account, 'transfer', args, {_from:'active'})
+        return self.push_action(token_account, 'transfer', args, {_from:permission})
 
     def get_abi(self, account):
         abi = db.get_abi(account)
@@ -431,5 +431,5 @@ class EosApi(object):
             if not len(digest) == 32:
                 raise Exception('digest should be a hex str with 64 charactors or a bytes with a size of 32 long')
         else:
-            raise Exception('digest should be a hex str with 64 charactors or a bytes with a size of 32 long')
+            raise TypeError('digest should be a hex str with 64 charactors or a bytes with a size of 32 long')
         return _eosapi.sign_digest(priv_key, digest)
