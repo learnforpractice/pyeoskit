@@ -299,12 +299,12 @@ class Client(HttpClient):
             body=body
         )
 
-    def get_scheduled_transactions(self, json, lower_bound) -> dict:
+    def get_scheduled_transactions(self, json, lower_bound, limit=50) -> dict:
 
         body = dict(
             json=json,
             lower_bound=lower_bound,
-            limit=50
+            limit=limit
         )
 
         return self.exec(
