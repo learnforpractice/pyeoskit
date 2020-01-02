@@ -786,9 +786,9 @@ class Client(HttpClient):
             body=body
         )
 
-    def get_supported_protocol_features(self) -> dict:
+    def get_supported_protocol_features(self, exclude_disabled=False, exclude_unactivatable=False) -> dict:
         """  """
-        body = dict()
+        body = dict(exclude_disabled=exclude_disabled, exclude_unactivatable=exclude_unactivatable)
         return self.exec(
             api='producer',
             endpoint='get_supported_protocol_features',
