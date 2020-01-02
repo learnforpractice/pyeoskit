@@ -97,8 +97,8 @@ class Function(object):
         self.function = function
         super(Function, self).__init__()
 
-    def __call__(self, *args):
-        ret = self.function(*args)
+    def __call__(self, *args, **kwargs):
+        ret = self.function(*args, **kwargs)
         try:
             if isinstance(ret, dict):
                 return JsonStruct(ret)

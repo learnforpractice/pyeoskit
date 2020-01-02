@@ -632,13 +632,13 @@ class Client(HttpClient):
             body=body
         )
 
-    def update_runtime_options(self, max_transaction_time, 
-                                    max_irreversible_block_age,
-                                    produce_time_offset_us,
-                                    last_block_time_offset_us,
-                                    max_scheduled_transaction_time_per_block_ms,
-                                    subjective_cpu_leeway_us,
-                                    incoming_defer_ratio) -> dict:
+    def update_runtime_options(self, max_transaction_time=None, 
+                                    max_irreversible_block_age=None,
+                                    produce_time_offset_us=None,
+                                    last_block_time_offset_us=None,
+                                    max_scheduled_transaction_time_per_block_ms=None,
+                                    subjective_cpu_leeway_us=None,
+                                    incoming_defer_ratio=None) -> dict:
         '''
             struct runtime_options {
                 fc::optional<int32_t> max_transaction_time;
@@ -650,15 +650,27 @@ class Client(HttpClient):
                 fc::optional<double>  incoming_defer_ratio;
             };
         '''
-        body = dict(
-            max_transaction_time=max_transaction_time, 
-            max_irreversible_block_age=max_irreversible_block_age,
-            produce_time_offset_us=produce_time_offset_us,
-            last_block_time_offset_us=last_block_time_offset_us,
-            max_scheduled_transaction_time_per_block_ms=max_scheduled_transaction_time_per_block_ms,
-            subjective_cpu_leeway_us=subjective_cpu_leeway_us,
-            incoming_defer_ratio=incoming_defer_ratio
-        )
+        body = dict()
+        if max_transaction_time is not None:
+            body['max_transaction_time']=max_transaction_time
+
+        if max_irreversible_block_age is not None:
+            body['max_irreversible_block_age']=max_irreversible_block_age,
+
+        if produce_time_offset_us is not None:
+            body['produce_time_offset_us']=produce_time_offset_us,
+
+        if last_block_time_offset_us is not None:
+            body['last_block_time_offset_us']=last_block_time_offset_us
+
+        if max_scheduled_transaction_time_per_block_ms is not None:
+            body['max_scheduled_transaction_time_per_block_ms']=max_scheduled_transaction_time_per_block_ms,
+
+        if subjective_cpu_leeway_us is not None:
+            body['subjective_cpu_leeway_us']=subjective_cpu_leeway_us,
+
+        if incoming_defer_ratio is not None:
+            body['incoming_defer_ratio']=incoming_defer_ratio
 
         return self.exec(
             api='producer',
