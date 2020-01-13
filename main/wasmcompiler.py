@@ -4,12 +4,7 @@ import shutil
 import hashlib
 import marshal
 import subprocess
-from pyeoskit import eosapi
-from pyeoskit import config
-from pyeoskit._hello import _eosapi
-
-config.main_token = 'UUOS'
-default_vm_type=1
+import tempfile
 
 def find_eosio_cdt_path():
     eosio_cpp = shutil.which('eosio-cpp')
@@ -114,24 +109,25 @@ class cpp_compiler(object):
             print("error (code {}):".format(e.returncode))
             print(e.output.decode('utf8'))
             return None
-        return open(f'{tmp_path}.wasm', 'rb').read()
+
+        with open(f'{tmp_path}.wasm', 'rb') as f:
+            return f.read()
 
 def compile_cpp_file(src_path, includes=[], entry='apply', opt='O3'):
     compiler = cpp_compiler(src_path, includes, entry)
     return compiler.compile_cpp_file(opt)
 
-def compile_cpp_src(account_name, code, includes = [], entry='apply', opt='O3'):
-    if not os.path.exists('.tmp'):
-        os.mkdir('.tmp')
-    src_path = os.path.join('.tmp', account_name+'.cpp')
-    if os.path.exists(src_path):
-        old_code = open(src_path).read()
-        if old_code == code:
-            tmp_path = src_path[:-4]
-            wasm_file = f'{tmp_path}.wasm'
-            if os.path.exists(f'{tmp_path}.cpp') and os.path.exists(wasm_file):
-                if os.path.getmtime(f'{tmp_path}.cpp') <= os.path.getmtime(wasm_file):
-                    return open(wasm_file, 'rb').read()
-    with open(src_path, 'w') as f:
+def compile_cpp_src(account_name, code, includes = [], entry='apply', opt='O3', force=False):
+    temp_dir = tempfile.mktemp()
+    src_file = temp_dir + '.cpp'
+
+    with open(src_file, 'w') as f:
         f.write(code)
-    return compile_cpp_file(src_path, includes, entry, opt=opt)
+    wasm_code = compile_cpp_file(src_file, includes, entry, opt=opt)
+
+    for ext in ('.cpp', '.obj', '.wasm'):
+        file_name = temp_dir + ext
+        if os.path.exists(file_name):
+            os.remove(file_name)
+
+    return wasm_code
