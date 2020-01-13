@@ -28,13 +28,20 @@ void n2s_(uint64_t n, std::string& s) {
    s = name(n).to_string();
 }
 
-void pack_args_(std::string& _rawabi, uint64_t action, std::string& _args, std::string& _binargs) {
+std::map<std::string, std::shared_ptr<abi_serializer>> abi_cache;
+
+void pack_args_(string& account, std::string& _rawabi, uint64_t action, std::string& _args, std::string& _binargs) {
    fc::variant args = fc::json::from_string(_args);
    bytes rawabi = bytes(_rawabi.data(), _rawabi.data() + _rawabi.size());
 
    try {
-      abi_def abi = fc::json::from_string(_rawabi).as<abi_def>();
-      abi_serializer abis( abi, abi_serializer_max_time );
+      auto itr = abi_cache.find(account);
+      if (itr == abi_cache.end()) {
+         abi_def abi = fc::json::from_string(_rawabi).as<abi_def>();
+         abi_cache[account] = std::make_shared<abi_serializer>(abi, abi_serializer_max_time);
+      }
+      abi_serializer& abis = *abi_cache[account];
+
       auto action_type = abis.get_action_type(action);
       EOS_ASSERT(!action_type.empty(), action_validate_exception, "Unknown action ${action}", ("action", action));
 
@@ -43,13 +50,18 @@ void pack_args_(std::string& _rawabi, uint64_t action, std::string& _args, std::
    } FC_LOG_AND_DROP();
 }
 
-void unpack_args_( std::string& _rawabi, uint64_t action, std::string& _binargs, std::string& _args ) {
+void unpack_args_(string& account, std::string& _rawabi, uint64_t action, std::string& _binargs, std::string& _args ) {
    bytes rawabi = bytes(_rawabi.data(), _rawabi.data() + _rawabi.size());
    bytes binargs = bytes(_binargs.data(), _binargs.data() + _binargs.size());
 
    try {
-      abi_def abi = fc::json::from_string(_rawabi).as<abi_def>();
-      abi_serializer abis( abi, abi_serializer_max_time );
+      auto itr = abi_cache.find(account);
+      if (itr == abi_cache.end()) {
+         abi_def abi = fc::json::from_string(_rawabi).as<abi_def>();
+         abi_cache[account] = std::make_shared<abi_serializer>(abi, abi_serializer_max_time);
+      }
+      abi_serializer& abis = *abi_cache[account];
+
       auto args = abis.binary_to_variant( abis.get_action_type( action ), binargs, abi_serializer_max_time );
       _args = fc::json::to_string(args);
    } FC_LOG_AND_DROP();

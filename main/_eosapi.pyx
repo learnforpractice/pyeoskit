@@ -19,8 +19,8 @@ cdef extern from "eosapi.hpp":
     void pack_cpp_object_(int _type, string& msg, string& packed_message)
     void unpack_cpp_object_(int _type, string& packed_message, string& msg)
 
-    void pack_args_(string& rawabi, uint64_t action, string& _args, string& binargs)
-    void unpack_args_(string& rawabi, uint64_t action, string& binargs, string& _args)
+    void pack_args_(string& account, string& rawabi, uint64_t action, string& _args, string& binargs)
+    void unpack_args_(string& account, string& rawabi, uint64_t action, string& binargs, string& _args)
     void pack_abi_(string& _abi, string& out);
 
     uint64_t s2n_(string& s);
@@ -65,18 +65,18 @@ def n2s(uint64_t n):
     n2s_(n, s)
     return s
 
-def pack_args(string& rawabi, action, _args):
+def pack_args(string& account, string& rawabi, action, _args):
     cdef string binargs
     cdef string args
     args = json.dumps(_args)
-    pack_args_(rawabi, N(action), args, binargs)
+    pack_args_(account, rawabi, N(action), args, binargs)
     if binargs.size():
         return <bytes>binargs
     raise Exception('pack error')
 
-def unpack_args(string& rawabi, action, string& binargs):
+def unpack_args(string& account, string& rawabi, action, string& binargs):
     cdef string _args
-    unpack_args_(rawabi, N(action), binargs, _args)
+    unpack_args_(account, rawabi, N(action), binargs, _args)
     if _args.size():
         return <bytes>_args;
 #        return json.loads(_args)
@@ -113,7 +113,7 @@ def gen_transaction(actions, int expiration, string& reference_block_id):
             abi = config.get_abi(account)
             if not abi:
                 raise Exception(f"{account} has no abi info")
-            args = pack_args(abi, action_name, args)
+            args = pack_args(account, abi, action_name, args)
         act.data.resize(0)
         act.data.resize(len(args))
         memcpy(act.data.data(), args, len(args))

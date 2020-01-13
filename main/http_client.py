@@ -121,6 +121,7 @@ class HttpClient(object):
             node fail-over, unless we are broadcasting a transaction.
             In latter case, the exception is **re-raised**.
         """
+        logger.debug(f'{endpoint} {body}')
         body = self._body(body)
         method = 'POST' if body else 'GET'
         if self.node_url.startswith('unix://'):

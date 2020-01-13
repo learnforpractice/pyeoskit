@@ -483,6 +483,14 @@ class Client(HttpClient):
             body=body
         )
 
+    def get_history_db_size(self) -> dict:
+        body = None
+        return self.exec(
+            api='history',
+            endpoint='get_db_size',
+            body=body
+        )
+
     def get_db_size(self) -> dict:
         """ Retrieve accounts has the specified key. """
         body = dict()

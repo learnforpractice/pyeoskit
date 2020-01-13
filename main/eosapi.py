@@ -7,6 +7,7 @@ from .client import Client, WalletClient
 from . import _hello as hello
 from .jsonstruct import JsonStruct
 from . import config
+from . import defaultabi
 
 _eosapi = _hello._eosapi
 wallet = _hello.wallet
@@ -146,10 +147,17 @@ class GetAbiFunction(object):
         super(GetAbiFunction, self).__init__()
 
     def __call__(self, *args):
+        account = ars[0]
+        if account == 'eosio.token':
+            return defaultabi.eosio_token_abi
+        elif account == 'eosio':
+            return defaultabi.eosio_system_abi
+
+        abi =  db.get_abi(account)
+        if abi:
+            return JsonStruct(ret)
         ret = self.function(*args)
-        account = args[0]
-        if not db.get_abi(account):
-            db.set_abi(account, json.dumps(ret))
+        db.set_abi(account, json.dumps(ret))
         ret = JsonStruct(ret)
         return ret
 
@@ -333,6 +341,11 @@ class EosApi(object):
         return self.push_action(token_account, 'transfer', args, {_from:permission})
 
     def get_abi(self, account):
+        if account == 'eosio.token':
+            return defaultabi.eosio_token_abi
+        elif account == 'eosio':
+            return defaultabi.eosio_system_abi
+
         abi = db.get_abi(account)
         if not abi:
             abi = self.client.get_abi(account)
@@ -348,11 +361,11 @@ class EosApi(object):
 
     def pack_args(self, account, action, args):
         abi = self.get_abi(account)
-        return _eosapi.pack_args(abi, action, args)
+        return _eosapi.pack_args(account, abi, action, args)
 
     def unpack_args(self, account, action, binargs):
         abi = self.get_abi(account)
-        return _eosapi.unpack_args(abi, action, binargs)
+        return _eosapi.unpack_args(account, abi, action, binargs)
 
     def set_contract(self, account, code, abi, vmtype=1, vmversion=0, sign=True, compress=0):
         actions = []
