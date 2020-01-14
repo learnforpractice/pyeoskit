@@ -21,7 +21,7 @@ class cpp_compiler(object):
         self.includes = includes
         self.entry = entry
         if not cpp_file.endswith('.cpp'):
-            raise 'Not a cpp file'
+            raise Exception('Not a cpp file')
 
     def compile_cpp_file(self, opt='O3'):
         tmp_path = self.cpp_file[:-4]
