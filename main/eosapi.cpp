@@ -32,7 +32,6 @@ std::map<std::string, std::shared_ptr<abi_serializer>> abi_cache;
 
 void pack_args_(string& account, std::string& _rawabi, uint64_t action, std::string& _args, std::string& _binargs) {
    fc::variant args = fc::json::from_string(_args);
-   bytes rawabi = bytes(_rawabi.data(), _rawabi.data() + _rawabi.size());
 
    try {
       auto itr = abi_cache.find(account);
@@ -51,7 +50,6 @@ void pack_args_(string& account, std::string& _rawabi, uint64_t action, std::str
 }
 
 void unpack_args_(string& account, std::string& _rawabi, uint64_t action, std::string& _binargs, std::string& _args ) {
-   bytes rawabi = bytes(_rawabi.data(), _rawabi.data() + _rawabi.size());
    bytes binargs = bytes(_binargs.data(), _binargs.data() + _binargs.size());
 
    try {
