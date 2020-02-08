@@ -65,6 +65,15 @@ void unpack_args_(string& account, std::string& _rawabi, uint64_t action, std::s
    } FC_LOG_AND_DROP();
 }
 
+bool clear_abi_cache_(string& account) {
+   auto itr = abi_cache.find(account);
+   if (itr != abi_cache.end()) {
+      abi_cache.erase(itr);
+      return true;
+   }
+   return false;
+}
+
 void pack_abi_(std::string& _abi, std::string& out) {
    try {
       auto abi = fc::raw::pack(fc::json::from_string(_abi).as<abi_def>());

@@ -21,6 +21,8 @@ cdef extern from "eosapi.hpp":
 
     void pack_args_(string& account, string& rawabi, uint64_t action, string& _args, string& binargs)
     void unpack_args_(string& account, string& rawabi, uint64_t action, string& binargs, string& _args)
+    bool clear_abi_cache_(string& account);
+
     void pack_abi_(string& _abi, string& out);
 
     uint64_t s2n_(string& s);
@@ -81,6 +83,9 @@ def unpack_args(string& account, string& rawabi, action, string& binargs):
         return <bytes>_args;
 #        return json.loads(_args)
     raise Exception("unpack error!")
+
+def clear_abi_cache(string& account):
+    return clear_abi_cache_(account);
 
 def pack_abi(string& _abi):
     cdef string out

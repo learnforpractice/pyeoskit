@@ -28,6 +28,8 @@ void n2s_(uint64_t n, std::string& s);
 
 void pack_args_(string& account, std::string& rawabi, uint64_t action, std::string& _args, std::string& binargs);
 void unpack_args_(string& account, std::string& rawabi, uint64_t action, std::string& binargs, std::string& _args );
+bool clear_abi_cache_(string& account);
+
 void pack_abi_(std::string& _abi, std::string& out);
 
 PyObject* gen_transaction_(vector<chain::action>& v, int expiration, std::string& reference_block_id);

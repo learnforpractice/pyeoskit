@@ -367,6 +367,9 @@ class EosApi(object):
         abi = self.get_abi(account)
         return _eosapi.unpack_args(account, abi, action, binargs)
 
+    def clear_abi_cache(self, account):
+        return _eosapi.clear_abi_cache(account)
+
     def set_contract(self, account, code, abi, vmtype=1, vmversion=0, sign=True, compress=0):
         actions = []
         setcode = {"account":account,
