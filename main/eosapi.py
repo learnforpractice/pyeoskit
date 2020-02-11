@@ -389,10 +389,14 @@ class EosApi(object):
         ret = self.push_actions(actions, compress)
         db.remove_code(account)
         db.remove_abi(account)
+        self.clear_abi_cache(account)
         return ret
 
     def publish_contract(self, account, code, abi, vmtype=1, vmversion=0, sign=True, compress=0):
-        self.set_contract(account, code, abi, vmtype, vmversion, sign, compress)
+        return self.set_contract(account, code, abi, vmtype, vmversion, sign, compress)
+
+    def deploy_contract(self, account, code, abi, vmtype=1, vmversion=0, sign=True, compress=0):
+        return self.set_contract(account, code, abi, vmtype, vmversion, sign, compress)
 
     def create_key(self):
         """ Retrieve a pair of public key / private key. """
