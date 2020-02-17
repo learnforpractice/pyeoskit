@@ -18,20 +18,25 @@ _db = {'accounts':{}, 'abis':{}, 'codes':{}}
 
 if os.path.exists(db_path):
     try:
-        _db = pickle.load(open(db_path, 'rb'))
+        with open(db_path, 'rb') as f:
+            _db = pickle.load(f)
     except:
-        pickle.dump(_db, open(db_path, 'wb'))
+        with open(db_path, 'wb') as f:
+            pickle.dump(_db, f)
 else:
-    pickle.dump(_db, open(db_path, 'wb'))
+    with open(db_path, 'wb') as f:
+        pickle.dump(_db, f)
 
 def reset():
     global _db
     _db = {'accounts':{}, 'abis':{}, 'codes':{}}
-    pickle.dump(_db, open(db_path, 'wb'))
+    with open(db_path, 'wb') as f:
+        pickle.dump(_db, f)
 
 def set_info(info):
     _db['chain_info'] = info
-    pickle.dump(_db, open(db_path, 'wb'))
+    with open(db_path, 'wb') as f:
+        pickle.dump(_db, f)
 
 def get_info():
     try:
@@ -48,7 +53,8 @@ def get_code(account):
 
 def set_code(account, code):
     _db['codes'][account] = code
-    pickle.dump(_db, open(db_path, 'wb'))
+    with open(db_path, 'wb') as f:
+        pickle.dump(_db, f)
 
 def remove_code(account):
     if account in _db['codes']:
@@ -61,7 +67,8 @@ def get_abi(account):
 
 def set_abi(account, abi):
     _db['abis'][account] = abi
-    pickle.dump(_db, open(db_path, 'wb'))
+    with open(db_path, 'wb') as f:
+        pickle.dump(_db, f)
 
 def remove_abi(account):
     if account in _db['abis']:
@@ -71,7 +78,8 @@ def set_account(account, info):
     if not isinstance(info, dict):
         info = json.loads(info)
     _db['accounts'][account] = info
-    pickle.dump(_db, open(db_path, 'wb'))
+    with open(db_path, 'wb') as f:
+        pickle.dump(_db, f)
 
 def get_account(account):
     try:
