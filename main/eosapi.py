@@ -147,7 +147,7 @@ class GetAbiFunction(object):
         super(GetAbiFunction, self).__init__()
 
     def __call__(self, *args):
-        account = ars[0]
+        account = args[0]
         if account == 'eosio.token':
             return defaultabi.eosio_token_abi
         elif account == 'eosio':
@@ -355,8 +355,6 @@ class EosApi(object):
             else:
                 abi = ''
                 db.set_abi(account, abi)
-        if not abi:
-            abi = default_abi
         return abi
 
     def pack_args(self, account, action, args):
@@ -372,19 +370,21 @@ class EosApi(object):
 
     def set_contract(self, account, code, abi, vmtype=1, vmversion=0, sign=True, compress=0):
         actions = []
-        setcode = {"account":account,
-                   "vmtype":vmtype,
-                   "vmversion":vmversion,
-                   "code":code.hex()
-                   }
-        setcode = self.pack_args('eosio', 'setcode', setcode)
-        setcode = ['eosio', 'setcode', setcode, {account:'active'}]
-        actions.append(setcode)
+        if code:
+            setcode = {"account":account,
+                    "vmtype":vmtype,
+                    "vmversion":vmversion,
+                    "code":code.hex()
+                    }
+            setcode = self.pack_args('eosio', 'setcode', setcode)
+            setcode = ['eosio', 'setcode', setcode, {account:'active'}]
+            actions.append(setcode)
 
-        abi = _eosapi.pack_abi(abi)
-        setabi = self.pack_args('eosio', 'setabi', {'account':account, 'abi':abi.hex()})
-        setabi = ['eosio', 'setabi', setabi, {account:'active'}]
-        actions.append(setabi)
+        if abi:
+            abi = _eosapi.pack_abi(abi)
+            setabi = self.pack_args('eosio', 'setabi', {'account':account, 'abi':abi.hex()})
+            setabi = ['eosio', 'setabi', setabi, {account:'active'}]
+            actions.append(setabi)
     
         ret = self.push_actions(actions, compress)
         db.remove_code(account)
@@ -397,6 +397,25 @@ class EosApi(object):
 
     def deploy_contract(self, account, code, abi, vmtype=1, vmversion=0, sign=True, compress=0):
         return self.set_contract(account, code, abi, vmtype, vmversion, sign, compress)
+
+    def deploy_code(self, account, code, vmtype=1, vmversion=0):
+        setcode = {"account":account,
+                "vmtype":vmtype,
+                "vmversion":vmversion,
+                "code":code.hex()
+                }
+        setcode = self.pack_args('eosio', 'setcode', setcode)
+        ret = self.push_action('eosio', 'setcode', setcode, {account:'active'})
+        db.remove_code(account)
+        return ret
+
+    def deploy_abi(self, account, abi):
+        abi = _eosapi.pack_abi(abi)
+        setabi = self.pack_args('eosio', 'setabi', {'account':account, 'abi':abi.hex()})    
+        ret = self.push_action('eosio', 'setabi', setabi, {account:'active'})
+        db.remove_abi(account)
+        self.clear_abi_cache(account)
+        return ret
 
     def create_key(self):
         """ Retrieve a pair of public key / private key. """

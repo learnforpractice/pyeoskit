@@ -13,6 +13,8 @@
 
 using namespace std;
 
+string eosapi_get_abi(string& account);
+
 static fc::microseconds abi_serializer_max_time = fc::microseconds(100*1000);
 static uint32_t tx_max_net_usage = 0;
 
@@ -30,12 +32,13 @@ void n2s_(uint64_t n, std::string& s) {
 
 std::map<std::string, std::shared_ptr<abi_serializer>> abi_cache;
 
-void pack_args_(string& account, std::string& _rawabi, uint64_t action, std::string& _args, std::string& _binargs) {
+void pack_args_(string& account, uint64_t action, std::string& _args, std::string& _binargs) {
    fc::variant args = fc::json::from_string(_args);
 
    try {
       auto itr = abi_cache.find(account);
       if (itr == abi_cache.end()) {
+         std::string _rawabi = eosapi_get_abi(account);
          abi_def abi = fc::json::from_string(_rawabi).as<abi_def>();
          abi_cache[account] = std::make_shared<abi_serializer>(abi, abi_serializer_max_time);
       }
@@ -49,12 +52,13 @@ void pack_args_(string& account, std::string& _rawabi, uint64_t action, std::str
    } FC_LOG_AND_DROP();
 }
 
-void unpack_args_(string& account, std::string& _rawabi, uint64_t action, std::string& _binargs, std::string& _args ) {
+void unpack_args_(string& account, uint64_t action, std::string& _binargs, std::string& _args ) {
    bytes binargs = bytes(_binargs.data(), _binargs.data() + _binargs.size());
 
    try {
       auto itr = abi_cache.find(account);
       if (itr == abi_cache.end()) {
+         std::string _rawabi = eosapi_get_abi(account);
          abi_def abi = fc::json::from_string(_rawabi).as<abi_def>();
          abi_cache[account] = std::make_shared<abi_serializer>(abi, abi_serializer_max_time);
       }
@@ -63,6 +67,12 @@ void unpack_args_(string& account, std::string& _rawabi, uint64_t action, std::s
       auto args = abis.binary_to_variant( abis.get_action_type( action ), binargs, abi_serializer_max_time );
       _args = fc::json::to_string(args);
    } FC_LOG_AND_DROP();
+}
+
+bool set_abi_(string& account, string& _abi) {
+   abi_def abi = fc::json::from_string(_abi).as<abi_def>();
+   abi_cache[account] = std::make_shared<abi_serializer>(abi, abi_serializer_max_time);
+   return true;
 }
 
 bool clear_abi_cache_(string& account) {
