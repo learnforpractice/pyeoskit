@@ -210,3 +210,15 @@ PyObject* block_log_get_block_(void *block_log_ptr, int block_num) {
    } FC_LOG_AND_DROP();
    return py_new_none();
 }
+
+bool block_log_append_block_(void *block_log_ptr, string& _block) {
+   eosio::chain::block_log &log = *(eosio::chain::block_log*)block_log_ptr;
+   auto block = python::json::from_string(_block).as<signed_block>();   
+   try {
+      auto block_ptr = std::make_shared<signed_block>(std::move(block));
+      log.append(block_ptr);
+      return true;
+   } FC_LOG_AND_DROP();
+   return false;
+}
+

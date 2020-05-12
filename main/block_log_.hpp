@@ -17,3 +17,5 @@ void block_log_parse_actions_(void *block_log_ptr, int start, int end);
 void block_log_parse_raw_actions_(void *block_log_ptr, int start, int end);
 
 PyObject* block_log_get_block_(void *block_log_ptr, int block_num);
+
+bool block_log_append_block_(void *block_log_ptr, string& _block);

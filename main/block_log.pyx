@@ -21,6 +21,9 @@ cdef extern from "block_log_.hpp":
 
     object block_log_get_block_(void *block_log_ptr, int block_num);
 
+    bool block_log_append_block_(void *block_log_ptr, string& _block)
+
+
 g_transaction_callback = None
 cdef extern int block_log_on_transaction(int block, object trx):
     global g_transaction_callback
@@ -109,3 +112,6 @@ cdef class BlockParser:
         global g_raw_action_cb
         g_raw_action_cb = self.on_raw_action
         return block_log_parse_raw_actions_(self.c_block_log_ptr, start_block, end_block)
+
+    def append_block(self, block):
+        block_log_append_block_(self.c_block_log_ptr, block)
