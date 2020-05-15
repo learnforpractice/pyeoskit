@@ -359,11 +359,11 @@ class EosApi(object):
 
     def pack_args(self, account, action, args):
         abi = self.get_abi(account)
-        return _eosapi.pack_args(account, abi, action, args)
+        return _eosapi.pack_args(account, action, args)
 
     def unpack_args(self, account, action, binargs):
         abi = self.get_abi(account)
-        return _eosapi.unpack_args(account, abi, action, binargs)
+        return _eosapi.unpack_args(account, action, binargs)
 
     def clear_abi_cache(self, account):
         return _eosapi.clear_abi_cache(account)
