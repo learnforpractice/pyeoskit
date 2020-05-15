@@ -57,6 +57,9 @@ cdef extern from "eosapi.hpp":
     void recover_key_( string& _digest, string& _sig, string& _pub );
     void sign_digest_(string& _priv_key, string& _digest, string& out);
 
+    uint64_t string_to_symbol_(int precision, string& str);
+
+
 def N(string& s):
     return s2n_(s)
 
@@ -67,6 +70,9 @@ def n2s(uint64_t n):
     cdef string s
     n2s_(n, s)
     return s
+
+def string_to_symbol(int precision, string& str):
+    return string_to_symbol_(precision, str)
 
 def pack_args(string& account, action, _args):
     cdef string binargs

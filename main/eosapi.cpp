@@ -8,6 +8,7 @@
 #include <fc/crypto/signature.hpp>
 #include <fc/crypto/sha1.hpp>
 #include <fc/io/raw.hpp>
+#include <eosio/chain/symbol.hpp>
 
 #include <vector>
 
@@ -70,9 +71,12 @@ void unpack_args_(string& account, uint64_t action, std::string& _binargs, std::
 }
 
 bool set_abi_(string& account, string& _abi) {
-   abi_def abi = fc::json::from_string(_abi).as<abi_def>();
-   abi_cache[account] = std::make_shared<abi_serializer>(abi, abi_serializer_max_time);
-   return true;
+   try {
+      abi_def abi = fc::json::from_string(_abi).as<abi_def>();
+      abi_cache[account] = std::make_shared<abi_serializer>(abi, abi_serializer_max_time);
+      return true;
+   } FC_LOG_AND_DROP();
+   return false;
 }
 
 bool clear_abi_cache_(string& account) {
@@ -221,3 +225,11 @@ void sign_digest_(string& _priv_key, string& _digest, string& out) {
         out = string(sign);
     } FC_LOG_AND_DROP();
 }
+
+uint64_t string_to_symbol_(int precision, string& str) {
+   try {
+      return string_to_symbol(precision, str.c_str());
+   } FC_LOG_AND_DROP();
+   return 0;
+}
+
