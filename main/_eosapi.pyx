@@ -87,7 +87,7 @@ def unpack_args(string& account, action, string& binargs):
     cdef string _args
     unpack_args_(account, N(action), binargs, _args)
     if _args.size():
-        return <bytes>_args;
+        return _args;
 #        return json.loads(_args)
     raise Exception("unpack error!")
 
