@@ -9,8 +9,8 @@ from .jsonstruct import JsonStruct
 from . import config
 from . import defaultabi
 
-_eosapi = _hello._eosapi
-wallet = _hello.wallet
+from . import wallet
+from . import _eosapi
 
 default_abi = '''
 {
@@ -398,7 +398,7 @@ class EosApi(object):
     def deploy_contract(self, account, code, abi, vmtype=1, vmversion=0, sign=True, compress=0):
         return self.set_contract(account, code, abi, vmtype, vmversion, sign, compress)
 
-    def deploy_code(self, account, code, vmtype=1, vmversion=0):
+    def deploy_code(self, account, code, vmtype=0, vmversion=0):
         setcode = {"account":account,
                 "vmtype":vmtype,
                 "vmversion":vmversion,
