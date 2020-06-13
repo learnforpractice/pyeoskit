@@ -50,5 +50,7 @@ PyObject* unpack_transaction_(std::string& trx);
 void sign_digest_(string& _priv_key, string& _digest, string& out);
 
 uint64_t string_to_symbol_(int precision, string& str);
+void set_public_key_prefix_(const string& prefix);
+void get_public_key_prefix_(string& prefix);
 
 #endif /* MAIN_EOSAPI_HPP_ */

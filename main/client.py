@@ -206,8 +206,11 @@ class Client(HttpClient):
         )
 
     def get_table_rows(self, json, code, scope, table, table_key, lower_bound,
-                       upper_bound, limit, encode_type='dec') -> dict:
-        """ Fetch smart contract data from an account. """
+                       upper_bound, limit, key_type='', index_position='', encode_type='dec') -> dict:
+        """ Fetch smart contract data from an account. 
+        key_type: "i64"|"i128"|"i256"|"float64"|"float128"|"sha256"|"ripemd160"
+        index_position: "2"|"3"|"4"|"5"|"6"|"7"|"8"|"9"|"10"
+        """
 
         body = dict(
             json=json,
@@ -218,6 +221,8 @@ class Client(HttpClient):
             lower_bound=lower_bound,
             upper_bound=upper_bound,
             limit=limit,
+            key_type=key_type,
+            index_position=index_position,
             encode_type=encode_type
         )
 

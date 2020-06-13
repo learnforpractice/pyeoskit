@@ -58,6 +58,8 @@ cdef extern from "eosapi.hpp":
     void sign_digest_(string& _priv_key, string& _digest, string& out);
 
     uint64_t string_to_symbol_(int precision, string& str);
+    void set_public_key_prefix_(const string& prefix);
+    void get_public_key_prefix_(string& prefix);
 
 
 def N(string& s):
@@ -183,3 +185,11 @@ def sign_digest(string& _priv_key, string& _digest):
 
 cdef extern string eosapi_get_abi(string& account):
     return config.get_abi(account)
+
+def set_public_key_prefix(const string& prefix):
+    set_public_key_prefix_(prefix)
+
+def get_public_key_prefix():
+    cdef string prefix
+    get_public_key_prefix_(prefix)
+    return prefix

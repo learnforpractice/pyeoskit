@@ -472,3 +472,7 @@ class EosApi(object):
         else:
             raise TypeError('digest should be a hex str with 64 charactors or a bytes with a size of 32 long')
         return _eosapi.sign_digest(priv_key, digest)
+
+    def set_public_key_prefix(self, prefix):
+        _eosapi.set_public_key_prefix(prefix)
+

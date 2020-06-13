@@ -9,6 +9,7 @@
 #include <fc/crypto/sha1.hpp>
 #include <fc/io/raw.hpp>
 #include <eosio/chain/symbol.hpp>
+#include <fc/crypto/public_key.hpp>
 
 #include <vector>
 
@@ -232,4 +233,13 @@ uint64_t string_to_symbol_(int precision, string& str) {
    } FC_LOG_AND_DROP();
    return 0;
 }
+
+void set_public_key_prefix_(const string& prefix) {
+   fc::crypto::config::public_key_legacy_prefix = prefix;
+}
+
+void get_public_key_prefix_(string& prefix) {
+   prefix = fc::crypto::config::public_key_legacy_prefix;
+}
+
 
