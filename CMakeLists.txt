@@ -5,14 +5,6 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/libraries/cmake")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 include( SetupTargetMacros )
 
-#set(PYTHON_LIBRARY "/Users/newworld/anaconda/lib/python3.6/config-3.6m-darwin/libpython3.6m.a")
-#set(CYTHON_EXECUTABLE "/Users/newworld/anaconda/bin/cython")
-#set(PYTHON_INCLUDE_DIR "/Users/newworld/anaconda/include/python3.6m")
-
-if (NOT WIN32)
-set(CYTHON_EXECUTABLE "${CMAKE_SOURCE_DIR}/cython")
-endif(NOT WIN32)
-
 set(HUNTER_CONFIGURATION_TYPES Release)
 set(HUNTER_JOBS_NUMBER 4)
 set(HUNTER_CACHE_SERVERS "https://github.com/ethereum/hunter-cache")
