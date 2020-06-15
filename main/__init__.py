@@ -1,5 +1,5 @@
 import sys
-import importlib
+from importlib import util
 
 from .http_client import HttpClient
 from .client import Client, WalletClient
@@ -24,8 +24,8 @@ class CustomImporter(object):
             if not hello_module:
                 return
             hello_so = hello_module.__file__
-            spec = importlib.util.spec_from_file_location(module_name, hello_so)
-            mod = importlib.util.module_from_spec(spec)
+            spec = util.spec_from_file_location(module_name, hello_so)
+            mod = util.module_from_spec(spec)
             spec.loader.exec_module(mod)
             sys.modules[module_name] = mod
         return mod
