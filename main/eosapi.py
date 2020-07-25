@@ -5,7 +5,6 @@ from . import _hello
 from . import db
 from .client import Client, WalletClient
 from . import _hello as hello
-from .jsonstruct import JsonStruct
 from . import config
 from . import defaultabi
 
@@ -100,13 +99,7 @@ class Function(object):
 
     def __call__(self, *args, **kwargs):
         ret = self.function(*args, **kwargs)
-        try:
-            if isinstance(ret, dict):
-                return JsonStruct(ret)
-            else:
-                return ret
-        except json.JSONDecodeError:
-            return ret
+        return ret
 
 class GetAccountFunction(object):
     def __init__(self, function):
@@ -118,7 +111,6 @@ class GetAccountFunction(object):
             ret = self.function(*args)        
             account = args[0]
             db.set_account(account, ret)
-            ret = JsonStruct(ret)
             return ret
         except Exception as e:
             pass
@@ -137,9 +129,7 @@ class GetCodeFunction(object):
                 db.set_code(account, code)
                 if 'abi' in code and not db.get_abi(account):
                     db.set_abi(account, json.dumps(code['abi']))
-        if code:
-            code = JsonStruct(code)
-            return code
+        return code
 
 class GetAbiFunction(object):
     def __init__(self, function):
@@ -155,10 +145,9 @@ class GetAbiFunction(object):
 
         abi =  db.get_abi(account)
         if abi:
-            return JsonStruct(ret)
+            return abi
         ret = self.function(*args)
         db.set_abi(account, json.dumps(ret))
-        ret = JsonStruct(ret)
         return ret
 
 class EosApi(object):

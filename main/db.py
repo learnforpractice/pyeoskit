@@ -3,7 +3,6 @@ import sys
 import json
 import pickle
 from .client import Client
-from .jsonstruct import JsonStruct
 
 client = Client()
 
@@ -40,11 +39,11 @@ def set_info(info):
 
 def get_info():
     try:
-        return JsonStruct(_db['chain_info'])
+        return _db['chain_info']
     except:
         info = client.get_info()
         set_info(info)
-        return JsonStruct(info)
+        return info
 
 def get_code(account):
     if account in _db['codes']:
