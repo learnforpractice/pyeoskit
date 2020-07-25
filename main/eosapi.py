@@ -271,13 +271,26 @@ class EosApi(object):
             trxs.append(trx)
         return self.client.push_transactions(trxs)
 
+    def strip_prefix(self, pub_key):
+        if pub_key.startswith('EOS'):
+            return pub_key[3:]
+        elif pub_key.startswith('UUOS'):
+            return pub_key[4:]
+        else:
+            return pub_key
+
     def get_available_public_keys(self, account, permission):
         wallet_public_keys = wallet.get_public_keys()
+        for i in range(len(wallet_public_keys)):
+            pub_key = wallet_public_keys[i]
+            wallet_public_keys[i] = self.strip_prefix(pub_key)
+
         threshold, account_public_keys = self.get_keys(account, permission)
         keys = []
         for key in account_public_keys:
-            if key['key'] in wallet_public_keys:
-                keys.append(key['key'])
+            _key = key['key']
+            if self.strip_prefix(_key) in wallet_public_keys:
+                keys.append(_key)
                 threshold -= key['weight']
                 if threshold <= 0:
                     break
@@ -439,7 +452,8 @@ class EosApi(object):
         threshold = 1
         if depth <= 0:
             return threshold
-        for per in self.get_account(account_name).permissions:
+        info = self.get_account(account_name)
+        for per in info.permissions:
             if perm_name != per['perm_name']:
                 continue
             for key in per['required_auth']['keys']:

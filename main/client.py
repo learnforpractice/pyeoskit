@@ -824,7 +824,7 @@ class Client(HttpClient):
     def set_filter_on(self, filter_in) -> dict:
         """
         receiver:action:actor
-        * to pass all action
+        * to pass all actions
         """
         body = json.dumps(filter_in)
         return self.exec(
