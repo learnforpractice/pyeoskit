@@ -127,9 +127,6 @@ def gen_transaction(actions, int expiration, string& reference_block_id):
 
         args = a[2]
         if isinstance(args, dict):
-            abi = config.get_abi(account)
-            if not abi:
-                raise Exception(f"{account} has no abi info")
             args = pack_args(account, action_name, args)
         act.data.resize(0)
         act.data.resize(len(args))

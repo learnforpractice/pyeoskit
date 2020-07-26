@@ -4,11 +4,9 @@ import shutil
 import hashlib
 import marshal
 import subprocess
-from pyeoskit import eosapi, wallet, db
+from pyeoskit import eosapi, wallet
 from pyeoskit import config
-from pyeoskit._hello import _eosapi
 
-db.reset()
 config.main_token = 'UUOS'
 default_vm_type=1
 
@@ -48,12 +46,6 @@ def set_code(account_name, code):
     eosapi.push_action('eosio', 'setcode', setcode, {account_name:'active'})
     
     return True
-
-def set_abi(account, abi):
-    db.set_abi(account, abi)
-    abi = _eosapi.pack_abi(abi)
-    setabi ={'account':account, 'abi':abi.hex()}
-    eosapi.push_action('eosio', 'setabi', setabi, {account:'active'})
 
 def find_eosio_cdt_path():
     eosio_cpp = shutil.which('eosio-cpp')

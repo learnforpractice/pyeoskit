@@ -2,7 +2,7 @@ import json
 import datetime
 
 from . import _hello
-from . import db
+from .chaincache import ChainCache
 from .client import Client, WalletClient
 from . import _hello as hello
 from . import config
@@ -92,123 +92,38 @@ default_abi = '''
 }
 '''
 
-class Function(object):
-    def __init__(self, function):
-        self.function = function
-        super(Function, self).__init__()
+class EosApi(Client):
+    def __init__(self, network='EOS', node_url = None):
+        super().__init__(self)
 
-    def __call__(self, *args, **kwargs):
-        ret = self.function(*args, **kwargs)
-        return ret
-
-class GetAccountFunction(object):
-    def __init__(self, function):
-        self.function = function
-        super(GetAccountFunction, self).__init__()
-
-    def __call__(self, *args):
-        try:
-            ret = self.function(*args)        
-            account = args[0]
-            db.set_account(account, ret)
-            return ret
-        except Exception as e:
-            pass
-
-class GetCodeFunction(object):
-    def __init__(self, function):
-        self.function = function
-        super(GetCodeFunction, self).__init__()
-
-    def __call__(self, *args):
-        account = args[0]
-        code = db.get_code(account)
-        if not code:
-            code = self.function(account)
-            if code:
-                db.set_code(account, code)
-                if 'abi' in code and not db.get_abi(account):
-                    db.set_abi(account, json.dumps(code['abi']))
-        return code
-
-class GetAbiFunction(object):
-    def __init__(self, function):
-        self.function = function
-        super(GetAbiFunction, self).__init__()
-
-    def __call__(self, *args):
-        account = args[0]
-        if account == 'eosio.token':
-            return defaultabi.eosio_token_abi
-        elif account == 'eosio':
-            return defaultabi.eosio_system_abi
-
-        abi =  db.get_abi(account)
-        if abi:
-            return abi
-        ret = self.function(*args)
-        db.set_abi(account, json.dumps(ret))
-        return ret
-
-class EosApi(object):
-    def __init__(self):
-        self.client = db.client
         config.get_abi = self.get_abi
+        self.db = ChainCache(self, network)
 
-    def set_nodes(self, nodes):
-        self.client.set_nodes(nodes)
+        if node_url:
+            self.set_node(node_url)
 
     def set_node(self, node_url):
-        self.client.set_nodes([node_url])
+        super().set_nodes([node_url])
 
     def enable_decode(self, json_format):
-        self.client.json_decode = json_format
+        super().json_decode = json_format
 
     def init(self):
         self.get_code('eosio')
         self.get_code('eosio.token')
 
-    def add_node(self, url):
-        return self.client.add_node(url)
-
-    def get_nodes(self):
-        return self.client.get_nodes()
-
-    def clear_nodes(self):
-        self.client.set_nodes([])
-        
-    def set_default_nodes(self):
-        self.set_nodes(config.default_nodes)
-
     def get_info(self):
-        info = self.client.get_info()
-        db.set_info(info)
-        return db.get_info()
-    
-    def get_chain_id(self):
-        pass
+        return self.db.get_info()
 
-    def __getattr__(self, attr):
-        if hasattr(self.client, attr):
-            func = getattr(self.client, attr)
-            if attr == 'get_account':
-                return GetAccountFunction(func)
-            elif attr == 'get_code':
-                return GetCodeFunction(func)
-            elif attr == 'get_abi':
-                return GetAbiFunction(func)
-            return Function(func)
-        elif hasattr(_eosapi, attr):
-            func = getattr(_eosapi, attr)
-            return func
-        raise Exception(attr + " not found")
+    def get_chain_id(self):
+        return self.db.get_info()['chain_id']
 
     def gen_transaction(self, actions, expiration, reference_block_id):
         return _eosapi.gen_transaction(actions, expiration, reference_block_id)
 
     def push_transaction(self, trx, compress=0):
         trx = _eosapi.pack_transaction(trx, compress)
-        return self.client.push_transaction(trx)
+        return super().push_transaction(trx)
 
     def pack_transaction(self, trx, compress=0):
         return _eosapi.pack_transaction(trx, compress)
@@ -228,7 +143,7 @@ class EosApi(object):
 #        print(keys)
         trx = wallet.sign_transaction(trx, keys, self.get_info().chain_id)
         trx = _eosapi.pack_transaction(trx, compress)
-        return self.client.push_transaction(trx)
+        return super().push_transaction(trx)
 
     def push_actions(self, actions, compress=0):
         reference_block_id = self.get_info().last_irreversible_block_id
@@ -242,7 +157,7 @@ class EosApi(object):
         trx = wallet.sign_transaction(trx, keys, self.get_info().chain_id)
         trx = _eosapi.pack_transaction(trx, compress)
 
-        return self.client.push_transaction(trx)
+        return super().push_transaction(trx)
 
     def push_transactions(self, aaa, expiration=60):
         reference_block_id = self.get_info().last_irreversible_block_id
@@ -258,7 +173,7 @@ class EosApi(object):
             trx = wallet.sign_transaction(trx, keys, self.get_info().chain_id)
             trx = _eosapi.pack_transaction(trx, 0)
             trxs.append(trx)
-        return self.client.push_transactions(trxs)
+        return super().push_transactions(trxs)
 
     def strip_prefix(self, pub_key):
         if pub_key.startswith('EOS'):
@@ -329,7 +244,7 @@ class EosApi(object):
         if not token_name:
             token_name = config.main_token
         try:
-            ret = self.client.get_currency_balance(token_account, account, token_name)
+            ret = super().get_currency_balance(token_account, account, token_name)
             if ret:
                 return float(ret[0].split(' ')[0])
         except Exception as e:
@@ -348,23 +263,21 @@ class EosApi(object):
         elif account == 'eosio':
             return defaultabi.eosio_system_abi
 
-        abi = db.get_abi(account)
+        abi = self.db.get_abi(account)
         if not abi:
-            abi = self.client.get_abi(account)
+            abi = super().get_abi(account)
             if abi and 'abi' in abi:
                 abi = json.dumps(abi['abi'])
-                db.set_abi(account, abi)
+                self.db.set_abi(account, abi)
             else:
                 abi = ''
-                db.set_abi(account, abi)
+                self.db.set_abi(account, abi)
         return abi
 
     def pack_args(self, account, action, args):
-        abi = self.get_abi(account)
         return _eosapi.pack_args(account, action, args)
 
     def unpack_args(self, account, action, binargs):
-        abi = self.get_abi(account)
         return _eosapi.unpack_args(account, action, binargs)
 
     def clear_abi_cache(self, account):
@@ -389,8 +302,8 @@ class EosApi(object):
             actions.append(setabi)
     
         ret = self.push_actions(actions, compress)
-        db.remove_code(account)
-        db.remove_abi(account)
+        self.db.remove_code(account)
+        self.db.remove_abi(account)
         self.clear_abi_cache(account)
         return ret
 
@@ -408,14 +321,14 @@ class EosApi(object):
                 }
         setcode = self.pack_args('eosio', 'setcode', setcode)
         ret = self.push_action('eosio', 'setcode', setcode, {account:'active'})
-        db.remove_code(account)
+        self.db.remove_code(account)
         return ret
 
     def deploy_abi(self, account, abi):
         abi = _eosapi.pack_abi(abi)
         setabi = self.pack_args('eosio', 'setabi', {'account':account, 'abi':abi.hex()})    
         ret = self.push_action('eosio', 'setabi', setabi, {account:'active'})
-        db.remove_abi(account)
+        self.db.remove_abi(account)
         self.clear_abi_cache(account)
         return ret
 
