@@ -1,17 +1,19 @@
+import os
 import sys
 from .http_client import HttpClient
 from .client import Client, WalletClient
 from . import _hello as hello
+
 __version__='0.7.0'
 
 __all__ = (
-    'eosapi',
+    'chainapi',
     'wallet',
 )
 
 class CustomImporter(object):
     def find_module(self, fullname, mpath=None):
-        if fullname in ['_eosapi', 'pyobject', 'wallet']:
+        if fullname in ['_eosapi', '_block_log', 'pyobject', 'wallet']:
             return self
         return
 
@@ -34,7 +36,8 @@ sys.meta_path.append(CustomImporter())
 import pyobject
 import wallet
 import _eosapi
+import _block_log
 
-from . import eosapi
-eosapi = eosapi.EosApi()
-
+from . import chainapi
+eosapi = chainapi.ChainApi()
+print('hello,world')

@@ -7,7 +7,6 @@ from libcpp.map cimport map
 from libcpp cimport bool
 
 import json
-from pyeoskit import db
 from pyeoskit import config
 
 cdef extern from * :

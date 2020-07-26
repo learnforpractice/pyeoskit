@@ -1,3 +1,3 @@
-from . import _hello
-BlockParser = _hello.block_log.BlockParser
+import _block_log
+BlockParser = _block_log.BlockParser
 

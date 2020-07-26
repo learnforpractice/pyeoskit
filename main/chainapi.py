@@ -1,28 +1,23 @@
 import json
 import datetime
 
-from . import _hello
 from .chaincache import ChainCache
 from .client import Client, WalletClient
-from . import _hello as hello
 from . import config
 from . import defaultabi
 
 from . import wallet
 from . import _eosapi
 
-class EosApi(Client):
+class ChainApi(Client):
     def __init__(self, network='EOS', node_url = None):
-        super().__init__(self)
+        super().__init__()
 
         config.get_abi = self.get_abi
         self.db = ChainCache(self, network)
 
         if node_url:
             self.set_node(node_url)
-
-    def set_node(self, node_url):
-        super().set_nodes([node_url])
 
     def enable_decode(self, json_format):
         super().json_decode = json_format
