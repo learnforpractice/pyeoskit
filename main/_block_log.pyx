@@ -5,6 +5,11 @@ import os
 import sys
 import traceback
 
+cdef extern from * :
+    ctypedef long long int64_t
+    ctypedef unsigned long long uint64_t
+    ctypedef unsigned int uint32_t
+
 cdef extern from "block_log_.hpp":
     void *block_log_new(string& path);
     void block_log_free(void *block_log_ptr);
@@ -22,6 +27,8 @@ cdef extern from "block_log_.hpp":
     object block_log_get_block_(void *block_log_ptr, int block_num);
 
     bool block_log_append_block_(void *block_log_ptr, string& _block)
+
+    void block_log_repair_log(string& data_dir, uint32_t truncate_at_block, string& backup_dir)
 
 
 g_transaction_callback = None
@@ -63,6 +70,7 @@ cdef class BlockParser:
 
     def __cinit__(self, string& path):
         self.c_block_log_ptr = block_log_new(path)
+        assert self.c_block_log_ptr, 'bad block log ptr'
         self.c_block_log_path = path
 
     def __dealloc__(self):
@@ -115,3 +123,8 @@ cdef class BlockParser:
 
     def append_block(self, block):
         block_log_append_block_(self.c_block_log_ptr, block)
+
+    def repair_block(self, uint32_t truncate_at_block):
+        cdef string backup_dir
+        block_log_repair_log(self.c_block_log_path, truncate_at_block, backup_dir)
+        return backup_dir
