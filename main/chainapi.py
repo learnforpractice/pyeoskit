@@ -2,13 +2,13 @@ import time
 import json
 import datetime
 
-from .chaincache import ChainCache
-from .client import Client, WalletClient
 from . import config
-from . import defaultabi
-
 from . import wallet
 from . import _eosapi
+from . import defaultabi
+
+from .chaincache import ChainCache
+from .client import Client, WalletClient
 
 class ChainApi(Client):
     def __init__(self, network='EOS', node_url = None):
@@ -121,6 +121,12 @@ class ChainApi(Client):
                     break
         return keys
 
+    def get_account(self, account):
+        try:
+            return super().get_account(account)
+        except Exception:
+            return None
+
     def create_account(self, creator, account, owner_key, active_key, ram_bytes=0, stake_net=0.0, stake_cpu=0.0, sign=True):
         actions = []
         args = {
@@ -178,6 +184,9 @@ class ChainApi(Client):
         args = {"from":_from, "to":_to, "quantity":'%.4f %s'%(_amount,token_name), "memo":_memo}
         return self.push_action(token_account, 'transfer', args, {_from:permission})
 
+    def set_abi(self, account, abi):
+        _eosapi.set_abi(account, abi)
+
     def get_abi(self, account):
         if account == 'eosio.token':
             return defaultabi.eosio_token_abi
@@ -195,14 +204,14 @@ class ChainApi(Client):
                 self.db.set_abi(account, abi)
         return abi
 
+    def clear_abi_cache(self, account):
+        return _eosapi.clear_abi_cache(account)
+
     def pack_args(self, account, action, args):
         return _eosapi.pack_args(account, action, args)
 
     def unpack_args(self, account, action, binargs):
         return _eosapi.unpack_args(account, action, binargs)
-
-    def clear_abi_cache(self, account):
-        return _eosapi.clear_abi_cache(account)
 
     def set_contract(self, account, code, abi, vmtype=1, vmversion=0, sign=True, compress=0):
         actions = []
@@ -252,6 +261,9 @@ class ChainApi(Client):
         self.db.remove_abi(account)
         self.clear_abi_cache(account)
         return ret
+
+    def pack_abi(self, abi):
+        return _eosapi.pack_abi(abi)
 
     def create_key(self):
         """ Retrieve a pair of public key / private key. """
