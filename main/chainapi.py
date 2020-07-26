@@ -46,7 +46,10 @@ class ChainApi(Client):
 
     def push_action(self, contract, action, args, permissions, compress=0):
         act = [contract, action, args, permissions]
-        reference_block_id = self.get_info()['last_irreversible_block_id']
+        chain_info = self.get_info()
+        reference_block_id = chain_info['last_irreversible_block_id']
+        chain_id = chain_info['chain_id']
+
         trx = _eosapi.gen_transaction([act], 60, reference_block_id)
 
         keys = []
@@ -54,12 +57,14 @@ class ChainApi(Client):
             public_keys = self.get_available_public_keys(account, permissions[account])
             keys.extend(public_keys)
 #        print(keys)
-        trx = wallet.sign_transaction(trx, keys, self.get_info()['chain_id'])
+        trx = wallet.sign_transaction(trx, keys, chain_id)
         trx = _eosapi.pack_transaction(trx, compress)
         return super().push_transaction(trx)
 
     def push_actions(self, actions, compress=0):
-        reference_block_id = self.get_info()['last_irreversible_block_id']
+        chain_info = self.get_info()
+        reference_block_id = chain_info['last_irreversible_block_id']
+        chain_id = chain_info['chain_id']
         trx = _eosapi.gen_transaction(actions, 60, reference_block_id)
         keys = []
         for a in actions:
@@ -67,13 +72,16 @@ class ChainApi(Client):
             for account in permissions:
                 public_keys = self.get_available_public_keys(account, permissions[account])
                 keys.extend(public_keys)
-        trx = wallet.sign_transaction(trx, keys, self.get_info()['chain_id'])
+        trx = wallet.sign_transaction(trx, keys, chain_id)
         trx = _eosapi.pack_transaction(trx, compress)
 
         return super().push_transaction(trx)
 
     def push_transactions(self, aaa, expiration=60):
-        reference_block_id = self.get_info()['last_irreversible_block_id']
+        chain_info = self.get_info()
+        reference_block_id = chain_info['last_irreversible_block_id']
+        chain_id = chain_info['chain_id']
+
         trxs = []
         for aa in aaa:
             trx = _eosapi.gen_transaction(aa, expiration, reference_block_id)
@@ -83,7 +91,7 @@ class ChainApi(Client):
                 for account in permissions:
                     public_keys = self.get_available_public_keys(account, permissions[account])
                     keys.extend(public_keys)
-            trx = wallet.sign_transaction(trx, keys, self.get_info()['chain_id'])
+            trx = wallet.sign_transaction(trx, keys, chain_id)
             trx = _eosapi.pack_transaction(trx, 0)
             trxs.append(trx)
         return super().push_transactions(trxs)
