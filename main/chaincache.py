@@ -20,7 +20,6 @@ class ChainCache(object):
         self.network = network
         self.client = client
         self.db = default_db
-        self.info_expire_time = time.time() + 5
         if os.path.exists(cache_path):
             try:
                 with open(cache_path, 'rb') as f:
@@ -54,19 +53,8 @@ class ChainCache(object):
     def set_info(self, info):
         self.set_value('chain_info',info)
 
-    def get_info(self):
-        if self.info_expire_time < time.time():
-            info = self.get_value('chain_info')
-            if info:
-                return info
-            info = self.client.get_info()
-            self.set_info(info)
-            return info
-        else:
-            info = self.client.get_info()
-            self.set_info(info)
-            self.info_expire_time = time.time() + 5
-            return info
+    def get_info(self, info):
+        self.set_value('chain_info',info)
 
     def get_code(self, account):
         if account in self.db[self.network]['codes']:

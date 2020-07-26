@@ -29,3 +29,5 @@ class Test(object):
 
     def test_basic(self):
         logger.info('hello,world')
+        api = ChainApi('UUOS', 'http://127.0.0.1:8888')
+        logger.info(api.get_info())
