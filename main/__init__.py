@@ -40,4 +40,3 @@ import _block_log
 
 from . import chainapi
 eosapi = chainapi.ChainApi()
-print('hello,world')

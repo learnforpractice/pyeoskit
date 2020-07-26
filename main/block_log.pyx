@@ -23,6 +23,8 @@ cdef extern from "block_log_.hpp":
 
     bool block_log_append_block_(void *block_log_ptr, string& _block)
 
+    void block_log_repair_log(string& data_dir, uint32_t truncate_at_block, string& backup_dir)
+
 
 g_transaction_callback = None
 cdef extern int block_log_on_transaction(int block, object trx):
@@ -63,6 +65,7 @@ cdef class BlockParser:
 
     def __cinit__(self, string& path):
         self.c_block_log_ptr = block_log_new(path)
+        assert self.c_block_log_ptr, 'bad block log ptr'
         self.c_block_log_path = path
 
     def __dealloc__(self):
@@ -115,3 +118,9 @@ cdef class BlockParser:
 
     def append_block(self, block):
         block_log_append_block_(self.c_block_log_ptr, block)
+
+    @classmethod
+    def repair_block(cls, string& data_dir, uint32_t truncate_at_block):
+        cdef string backup_dir
+        block_log_repair_log(data_dir, truncate_at_block, backup_dir)
+        return backup_dir

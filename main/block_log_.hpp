@@ -19,3 +19,5 @@ void block_log_parse_raw_actions_(void *block_log_ptr, int start, int end);
 PyObject* block_log_get_block_(void *block_log_ptr, int block_num);
 
 bool block_log_append_block_(void *block_log_ptr, string& _block);
+
+void block_log_repair_log(string& data_dir, uint32_t truncate_at_block, string& backup_dir);

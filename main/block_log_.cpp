@@ -58,8 +58,11 @@ int block_log_on_action(int block, string& act);
    }
 
 void *block_log_new(string& path) {
-   eosio::chain::block_log *block_log_ptr = new eosio::chain::block_log(path);
-   return (void *)block_log_ptr;
+   try {
+      eosio::chain::block_log *block_log_ptr = new eosio::chain::block_log(path);
+      return (void *)block_log_ptr;
+   } FC_LOG_AND_DROP();
+   return nullptr;
 }
 
 void block_log_free(void *block_log_ptr) {
@@ -221,4 +224,12 @@ bool block_log_append_block_(void *block_log_ptr, string& _block) {
    } FC_LOG_AND_DROP();
    return false;
 }
+
+void block_log_repair_log(string& data_dir, uint32_t truncate_at_block, string& backup_dir) {
+    try {
+        auto _backup_dir = eosio::chain::block_log::repair_log(data_dir, truncate_at_block);
+        backup_dir = _backup_dir.string();
+    } FC_LOG_AND_DROP();
+}
+
 
