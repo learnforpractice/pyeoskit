@@ -4,7 +4,7 @@ import glob
 
 setup(
     name="pyeoskit",
-    version="0.7.0",
+    version="0.8.0",
     description="toolkit for pyeos",
     author='The pyeos team',
     license="MIT",
