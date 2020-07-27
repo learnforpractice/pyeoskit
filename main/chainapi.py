@@ -28,6 +28,12 @@ class ChainApi(Client):
         self.get_code('eosio')
         self.get_code('eosio.token')
 
+    def n2s(self, n):
+        return _eosapi.n2s(n)
+
+    def s2n(self, s):
+        return _eosapi.s2n(s)
+
     def get_chain_id(self):
         return self.get_info()['chain_id']
 
