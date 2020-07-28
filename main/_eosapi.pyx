@@ -72,8 +72,8 @@ def n2s(uint64_t n):
     n2s_(n, s)
     return s
 
-def string_to_symbol(int precision, string& str):
-    return string_to_symbol_(precision, str)
+def string_to_symbol(int precision, string& _str):
+    return string_to_symbol_(precision, _str)
 
 def pack_args(string& account, action, _args):
     cdef string binargs
@@ -179,9 +179,6 @@ def sign_digest(string& _priv_key, string& _digest):
     sign_digest_(_priv_key, _digest, out)
     return out
 
-cdef extern string eosapi_get_abi(string& account):
-    return config.get_abi(account)
-
 def set_public_key_prefix(const string& prefix):
     set_public_key_prefix_(prefix)
 
@@ -189,3 +186,6 @@ def get_public_key_prefix():
     cdef string prefix
     get_public_key_prefix_(prefix)
     return prefix
+
+cdef extern string eosapi_get_abi(string& account):
+    return config.get_abi(account)

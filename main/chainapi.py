@@ -28,27 +28,111 @@ class ChainApi(Client):
         self.get_code('eosio')
         self.get_code('eosio.token')
 
-    def n2s(self, n):
+    @classmethod
+    def n2s(cls, n):
         return _eosapi.n2s(n)
 
-    def s2n(self, s):
+    @classmethod
+    def s2n(cls, s):
         return _eosapi.s2n(s)
+
+    @classmethod
+    def string_to_symbol(cls, precision, str_symbol):
+        return _eosapi.string_to_symbol(precision, str_symbol)
+
+    @classmethod
+    def pack_args(cls, account, action, args):
+        return _eosapi.pack_args(account, action, args)
+
+    @classmethod
+    def unpack_args(cls, account, action, binargs):
+        return _eosapi.unpack_args(account, action, binargs)
+
+    @classmethod
+    def clear_abi_cache(cls, account):
+        return _eosapi.clear_abi_cache(account)
+
+    @classmethod
+    def set_abi(cls, account, abi):
+        _eosapi.set_abi(account, abi)
+
+    @classmethod
+    def pack_abi(cls, abi):
+        return _eosapi.pack_abi(abi)
+
+    @classmethod
+    def gen_transaction(cls, actions, expiration, reference_block_id):
+        return _eosapi.gen_transaction(actions, expiration, reference_block_id)
+
+    @classmethod
+    def sign_transaction(cls, trx, private_key, chain_id):
+        if isinstance(trx, dict):
+            trx = json.loads(trx)
+        return _eosapi.sign_transaction(trx, private_key, chain_id)
+
+    @classmethod
+    def pack_transaction(cls, trx, compress=0):
+        return _eosapi.pack_transaction(trx, compress)
+
+    @classmethod
+    def unpack_transaction(cls, trx):
+        return _eosapi.unpack_transaction(trx)
+
+    @classmethod
+    def create_key(cls):
+        return _eosapi.create_key()
+
+    @classmethod
+    def get_public_key(cls, priv):
+        return _eosapi.get_public_key(priv)
+
+    @classmethod
+    def from_base58(cls, pub_key):
+        return _eosapi.from_base58(pub_key)
+
+    @classmethod
+    def to_base58(cls, raw_pub_key):
+        return _eosapi.to_base58(raw_pub_key)
+
+    @classmethod
+    def recover_key(self, digest, sign):
+        return _eosapi.recover_key(digest, sign)
+
+    @classmethod
+    def pack_cpp_object(cls, obj_type, json_str):
+        return _eosapi.pack_cpp_object(obj_type, json_str)
+
+    @classmethod
+    def unpack_cpp_object(cls, obj_type, raw_data):
+        return _eosapi.unpack_cpp_object(obj_type, raw_data)
+
+    @classmethod
+    def sign_digest(cls, priv_key, digest):
+        if isinstance(digest, str):
+            if not len(digest) == 64:
+                raise Exception('digest should be a hex str with 64 charactors or a bytes with a size of 32 long')
+            digest = bytes.fromhex(digest)
+        elif isinstance(digest, bytes):
+            if not len(digest) == 32:
+                raise Exception('digest should be a hex str with 64 charactors or a bytes with a size of 32 long')
+        else:
+            raise TypeError('digest should be a hex str with 64 charactors or a bytes with a size of 32 long')
+        return _eosapi.sign_digest(priv_key, digest)
+
+    @classmethod
+    def set_public_key_prefix(cls, prefix):
+        _eosapi.set_public_key_prefix(prefix)
+
+    @classmethod
+    def get_public_key_prefix(cls):
+        return _eosapi.get_public_key_prefix()
 
     def get_chain_id(self):
         return self.get_info()['chain_id']
 
-    def gen_transaction(self, actions, expiration, reference_block_id):
-        return _eosapi.gen_transaction(actions, expiration, reference_block_id)
-
     def push_transaction(self, trx, compress=0):
         trx = _eosapi.pack_transaction(trx, compress)
         return super().push_transaction(trx)
-
-    def pack_transaction(self, trx, compress=0):
-        return _eosapi.pack_transaction(trx, compress)
-
-    def unpack_transaction(self, trx):
-        return _eosapi.unpack_transaction(trx)
 
     def push_action(self, contract, action, args, permissions, compress=0):
         act = [contract, action, args, permissions]
@@ -190,9 +274,6 @@ class ChainApi(Client):
         args = {"from":_from, "to":_to, "quantity":'%.4f %s'%(_amount,token_name), "memo":_memo}
         return self.push_action(token_account, 'transfer', args, {_from:permission})
 
-    def set_abi(self, account, abi):
-        _eosapi.set_abi(account, abi)
-
     def get_abi(self, account):
         if account == 'eosio.token':
             return defaultabi.eosio_token_abi
@@ -209,15 +290,6 @@ class ChainApi(Client):
                 abi = ''
                 self.db.set_abi(account, abi)
         return abi
-
-    def clear_abi_cache(self, account):
-        return _eosapi.clear_abi_cache(account)
-
-    def pack_args(self, account, action, args):
-        return _eosapi.pack_args(account, action, args)
-
-    def unpack_args(self, account, action, binargs):
-        return _eosapi.unpack_args(account, action, binargs)
 
     def set_contract(self, account, code, abi, vmtype=1, vmversion=0, sign=True, compress=0):
         actions = []
@@ -268,16 +340,6 @@ class ChainApi(Client):
         self.clear_abi_cache(account)
         return ret
 
-    def pack_abi(self, abi):
-        return _eosapi.pack_abi(abi)
-
-    def create_key(self):
-        """ Retrieve a pair of public key / private key. """
-        return _eosapi.create_key()
-
-    def get_public_key(self, priv):
-        return _eosapi.get_public_key(priv)
-
     def get_public_keys(self, account_name, perm_name):
         keys = []
         for public_key in self.get_keys(account_name, perm_name):
@@ -307,27 +369,4 @@ class ChainApi(Client):
                self._get_keys(actor, per, keys, depth-1)
         return threshold
 
-    def recover_key(self, digest, sign):
-        return _eosapi.recover_key(digest, sign)
-
-    def pack_cpp_object(self, obj_type, json_str):
-        return _eosapi.pack_cpp_object(obj_type, json_str)
-    
-    def unpack_cpp_object(self, obj_type, raw_data):
-        return _eosapi.unpack_cpp_object(obj_type, raw_data)
-
-    def sign_digest(self, priv_key, digest):
-        if isinstance(digest, str):
-            if not len(digest) == 64:
-                raise Exception('digest should be a hex str with 64 charactors or a bytes with a size of 32 long')
-            digest = bytes.fromhex(digest)
-        elif isinstance(digest, bytes):
-            if not len(digest) == 32:
-                raise Exception('digest should be a hex str with 64 charactors or a bytes with a size of 32 long')
-        else:
-            raise TypeError('digest should be a hex str with 64 charactors or a bytes with a size of 32 long')
-        return _eosapi.sign_digest(priv_key, digest)
-
-    def set_public_key_prefix(self, prefix):
-        _eosapi.set_public_key_prefix(prefix)
 
