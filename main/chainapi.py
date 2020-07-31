@@ -95,7 +95,7 @@ class ChainApi(Client):
         return _eosapi.to_base58(raw_pub_key)
 
     @classmethod
-    def recover_key(self, digest, sign):
+    def recover_key(cls, digest, sign):
         return _eosapi.recover_key(digest, sign)
 
     @classmethod
@@ -252,9 +252,9 @@ class ChainApi(Client):
                 'transfer': 1
             }
 
-            args = self.pack_args('eosio', 'delegatebw', args)
-            act = ['eosio', 'delegatebw', args, {creator:'active'}]
-            actions.append(act)
+        args = self.pack_args('eosio', 'delegatebw', args)
+        act = ['eosio', 'delegatebw', args, {creator:'active'}]
+        actions.append(act)
         return self.push_actions(actions)
 
     def get_balance(self, account, token_account='eosio.token', token_name=''):
