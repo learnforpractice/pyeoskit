@@ -45,7 +45,7 @@ class HttpClient(object):
 
     """
 
-    def __init__(self, nodes, **kwargs):
+    def __init__(self, nodes, _async = False, **kwargs):
         self.api_version = kwargs.get('api_version', 'v1')
         self.max_retries = kwargs.get('max_retries', 2)
         self.json_decode = kwargs.get('json_decode', True)
@@ -84,6 +84,13 @@ class HttpClient(object):
         self.session_unix = requests_unixsocket.Session()
         self.session = requests.Session()
         self.timeout = 5
+        self._async = _async
+
+        if _async:
+            import httpx
+            self.async_client = httpx.AsyncClient()
+        else:
+            self.async_client = None
 
     def set_nodes(self, nodes):
         self.nodes_cache = self._nodes(nodes)
@@ -113,7 +120,13 @@ class HttpClient(object):
     def hostname(self):
         return urlparse(self.node_url).hostname
 
-    def exec(self, api, endpoint, body=None, _ret_cnt=0):
+    def exec(self, api, endpoint, body=None):
+        if self._async:
+            return self.async_exec(api, endpoint, body)
+        else:
+            return self.sync_exec(api, endpoint, body)
+
+    def sync_exec(self, api, endpoint, body=None):
         """ Execute a method against eosd RPC.
 
         Warnings:
@@ -156,34 +169,20 @@ class HttpClient(object):
                     response=response,
                     body=body)
 
-    def _exec(self, api, endpoint, body=None, _ret_cnt=0):
-        """ Execute a method against eosd RPC.
-
-        Warnings:
-            This command will auto-retry in case of node failure, as well as handle
-            node fail-over, unless we are broadcasting a transaction.
-            In latter case, the exception is **re-raised**.
-        """
-        body = self._body(body)
-        method = 'POST' if body else 'GET'
-        if self.node_url.startswith('unix://'):
-            session = self.session_unix
-            url = "http+{}/{}/{}/{}".format(self.node_url, self.api_version, api, endpoint)
+    async def async_exec(self, api, endpoint, body=None):
+        url = f'{self.node_url}/v1/{api}/{endpoint}'
+        if not body:
+            r = await self.async_client.get(url)
         else:
-            session = self.session
-            url = "{}/{}/{}/{}".format(self.node_url, self.api_version, api, endpoint)
-        try:
-            if body:
-                r = session.post(url, data = body, timeout=self.timeout)
-            else:
-                r = session.get(url, timeout=self.timeout)
-            if not r.status_code in [200, 202, 201]:
-                raise HttpAPIError(r.status_code, r.text)
-            return json.loads(r.text)
-        except Exception as e:
-            extra = dict(err=e, url=url, body=body, method=method)
-            logger.info('Request error', extra=extra)
-            raise e
+            r = await self.async_client.post(url, data=body)
+
+        result = r.text
+        response = r.text
+        if not r.status_code in [200, 202, 201] or not result:
+            extra = dict(result=result, response=response, request_body=body)
+            raise HttpAPIError(r.status_code, result)
+
+        return json.loads(r.text)
 
     def _return(self, response=None, body=None):
         """ Process the response status code and body (json).

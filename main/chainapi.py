@@ -8,18 +8,16 @@ from . import _eosapi
 from . import defaultabi
 
 from .chaincache import ChainCache
-from .client import Client, WalletClient
+from .client import Client
+from .chainnative import ChainNative
 
-class ChainApi(Client):
-    def __init__(self, network='EOS', node_url = None):
-        super().__init__()
+class ChainApi(Client, ChainNative):
+    def __init__(self, network='EOS', node_url = 'http://127.0.0.1:8888', _async=False):
+        super().__init__(_async=_async)
 
         config.get_abi = self.get_abi
         self.db = ChainCache(self, network)
-
-        if node_url:
-            self.set_node(node_url)
-        self.info_expire_time = time.time() + 5
+        self.set_node(node_url)
 
     def enable_decode(self, json_format):
         super().json_decode = json_format
@@ -27,105 +25,6 @@ class ChainApi(Client):
     def init(self):
         self.get_code('eosio')
         self.get_code('eosio.token')
-
-    @classmethod
-    def n2s(cls, n):
-        return _eosapi.n2s(n)
-
-    @classmethod
-    def s2n(cls, s):
-        return _eosapi.s2n(s)
-
-    @classmethod
-    def string_to_symbol(cls, precision, str_symbol):
-        return _eosapi.string_to_symbol(precision, str_symbol)
-
-    @classmethod
-    def pack_args(cls, account, action, args):
-        return _eosapi.pack_args(account, action, args)
-
-    @classmethod
-    def unpack_args(cls, account, action, binargs):
-        return _eosapi.unpack_args(account, action, binargs)
-
-    @classmethod
-    def clear_abi_cache(cls, account):
-        return _eosapi.clear_abi_cache(account)
-
-    @classmethod
-    def set_abi(cls, account, abi):
-        _eosapi.set_abi(account, abi)
-
-    @classmethod
-    def pack_abi(cls, abi):
-        return _eosapi.pack_abi(abi)
-
-    @classmethod
-    def gen_transaction(cls, actions, expiration, reference_block_id):
-        return _eosapi.gen_transaction(actions, expiration, reference_block_id)
-
-    @classmethod
-    def sign_transaction(cls, trx, private_key, chain_id):
-        if isinstance(trx, dict):
-            trx = json.loads(trx)
-        return _eosapi.sign_transaction(trx, private_key, chain_id)
-
-    @classmethod
-    def pack_transaction(cls, trx, compress=0):
-        return _eosapi.pack_transaction(trx, compress)
-
-    @classmethod
-    def unpack_transaction(cls, trx):
-        return _eosapi.unpack_transaction(trx)
-
-    @classmethod
-    def create_key(cls):
-        return _eosapi.create_key()
-
-    @classmethod
-    def get_public_key(cls, priv):
-        return _eosapi.get_public_key(priv)
-
-    @classmethod
-    def from_base58(cls, pub_key):
-        return _eosapi.from_base58(pub_key)
-
-    @classmethod
-    def to_base58(cls, raw_pub_key):
-        return _eosapi.to_base58(raw_pub_key)
-
-    @classmethod
-    def recover_key(cls, digest, sign):
-        return _eosapi.recover_key(digest, sign)
-
-    @classmethod
-    def pack_cpp_object(cls, obj_type, json_str):
-        return _eosapi.pack_cpp_object(obj_type, json_str)
-
-    @classmethod
-    def unpack_cpp_object(cls, obj_type, raw_data):
-        return _eosapi.unpack_cpp_object(obj_type, raw_data)
-
-    @classmethod
-    def sign_digest(cls, priv_key, digest):
-        if isinstance(digest, str):
-            if not len(digest) == 64:
-                raise Exception('digest should be a hex str with 64 charactors or a bytes with a size of 32 long')
-            digest = bytes.fromhex(digest)
-        elif isinstance(digest, bytes):
-            if not len(digest) == 32:
-                raise Exception('digest should be a hex str with 64 charactors or a bytes with a size of 32 long')
-        else:
-            raise TypeError('digest should be a hex str with 64 charactors or a bytes with a size of 32 long')
-        return _eosapi.sign_digest(priv_key, digest)
-
-    @classmethod
-    def set_public_key_prefix(cls, prefix):
-        _eosapi.set_public_key_prefix(prefix)
-
-    @classmethod
-    def get_public_key_prefix(cls):
-        return _eosapi.get_public_key_prefix()
 
     def get_chain_id(self):
         return self.get_info()['chain_id']
@@ -220,18 +119,20 @@ class ChainApi(Client):
     def create_account(self, creator, account, owner_key, active_key, ram_bytes=0, stake_net=0.0, stake_cpu=0.0, sign=True):
         actions = []
         args = {
-        'creator': creator,
-        'name': account,
-        'owner': {'threshold': 1,
-                   'keys': [{'key': owner_key, 'weight': 1}],
-                   'accounts': [],
-                   'waits': []
-                },
-        'active': {'threshold': 1,
-                    'keys': [{'key': active_key, 'weight': 1}],
-                    'accounts': [],
-                    'waits': []
-                }
+            'creator': creator,
+            'name': account,
+            'owner': {
+                'threshold': 1,
+                'keys': [{'key': owner_key, 'weight': 1}],
+                'accounts': [],
+                'waits': []
+            },
+            'active': {
+                'threshold': 1,
+                'keys': [{'key': active_key, 'weight': 1}],
+                'accounts': [],
+                'waits': []
+            }
         }
         args = self.pack_args('eosio', 'newaccount', args)
         act = ['eosio', 'newaccount', args, {creator:'active'}]
