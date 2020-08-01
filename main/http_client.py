@@ -174,7 +174,7 @@ class HttpClient(object):
         if not body:
             r = await self.async_client.get(url)
         else:
-            r = await self.async_client.post(url, data=body)
+            r = await self.async_client.post(url, json=body)
 
         result = r.text
         response = r.text

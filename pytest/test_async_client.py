@@ -39,6 +39,8 @@ class Test(object):
         api = ChainApi('UUOS', 'http://127.0.0.1:8888', True)
         r = await api.get_info()
         logger.info(r)
+        r = await api.get_account('eosio')
+        logger.info(r)
 
     def test_basic(self, event_loop):
         event_loop.run_until_complete(self.api_test())
