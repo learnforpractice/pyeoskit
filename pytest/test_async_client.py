@@ -10,7 +10,8 @@ logger=logging.getLogger(__name__)
 test_dir = os.path.dirname(__file__)
 
 
-from pyeoskit.chainapi import ChainApi
+from pyeoskit.chainapi import ChainApiAsync
+from pyeoskit import wallet
 
 @pytest.fixture
 def event_loop():
@@ -35,11 +36,18 @@ class Test(object):
         pass
 
     async def api_test(self):
-        logger.info('hello,world')
-        api = ChainApi('UUOS', 'http://127.0.0.1:8888', True)
+        if os.path.exists('test.wallet'):
+            os.remove('test.wallet')
+        wallet.create('test')
+        wallet.import_key('test', '5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3')
+
+        api = ChainApiAsync('UUOS', 'http://127.0.0.1:8989')
         r = await api.get_info()
         logger.info(r)
         r = await api.get_account('eosio')
+        logger.info(r)
+
+        r = await api.push_action('eosio', 'sayhello', b'', {'eosio':'active'})
         logger.info(r)
 
     def test_basic(self, event_loop):
