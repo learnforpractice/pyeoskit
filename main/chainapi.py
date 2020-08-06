@@ -194,22 +194,21 @@ class ChainApi(Client, ChainNative):
 
     def set_contract(self, account, code, abi, vmtype=1, vmversion=0, sign=True, compress=0):
         actions = []
-        if code:
-            setcode = {"account":account,
-                    "vmtype":vmtype,
-                    "vmversion":vmversion,
-                    "code":code.hex()
-                    }
-            setcode = self.pack_args('eosio', 'setcode', setcode)
-            setcode = ['eosio', 'setcode', setcode, {account:'active'}]
-            actions.append(setcode)
 
-        if abi:
-            abi = _eosapi.pack_abi(abi)
-            setabi = self.pack_args('eosio', 'setabi', {'account':account, 'abi':abi.hex()})
-            setabi = ['eosio', 'setabi', setabi, {account:'active'}]
-            actions.append(setabi)
-    
+        setcode = {"account":account,
+                "vmtype":vmtype,
+                "vmversion":vmversion,
+                "code":code.hex()
+                }
+        setcode = self.pack_args('eosio', 'setcode', setcode)
+        setcode = ['eosio', 'setcode', setcode, {account:'active'}]
+        actions.append(setcode)
+
+        abi = _eosapi.pack_abi(abi)
+        setabi = self.pack_args('eosio', 'setabi', {'account':account, 'abi':abi.hex()})
+        setabi = ['eosio', 'setabi', setabi, {account:'active'}]
+        actions.append(setabi)
+
         ret = self.push_actions(actions, compress)
         self.db.remove_code(account)
         self.db.remove_abi(account)

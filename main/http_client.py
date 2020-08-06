@@ -177,9 +177,7 @@ class HttpClient(object):
             r = await self.async_client.post(url, json=body)
 
         result = r.text
-        response = r.text
         if not r.status_code in [200, 202, 201] or not result:
-            extra = dict(result=result, response=response, request_body=body)
             raise HttpAPIError(r.status_code, result)
 
         return json.loads(r.text)
