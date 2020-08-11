@@ -42,9 +42,18 @@ class ChainApi(Client, ChainNative):
         trx = _eosapi.gen_transaction([act], 60, reference_block_id)
 
         keys = []
-        for account in permissions:
-            public_keys = self.get_available_public_keys(account, permissions[account])
-            keys.extend(public_keys)
+        if isinstance(permissions, dict):
+            for account in permissions:
+                public_keys = self.get_available_public_keys(account, permissions[account])
+                keys.extend(public_keys)
+        elif isinstance(permissions, list):
+            for perm in permissions:
+                assert len(perm) == 1
+                for account in perm:
+                    public_keys = self.get_available_public_keys(account, perm[account])
+                    keys.extend(public_keys)
+        else:
+            assert 0, 'bad permission type'
 #        print(keys)
         trx = wallet.sign_transaction(trx, keys, chain_id)
         trx = _eosapi.pack_transaction(trx, compress)
