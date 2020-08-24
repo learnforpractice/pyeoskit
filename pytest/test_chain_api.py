@@ -35,16 +35,16 @@ print(info)
 info = eosapi.get_producer_schedule()
 print(info)
 
-args = {"from": 'eosio',
+args = {"from": config.system_contract,
         "to": contract_name,
         "quantity": '0.0001 EOS',
         "memo": 'hello,world'
 }
 
-r = eosapi.abi_json_to_bin('eosio.token', 'transfer', args)
+r = eosapi.abi_json_to_bin(config.main_token_contract, 'transfer', args)
 print(r)
 binargs = '0000000000ea305500000000001aa36a010000000000000004454f53000000000b68656c6c6f2c776f726c64'
-eosapi.abi_bin_to_json('eosio.token', 'transfer', binargs)
+eosapi.abi_bin_to_json(config.main_token_contract, 'transfer', binargs)
 
 abi = '''
 {
@@ -75,9 +75,9 @@ abi = '''
 }
 '''
 
-eosapi.set_abi('eosio.token', abi)
+eosapi.set_abi(config.main_token_contract, abi)
 
-args = {"from": 'eosio',
+args = {"from": config.system_contract,
         "to": contract_name,
         "quantity": '0.0001 EOS',
         "memo": 'hello,world'
@@ -87,11 +87,11 @@ r = eosapi.pack_args(abi, 'transfer', args)
 print(r)
 
 args = {"from": contract_name,
-        "to": 'eosio',
+        "to": config.system_contract,
         "quantity": '0.0001 EOS',
         "memo": 'hello,world'
 }
-action = ['eosio.token', 'transfer', args, {contract_name:'active'}]
+action = [config.main_token_contract, 'transfer', args, {contract_name:'active'}]
 
 info = eosapi.get_info()
 reference_block_id = info['last_irreversible_block_id']

@@ -23,8 +23,8 @@ class ChainApi(Client, ChainNative):
         super().json_decode = json_format
 
     def init(self):
-        self.get_code('eosio')
-        self.get_code('eosio.token')
+        self.get_code(config.system_contract)
+        self.get_code(config.main_token_contract)
 
     def get_chain_id(self):
         return self.get_info()['chain_id']
@@ -36,7 +36,7 @@ class ChainApi(Client, ChainNative):
     def push_action(self, contract, action, args, permissions, compress=0):
         act = [contract, action, args, permissions]
         chain_info = self.get_info()
-        reference_block_id = chain_info['last_irreversible_block_id']
+        reference_block_id = chain_info['head_block_id']
         chain_id = chain_info['chain_id']
 
         trx = _eosapi.gen_transaction([act], 60, reference_block_id)
@@ -143,14 +143,14 @@ class ChainApi(Client, ChainNative):
                 'waits': []
             }
         }
-        args = self.pack_args('eosio', 'newaccount', args)
-        act = ['eosio', 'newaccount', args, {creator:'active'}]
+        args = self.pack_args(config.system_contract, 'newaccount', args)
+        act = [config.system_contract, 'newaccount', args, {creator:'active'}]
         actions.append(act)
 
         if ram_bytes:
             args = {'payer':creator, 'receiver':account, 'bytes':ram_bytes}
-            args = self.pack_args('eosio', 'buyrambytes', args)
-            act = ['eosio', 'buyrambytes', args, {creator:'active'}]
+            args = self.pack_args(config.system_contract, 'buyrambytes', args)
+            act = [config.system_contract, 'buyrambytes', args, {creator:'active'}]
             actions.append(act)
 
         if stake_net or stake_cpu:
@@ -162,14 +162,16 @@ class ChainApi(Client, ChainNative):
                 'transfer': 1
             }
 
-        args = self.pack_args('eosio', 'delegatebw', args)
-        act = ['eosio', 'delegatebw', args, {creator:'active'}]
+        args = self.pack_args(config.system_contract, 'delegatebw', args)
+        act = [config.system_contract, 'delegatebw', args, {creator:'active'}]
         actions.append(act)
         return self.push_actions(actions)
 
-    def get_balance(self, account, token_account='eosio.token', token_name=''):
+    def get_balance(self, account, token_account=None, token_name=None):
+        if not token_account:
+            token_account = config.main_token_contract
         if not token_name:
-            token_name = config.main_token
+            token_name = config.main_token            
         try:
             ret = super().get_currency_balance(token_account, account, token_name)
             if ret:
@@ -178,16 +180,18 @@ class ChainApi(Client, ChainNative):
             return 0.0
         return 0.0
 
-    def transfer(self, _from, _to, _amount, _memo='', token_account='eosio.token', token_name='', permission='active'):
+    def transfer(self, _from, _to, _amount, _memo='', token_account=None, token_name=None, permission='active'):
+        if not token_account:
+            token_account = config.main_token_contract
         if not token_name:
             token_name = config.main_token
         args = {"from":_from, "to":_to, "quantity":'%.4f %s'%(_amount,token_name), "memo":_memo}
         return self.push_action(token_account, 'transfer', args, {_from:permission})
 
     def get_abi(self, account):
-        if account == 'eosio.token':
+        if account == config.main_token_contract:
             return defaultabi.eosio_token_abi
-        elif account == 'eosio':
+        elif account == config.system_contract:
             return defaultabi.eosio_system_abi
 
         abi = self.db.get_abi(account)
@@ -209,13 +213,13 @@ class ChainApi(Client, ChainNative):
                 "vmversion":vmversion,
                 "code":code.hex()
                 }
-        setcode = self.pack_args('eosio', 'setcode', setcode)
-        setcode = ['eosio', 'setcode', setcode, {account:'active'}]
+        setcode = self.pack_args(config.system_contract, 'setcode', setcode)
+        setcode = [config.system_contract, 'setcode', setcode, {account:'active'}]
         actions.append(setcode)
 
         abi = _eosapi.pack_abi(abi)
-        setabi = self.pack_args('eosio', 'setabi', {'account':account, 'abi':abi.hex()})
-        setabi = ['eosio', 'setabi', setabi, {account:'active'}]
+        setabi = self.pack_args(config.system_contract, 'setabi', {'account':account, 'abi':abi.hex()})
+        setabi = [config.system_contract, 'setabi', setabi, {account:'active'}]
         actions.append(setabi)
 
         ret = self.push_actions(actions, compress)
@@ -236,15 +240,15 @@ class ChainApi(Client, ChainNative):
                 "vmversion":vmversion,
                 "code":code.hex()
                 }
-        setcode = self.pack_args('eosio', 'setcode', setcode)
-        ret = self.push_action('eosio', 'setcode', setcode, {account:'active'})
+        setcode = self.pack_args(config.system_contract, 'setcode', setcode)
+        ret = self.push_action(config.system_contract, 'setcode', setcode, {account:'active'})
         self.db.remove_code(account)
         return ret
 
     def deploy_abi(self, account, abi):
         abi = _eosapi.pack_abi(abi)
-        setabi = self.pack_args('eosio', 'setabi', {'account':account, 'abi':abi.hex()})    
-        ret = self.push_action('eosio', 'setabi', setabi, {account:'active'})
+        setabi = self.pack_args(config.system_contract, 'setabi', {'account':account, 'abi':abi.hex()})    
+        ret = self.push_action(config.system_contract, 'setabi', setabi, {account:'active'})
         self.db.remove_abi(account)
         self.clear_abi_cache(account)
         return ret
@@ -291,8 +295,8 @@ class ChainApiAsync(Client, ChainNative):
         super().json_decode = json_format
 
     def init(self):
-        self.get_code('eosio')
-        self.get_code('eosio.token')
+        self.get_code(config.system_contract)
+        self.get_code(config.main_token_contract)
 
     def get_chain_id(self):
         return self.get_info()['chain_id']
@@ -402,14 +406,14 @@ class ChainApiAsync(Client, ChainNative):
                 'waits': []
             }
         }
-        args = self.pack_args('eosio', 'newaccount', args)
-        act = ['eosio', 'newaccount', args, {creator:'active'}]
+        args = self.pack_args(config.system_contract, 'newaccount', args)
+        act = [config.system_contract, 'newaccount', args, {creator:'active'}]
         actions.append(act)
 
         if ram_bytes:
             args = {'payer':creator, 'receiver':account, 'bytes':ram_bytes}
-            args = self.pack_args('eosio', 'buyrambytes', args)
-            act = ['eosio', 'buyrambytes', args, {creator:'active'}]
+            args = self.pack_args(config.system_contract, 'buyrambytes', args)
+            act = [config.system_contract, 'buyrambytes', args, {creator:'active'}]
             actions.append(act)
 
         if stake_net or stake_cpu:
@@ -421,14 +425,17 @@ class ChainApiAsync(Client, ChainNative):
                 'transfer': 1
             }
 
-        args = self.pack_args('eosio', 'delegatebw', args)
-        act = ['eosio', 'delegatebw', args, {creator:'active'}]
+        args = self.pack_args(config.system_contract, 'delegatebw', args)
+        act = [config.system_contract, 'delegatebw', args, {creator:'active'}]
         actions.append(act)
         return await self.push_actions(actions)
 
-    async def get_balance(self, account, token_account='eosio.token', token_name=''):
+    async def get_balance(self, account, token_account=None, token_name=None):
         if not token_name:
             token_name = config.main_token
+        if not token_account:
+            token_account = config.main_token_contract
+        print(account, token_account, token_name)
         try:
             ret = await super().get_currency_balance(token_account, account, token_name)
             if ret:
@@ -437,16 +444,18 @@ class ChainApiAsync(Client, ChainNative):
             return 0.0
         return 0.0
 
-    async def transfer(self, _from, _to, _amount, _memo='', token_account='eosio.token', token_name='', permission='active'):
+    async def transfer(self, _from, _to, _amount, _memo='', token_account=None, token_name=None, permission='active'):
+        if not token_account:
+            token_account = config.main_token_contract
         if not token_name:
             token_name = config.main_token
         args = {"from":_from, "to":_to, "quantity":'%.4f %s'%(_amount,token_name), "memo":_memo}
         return await self.push_action(token_account, 'transfer', args, {_from:permission})
 
     async def get_abi(self, account):
-        if account == 'eosio.token':
+        if account == config.main_token_contract:
             return defaultabi.eosio_token_abi
-        elif account == 'eosio':
+        elif account == config.system_contract:
             return defaultabi.eosio_system_abi
 
         abi = self.db.get_abi(account)
@@ -468,13 +477,13 @@ class ChainApiAsync(Client, ChainNative):
                 "vmversion":vmversion,
                 "code":code.hex()
                 }
-        setcode = self.pack_args('eosio', 'setcode', setcode)
-        setcode = ['eosio', 'setcode', setcode, {account:'active'}]
+        setcode = self.pack_args(config.system_contract, 'setcode', setcode)
+        setcode = [config.system_contract, 'setcode', setcode, {account:'active'}]
         actions.append(setcode)
 
         abi = _eosapi.pack_abi(abi)
-        setabi = self.pack_args('eosio', 'setabi', {'account':account, 'abi':abi.hex()})
-        setabi = ['eosio', 'setabi', setabi, {account:'active'}]
+        setabi = self.pack_args(config.system_contract, 'setabi', {'account':account, 'abi':abi.hex()})
+        setabi = [config.system_contract, 'setabi', setabi, {account:'active'}]
         actions.append(setabi)
 
         ret = await self.push_actions(actions, compress)
@@ -492,15 +501,15 @@ class ChainApiAsync(Client, ChainNative):
                 "vmversion":vmversion,
                 "code":code.hex()
                 }
-        setcode = self.pack_args('eosio', 'setcode', setcode)
-        ret = await self.push_action('eosio', 'setcode', setcode, {account:'active'})
+        setcode = self.pack_args(config.system_contract, 'setcode', setcode)
+        ret = await self.push_action(config.system_contract, 'setcode', setcode, {account:'active'})
         self.db.remove_code(account)
         return ret
 
     async def deploy_abi(self, account, abi):
         abi = _eosapi.pack_abi(abi)
-        setabi = self.pack_args('eosio', 'setabi', {'account':account, 'abi':abi.hex()})    
-        ret = await self.push_action('eosio', 'setabi', setabi, {account:'active'})
+        setabi = self.pack_args(config.system_contract, 'setabi', {'account':account, 'abi':abi.hex()})    
+        ret = await self.push_action(config.system_contract, 'setabi', setabi, {account:'active'})
         self.db.remove_abi(account)
         self.clear_abi_cache(account)
         return ret

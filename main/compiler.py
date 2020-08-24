@@ -43,7 +43,7 @@ def set_code(account_name, code):
                "vmversion":0,
                "code":code.hex()
                }
-    eosapi.push_action('eosio', 'setcode', setcode, {account_name:'active'})
+    eosapi.push_action(config.system_contract, 'setcode', setcode, {account_name:'active'})
     
     return True
 

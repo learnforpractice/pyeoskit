@@ -11,7 +11,7 @@ test_dir = os.path.dirname(__file__)
 
 
 from pyeoskit.chainapi import ChainApiAsync
-from pyeoskit import wallet
+from pyeoskit import wallet, config
 
 @pytest.fixture
 def event_loop():
@@ -44,10 +44,10 @@ class Test(object):
         api = ChainApiAsync('UUOS', 'http://127.0.0.1:8989')
         r = await api.get_info()
         logger.info(r)
-        r = await api.get_account('eosio')
+        r = await api.get_account(config.system_contract)
         logger.info(r)
 
-        r = await api.push_action('eosio', 'sayhello', b'', {'eosio':'active'})
+        r = await api.push_action(config.system_contract, 'sayhello', b'', {config.system_contract:'active'})
         logger.info(r)
 
     def test_basic(self, event_loop):

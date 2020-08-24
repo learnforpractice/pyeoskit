@@ -10,14 +10,14 @@ def create_account_on_chain(from_account, new_account, balance, public_key):
 
 def buyrambytes(payer, receiver, _bytes):
     args = {"payer":payer,"receiver":receiver,"bytes":_bytes}
-    return eosapi.push_action('eosio', 'buyrambytes', args, {payer:'active'})
+    return eosapi.push_action(config.system_contract, 'buyrambytes', args, {payer:'active'})
 
 def buyram(payer, receiver, quant):
     args = {'payer':payer, 'receiver':receiver, 'quant':'%.4f %s'%(quant, config.main_token)}
-    return eosapi.push_action('eosio', 'buyram', args, {payer:'active'})
+    return eosapi.push_action(config.system_contract, 'buyram', args, {payer:'active'})
 
 def sellram(account, _bytes):
-    return eosapi.push_action('eosio', 'sellram', {'account':account, 'bytes':_bytes}, {account:'active'})
+    return eosapi.push_action(config.system_contract, 'sellram', {'account':account, 'bytes':_bytes}, {account:'active'})
 
 def dbw(_from, _to, net, cpu, transfer=False):
     args = {'from':_from, 
@@ -26,7 +26,7 @@ def dbw(_from, _to, net, cpu, transfer=False):
             'stake_cpu_quantity':'%.4f %s'%(cpu, config.main_token), 
             'transfer':transfer
             }
-    return eosapi.push_action('eosio', 'delegatebw', args, {_from:'active'})
+    return eosapi.push_action(config.system_contract, 'delegatebw', args, {_from:'active'})
 
 def undbw(_from, _to, net, cpu, transfer=False):
     args = {'from':_from, 
@@ -35,4 +35,4 @@ def undbw(_from, _to, net, cpu, transfer=False):
             'unstake_cpu_quantity':'%.4f %s'%(cpu, config.main_token), 
             'transfer':transfer
             }
-    return eosapi.push_action('eosio', 'undelegatebw', args, {_from:'active'})
+    return eosapi.push_action(config.system_contract, 'undelegatebw', args, {_from:'active'})

@@ -26,4 +26,26 @@ def set_nodes(_nodes):
     nodes = _nodes
 #set in eosapi.py:EosApi.__init__
 get_abi = None
+
 main_token = 'EOS'
+system_contract = 'eosio'
+main_token_contract = 'eosio.token'
+
+def setup_uuos_network():
+    global main_token
+    global system_contract
+    global main_token_contract
+    main_token = 'UUOS'
+    system_contract = 'uuos'
+    main_token_contract = 'uuos.token'
+    from pyeoskit import eosapi
+    eosapi.set_public_key_prefix(main_token)
+
+def setup_eos_network():
+    global main_token
+    global system_contract
+    global main_token_contract
+    main_token = 'EOS'
+    system_contract = 'eosio'
+    main_token_contract = 'eosio.token'
+    eosapi.set_public_key_prefix(main_token)
