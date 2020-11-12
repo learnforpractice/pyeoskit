@@ -192,7 +192,7 @@ class ChainApi(Client, ChainNative):
         if account == config.main_token_contract:
             return defaultabi.eosio_token_abi
         elif account == config.system_contract:
-            return defaultabi.eosio_system_abi
+            return defaultabi.eosio_system_abi[config.main_token]
 
         abi = self.db.get_abi(account)
         if not abi:

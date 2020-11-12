@@ -5,9 +5,9 @@ add_cython_target(wallet CXX)
 add_cython_target(pyobject CXX)
 add_cython_target(_block_log CXX)
 
-set(SRCS ${_hello} 
-         ${_eosapi} 
-         ${wallet} 
+set(SRCS ${_hello}
+         ${_eosapi}
+         ${wallet}
          ${pyobject}
          ${_block_log}
          wallet_.cpp
