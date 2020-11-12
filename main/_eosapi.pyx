@@ -60,6 +60,8 @@ cdef extern from "eosapi.hpp":
     void set_public_key_prefix_(const string& prefix);
     void get_public_key_prefix_(string& prefix);
 
+    int compile_src(const char *src, char **output, size_t *output_size, const char *source_file);
+    int compile_src_and_save(const char *file, const char *output_file, const char *source_file);
 
 def N(string& s):
     return s2n_(s)
@@ -189,3 +191,13 @@ def get_public_key_prefix():
 
 cdef extern string eosapi_get_abi(string& account):
     return config.get_abi(account)
+
+def compile_py_src(src):
+    cdef char *output
+    cdef size_t output_size
+    compile_src(src, &output, &output_size, "contract.py");
+    return <bytes>string(output, output_size)
+
+def compile_py_src_and_save(src_file, output_file):
+    return compile_src_and_save(src_file, output_file, "contract.mpy")
+

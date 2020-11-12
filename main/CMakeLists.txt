@@ -5,9 +5,9 @@ add_cython_target(wallet CXX)
 add_cython_target(pyobject CXX)
 add_cython_target(_block_log CXX)
 
-set(SRCS ${_hello} 
-         ${_eosapi} 
-         ${wallet} 
+set(SRCS ${_hello}
+         ${_eosapi}
+         ${wallet}
          ${pyobject}
          ${_block_log}
          wallet_.cpp
@@ -28,11 +28,11 @@ else()
     set(EXTRA_LIBS util)
 endif(WIN32)
 
-target_link_libraries( _hello fc wallet_plugin eosio_chain eos_utilities ${EXTRA_LIBS})
+target_link_libraries( _hello fc wallet_plugin eosio_chain eos_utilities micropython ${EXTRA_LIBS})
 
 add_executable(hello ${SRCS})
 
-target_link_libraries(hello fc wallet_plugin eosio_chain eos_utilities 
+target_link_libraries(hello fc wallet_plugin eosio_chain eos_utilities micropython
 ${PYTHON_LIBRARY} ${EXTRA_LIBS})
 
 set(INCS   "${CMAKE_CURRENT_SOURCE_DIR}" 

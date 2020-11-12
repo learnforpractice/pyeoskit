@@ -100,3 +100,11 @@ class ChainNative(object):
     @staticmethod
     def get_public_key_prefix():
         return _eosapi.get_public_key_prefix()
+
+    @staticmethod
+    def compile_py_src(src):
+        return _eosapi.compile_py_src(src)
+
+    @staticmethod
+    def compile_py_src_and_save(src_file, output_file):
+        return _eosapi.compile_py_src_and_save(src_file, output_file)

@@ -76,18 +76,18 @@ STATIC void code_print_strn(void *env, const char *str, size_t len) {
     buf->pos += len;
 }
 
-STATIC int compile_src(const char *src, char **output, size_t *output_size, const char *source_file) {
+static int _compile_src(const char *src, char **output, size_t *output_size, const char *source_file) {
     nlr_buf_t nlr;
 
     struct buffer buf;
-    size_t buffer_size = strlen(src) * 2;
-    buf.data = (char *)malloc(buffer_size);
-    buf.size = buffer_size;
+    size_t src_size = strlen(src);
+    buf.data = (char *)malloc(src_size*2);
+    buf.size = src_size*2;
     buf.pos = 0;
 
     if (nlr_push(&nlr) == 0) {
 //        mp_lexer_t *lex = mp_lexer_new_from_file(file);
-        mp_lexer_t *lex = mp_lexer_new_from_str_len(MP_QSTR__lt_stdin_gt_, src, buffer_size, 0);
+        mp_lexer_t *lex = mp_lexer_new_from_str_len(MP_QSTR__lt_stdin_gt_, src, src_size, 0);
 
         qstr source_name;
         if (source_file == NULL) {
@@ -245,6 +245,53 @@ STATIC void pre_process_options(int argc, char **argv) {
     }
 }
 
+int compile_src(const char *src, char **output, size_t *output_size, const char *source_file) {
+    mp_stack_ctrl_init();
+    mp_stack_set_limit(40000 * (BYTES_PER_WORD / 4));
+
+    char *heap = malloc(64*1024);
+    gc_init(heap, heap + heap_size);
+
+    mp_init();
+    #ifdef _WIN32
+    set_fmode_binary();
+    #endif
+    mp_obj_list_init(mp_sys_path, 0);
+    mp_obj_list_init(mp_sys_argv, 0);
+
+    #if MICROPY_EMIT_NATIVE
+    // Set default emitter options
+    MP_STATE_VM(default_emit_opt) = emit_opt;
+    #else
+    (void)emit_opt;
+    #endif
+
+    // set default compiler configuration
+    mp_dynamic_compiler.small_int_bits = 31;
+    mp_dynamic_compiler.opt_cache_map_lookup_in_bytecode = 0;
+    mp_dynamic_compiler.py_builtins_str_unicode = 1;
+    #if defined(__i386__)
+    mp_dynamic_compiler.native_arch = MP_NATIVE_ARCH_X86;
+    mp_dynamic_compiler.nlr_buf_num_regs = MICROPY_NLR_NUM_REGS_X86;
+    #elif defined(__x86_64__)
+    mp_dynamic_compiler.native_arch = MP_NATIVE_ARCH_X64;
+    mp_dynamic_compiler.nlr_buf_num_regs = MAX(MICROPY_NLR_NUM_REGS_X64, MICROPY_NLR_NUM_REGS_X64_WIN);
+    #elif defined(__arm__) && !defined(__thumb2__)
+    mp_dynamic_compiler.native_arch = MP_NATIVE_ARCH_ARMV6;
+    mp_dynamic_compiler.nlr_buf_num_regs = MICROPY_NLR_NUM_REGS_ARM_THUMB_FP;
+    #else
+    mp_dynamic_compiler.native_arch = MP_NATIVE_ARCH_NONE;
+    mp_dynamic_compiler.nlr_buf_num_regs = 0;
+    #endif
+
+    printf("+++++++++compile_src:%s\n", src);
+    int ret = _compile_src(src, output, output_size, source_file);
+
+    mp_deinit();
+
+    return ret & 0xff;
+}
+
 MP_NOINLINE int main_(int argc, char **argv) {
     mp_stack_set_limit(40000 * (BYTES_PER_WORD / 4));
 
@@ -398,7 +445,25 @@ MP_NOINLINE int main_(int argc, char **argv) {
     return ret & 0xff;
 }
 
+#ifndef BUILD_LIB
 int main(int argc, char **argv) {
+    for (int i=0;i<argc;i++) {
+        printf("+++%s\n", argv[i]);
+    }
+    mp_stack_ctrl_init();
+    return main_(argc, argv);
+}
+#endif
+
+int compile_src_and_save(const char *file, const char *output_file, const char *source_file) {
+    int argc = 4;
+    char *argv[4];
+
+    argv[0] = "mpy-cross";
+    argv[1] = "-o";
+    argv[2] = output_file;
+    argv[3] = file;
+
     mp_stack_ctrl_init();
     return main_(argc, argv);
 }

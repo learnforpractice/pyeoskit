@@ -53,4 +53,9 @@ uint64_t string_to_symbol_(int precision, string& str);
 void set_public_key_prefix_(const string& prefix);
 void get_public_key_prefix_(string& prefix);
 
+extern "C" {
+int compile_src(const char *src, char **output, size_t *output_size, const char *source_file);
+int compile_src_and_save(const char *file, const char *output_file, const char *source_file);
+}
+
 #endif /* MAIN_EOSAPI_HPP_ */
