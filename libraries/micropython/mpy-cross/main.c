@@ -106,6 +106,7 @@ static size_t _compile_src(const char *src, char *output, size_t output_size, co
         mp_print_t code_print = {(void *)(intptr_t)&buf, code_print_strn};
         mp_raw_code_save(rc, &code_print);
         nlr_pop();
+        gc_collect();
         return buf.pos;
     } else {
         // uncaught exception
