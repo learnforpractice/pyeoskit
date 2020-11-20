@@ -62,32 +62,32 @@ struct buffer {
 };
 
 STATIC void code_print_strn(void *env, const char *str, size_t len) {
-    struct buffer *buf;
-    size_t copy_size;
-
-    buf = (struct buffer *)env;
+    struct buffer *buf = (struct buffer *)env;
     size_t remain_size = buf->size - buf->pos;
+    size_t copy_size = len;
+
     if (remain_size < len) {
-        buf->data = (char *)realloc(buf->data, buf->size + len);
-        buf->size += len;
+        copy_size = remain_size;
+        printf("++buffer overflow!\n");
+        // buf->data = (char *)realloc(buf->data, buf->size + len);
+        // buf->size += len;
     }
 
-    memcpy(buf->data + buf->pos, str, len);
-    buf->pos += len;
+    memcpy(buf->data + buf->pos, str, copy_size);
+    buf->pos += copy_size;
 }
 
-static int _compile_src(const char *src, char **output, size_t *output_size, const char *source_file) {
+static size_t _compile_src(const char *src, char *output, size_t output_size, const char *source_file) {
     nlr_buf_t nlr;
-
     struct buffer buf;
-    size_t src_size = strlen(src);
-    buf.data = (char *)malloc(src_size*2);
-    buf.size = src_size*2;
+
+    buf.data = output;
+    buf.size = output_size;
     buf.pos = 0;
 
     if (nlr_push(&nlr) == 0) {
 //        mp_lexer_t *lex = mp_lexer_new_from_file(file);
-        mp_lexer_t *lex = mp_lexer_new_from_str_len(MP_QSTR__lt_stdin_gt_, src, src_size, 0);
+        mp_lexer_t *lex = mp_lexer_new_from_str_len(MP_QSTR__lt_stdin_gt_, src, strlen(src), 0);
 
         qstr source_name;
         if (source_file == NULL) {
@@ -105,17 +105,12 @@ static int _compile_src(const char *src, char **output, size_t *output_size, con
 
         mp_print_t code_print = {(void *)(intptr_t)&buf, code_print_strn};
         mp_raw_code_save(rc, &code_print);
-        *output = buf.data;
-        *output_size = buf.pos;
         nlr_pop();
-        return 0;
+        return buf.pos;
     } else {
         // uncaught exception
-        free(buf.data);
-        *output = NULL;
-        *output_size = 0;
         mp_obj_print_exception(&mp_stderr_print, (mp_obj_t)nlr.ret_val);
-        return 1;
+        return 0;
     }
 }
 
@@ -245,51 +240,53 @@ STATIC void pre_process_options(int argc, char **argv) {
     }
 }
 
-int compile_src(const char *src, char **output, size_t *output_size, const char *source_file) {
-    mp_stack_ctrl_init();
-    mp_stack_set_limit(40000 * (BYTES_PER_WORD / 4));
+size_t compile_src(const char *src, char *output, size_t output_size, const char *source_file) {
+    static int initialized = 0;
+    if (!initialized) {
+        initialized = 1;
 
-    char *heap = malloc(64*1024);
-    gc_init(heap, heap + heap_size);
+        mp_stack_ctrl_init();
+        mp_stack_set_limit(40000 * (BYTES_PER_WORD / 4));
 
-    mp_init();
-    #ifdef _WIN32
-    set_fmode_binary();
-    #endif
-    mp_obj_list_init(mp_sys_path, 0);
-    mp_obj_list_init(mp_sys_argv, 0);
+        char *heap = malloc(64*1024);
+        gc_init(heap, heap + heap_size);
 
-    #if MICROPY_EMIT_NATIVE
-    // Set default emitter options
-    MP_STATE_VM(default_emit_opt) = emit_opt;
-    #else
-    (void)emit_opt;
-    #endif
+        mp_init();
+        #ifdef _WIN32
+        set_fmode_binary();
+        #endif
+        mp_obj_list_init(mp_sys_path, 0);
+        mp_obj_list_init(mp_sys_argv, 0);
 
-    // set default compiler configuration
-    mp_dynamic_compiler.small_int_bits = 31;
-    mp_dynamic_compiler.opt_cache_map_lookup_in_bytecode = 0;
-    mp_dynamic_compiler.py_builtins_str_unicode = 1;
-    #if defined(__i386__)
-    mp_dynamic_compiler.native_arch = MP_NATIVE_ARCH_X86;
-    mp_dynamic_compiler.nlr_buf_num_regs = MICROPY_NLR_NUM_REGS_X86;
-    #elif defined(__x86_64__)
-    mp_dynamic_compiler.native_arch = MP_NATIVE_ARCH_X64;
-    mp_dynamic_compiler.nlr_buf_num_regs = MAX(MICROPY_NLR_NUM_REGS_X64, MICROPY_NLR_NUM_REGS_X64_WIN);
-    #elif defined(__arm__) && !defined(__thumb2__)
-    mp_dynamic_compiler.native_arch = MP_NATIVE_ARCH_ARMV6;
-    mp_dynamic_compiler.nlr_buf_num_regs = MICROPY_NLR_NUM_REGS_ARM_THUMB_FP;
-    #else
-    mp_dynamic_compiler.native_arch = MP_NATIVE_ARCH_NONE;
-    mp_dynamic_compiler.nlr_buf_num_regs = 0;
-    #endif
+        #if MICROPY_EMIT_NATIVE
+        // Set default emitter options
+        MP_STATE_VM(default_emit_opt) = emit_opt;
+        #else
+        (void)emit_opt;
+        #endif
 
-    printf("+++++++++compile_src:%s\n", src);
-    int ret = _compile_src(src, output, output_size, source_file);
+        // set default compiler configuration
+        mp_dynamic_compiler.small_int_bits = 31;
+        mp_dynamic_compiler.opt_cache_map_lookup_in_bytecode = 0;
+        mp_dynamic_compiler.py_builtins_str_unicode = 1;
+        #if defined(__i386__)
+        mp_dynamic_compiler.native_arch = MP_NATIVE_ARCH_X86;
+        mp_dynamic_compiler.nlr_buf_num_regs = MICROPY_NLR_NUM_REGS_X86;
+        #elif defined(__x86_64__)
+        mp_dynamic_compiler.native_arch = MP_NATIVE_ARCH_X64;
+        mp_dynamic_compiler.nlr_buf_num_regs = MAX(MICROPY_NLR_NUM_REGS_X64, MICROPY_NLR_NUM_REGS_X64_WIN);
+        #elif defined(__arm__) && !defined(__thumb2__)
+        mp_dynamic_compiler.native_arch = MP_NATIVE_ARCH_ARMV6;
+        mp_dynamic_compiler.nlr_buf_num_regs = MICROPY_NLR_NUM_REGS_ARM_THUMB_FP;
+        #else
+        mp_dynamic_compiler.native_arch = MP_NATIVE_ARCH_NONE;
+        mp_dynamic_compiler.nlr_buf_num_regs = 0;
+        #endif
+    }
 
-    mp_deinit();
+    return _compile_src(src, output, output_size, source_file);
 
-    return ret & 0xff;
+//    mp_deinit();
 }
 
 MP_NOINLINE int main_(int argc, char **argv) {
@@ -457,7 +454,7 @@ int main(int argc, char **argv) {
 
 int compile_src_and_save(const char *file, const char *output_file, const char *source_file) {
     int argc = 4;
-    char *argv[4];
+    const char *argv[4];
 
     argv[0] = "mpy-cross";
     argv[1] = "-o";
@@ -465,7 +462,7 @@ int compile_src_and_save(const char *file, const char *output_file, const char *
     argv[3] = file;
 
     mp_stack_ctrl_init();
-    return main_(argc, argv);
+    return main_(argc, (char **)argv);
 }
 
 uint mp_import_stat(const char *path) {

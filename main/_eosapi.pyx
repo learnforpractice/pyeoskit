@@ -14,6 +14,7 @@ cdef extern from * :
     ctypedef unsigned long long uint64_t
 
 cdef extern from "eosapi.hpp":
+    void *malloc(size_t size);
 
     void pack_cpp_object_(int _type, string& msg, string& packed_message)
     void unpack_cpp_object_(int _type, string& packed_message, string& msg)
@@ -60,8 +61,7 @@ cdef extern from "eosapi.hpp":
     void set_public_key_prefix_(const string& prefix);
     void get_public_key_prefix_(string& prefix);
 
-    int compile_src(const char *src, char **output, size_t *output_size, const char *source_file);
-    int compile_src_and_save(const char *file, const char *output_file, const char *source_file);
+    size_t compile_src(const char *src, char *output, size_t output_size, const char *source_file);
 
 def N(string& s):
     return s2n_(s)
@@ -192,12 +192,12 @@ def get_public_key_prefix():
 cdef extern string eosapi_get_abi(string& account):
     return config.get_abi(account)
 
-def compile_py_src(src):
-    cdef char *output
-    cdef size_t output_size
-    compile_src(src, &output, &output_size, "contract.py");
-    return <bytes>string(output, output_size)
+def compile_py(src, src_type = 0):
+    cdef vector[char] output
+    cdef size_t size
 
-def compile_py_src_and_save(src_file, output_file):
-    return compile_src_and_save(src_file, output_file, "contract.mpy")
-
+    output.resize(len(src) * 2 + 128)
+    size = compile_src(src, output.data(), output.size(), "contract.py")
+    if not size:
+        return None
+    return <bytes>string(output.data(), size)
