@@ -61,7 +61,7 @@ cdef extern from "eosapi.hpp":
     void set_public_key_prefix_(const string& prefix);
     void get_public_key_prefix_(string& prefix);
 
-    size_t compile_src(const char *src, char *output, size_t output_size, const char *source_file);
+    size_t micropython_compile_src(const char *src, char *output, size_t output_size, const char *source_file);
 
 def N(string& s):
     return s2n_(s)
@@ -197,7 +197,7 @@ def compile_py(src, src_type = 0):
     cdef size_t size
 
     output.resize(len(src) * 2 + 128)
-    size = compile_src(src, output.data(), output.size(), "contract.py")
+    size = micropython_compile_src(src, output.data(), output.size(), "contract.py")
     if not size:
         return None
     return <bytes>string(output.data(), size)

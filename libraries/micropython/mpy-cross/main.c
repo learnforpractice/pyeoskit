@@ -241,53 +241,50 @@ STATIC void pre_process_options(int argc, char **argv) {
     }
 }
 
-size_t compile_src(const char *src, char *output, size_t output_size, const char *source_file) {
-    static int initialized = 0;
-    if (!initialized) {
-        initialized = 1;
+size_t micropython_compile_src(const char *src, char *output, size_t output_size, const char *source_file) {
 
-        mp_stack_ctrl_init();
-        mp_stack_set_limit(40000 * (BYTES_PER_WORD / 4));
+    mp_stack_ctrl_init();
+    mp_stack_set_limit(40000 * (BYTES_PER_WORD / 4));
 
-        char *heap = malloc(64*1024);
-        gc_init(heap, heap + heap_size);
+    char *heap = malloc(heap_size);
 
-        mp_init();
-        #ifdef _WIN32
-        set_fmode_binary();
-        #endif
-        mp_obj_list_init(mp_sys_path, 0);
-        mp_obj_list_init(mp_sys_argv, 0);
+    gc_init(heap, heap + heap_size);
 
-        #if MICROPY_EMIT_NATIVE
-        // Set default emitter options
-        MP_STATE_VM(default_emit_opt) = emit_opt;
-        #else
-        (void)emit_opt;
-        #endif
+    mp_init();
+    #ifdef _WIN32
+    set_fmode_binary();
+    #endif
+    mp_obj_list_init(mp_sys_path, 0);
+    mp_obj_list_init(mp_sys_argv, 0);
 
-        // set default compiler configuration
-        mp_dynamic_compiler.small_int_bits = 31;
-        mp_dynamic_compiler.opt_cache_map_lookup_in_bytecode = 0;
-        mp_dynamic_compiler.py_builtins_str_unicode = 1;
-        #if defined(__i386__)
-        mp_dynamic_compiler.native_arch = MP_NATIVE_ARCH_X86;
-        mp_dynamic_compiler.nlr_buf_num_regs = MICROPY_NLR_NUM_REGS_X86;
-        #elif defined(__x86_64__)
-        mp_dynamic_compiler.native_arch = MP_NATIVE_ARCH_X64;
-        mp_dynamic_compiler.nlr_buf_num_regs = MAX(MICROPY_NLR_NUM_REGS_X64, MICROPY_NLR_NUM_REGS_X64_WIN);
-        #elif defined(__arm__) && !defined(__thumb2__)
-        mp_dynamic_compiler.native_arch = MP_NATIVE_ARCH_ARMV6;
-        mp_dynamic_compiler.nlr_buf_num_regs = MICROPY_NLR_NUM_REGS_ARM_THUMB_FP;
-        #else
-        mp_dynamic_compiler.native_arch = MP_NATIVE_ARCH_NONE;
-        mp_dynamic_compiler.nlr_buf_num_regs = 0;
-        #endif
-    }
+    #if MICROPY_EMIT_NATIVE
+    // Set default emitter options
+    MP_STATE_VM(default_emit_opt) = emit_opt;
+    #else
+    (void)emit_opt;
+    #endif
 
-    return _compile_src(src, output, output_size, source_file);
-
-//    mp_deinit();
+    // set default compiler configuration
+    mp_dynamic_compiler.small_int_bits = 31;
+    mp_dynamic_compiler.opt_cache_map_lookup_in_bytecode = 0;
+    mp_dynamic_compiler.py_builtins_str_unicode = 1;
+    #if defined(__i386__)
+    mp_dynamic_compiler.native_arch = MP_NATIVE_ARCH_X86;
+    mp_dynamic_compiler.nlr_buf_num_regs = MICROPY_NLR_NUM_REGS_X86;
+    #elif defined(__x86_64__)
+    mp_dynamic_compiler.native_arch = MP_NATIVE_ARCH_X64;
+    mp_dynamic_compiler.nlr_buf_num_regs = MAX(MICROPY_NLR_NUM_REGS_X64, MICROPY_NLR_NUM_REGS_X64_WIN);
+    #elif defined(__arm__) && !defined(__thumb2__)
+    mp_dynamic_compiler.native_arch = MP_NATIVE_ARCH_ARMV6;
+    mp_dynamic_compiler.nlr_buf_num_regs = MICROPY_NLR_NUM_REGS_ARM_THUMB_FP;
+    #else
+    mp_dynamic_compiler.native_arch = MP_NATIVE_ARCH_NONE;
+    mp_dynamic_compiler.nlr_buf_num_regs = 0;
+    #endif
+    size_t ret = _compile_src(src, output, output_size, source_file);
+    mp_deinit();
+    free(heap);
+    return ret;
 }
 
 MP_NOINLINE int main_(int argc, char **argv) {
