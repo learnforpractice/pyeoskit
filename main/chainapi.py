@@ -188,6 +188,10 @@ class ChainApi(Client, ChainNative):
         args = {"from":_from, "to":_to, "quantity":'%.4f %s'%(_amount,token_name), "memo":_memo}
         return self.push_action(token_account, 'transfer', args, {_from:permission})
 
+    def set_abi(self, account, abi):
+        super().set_abi(account, abi)
+        self.db.set_abi(account, abi)
+
     def get_abi(self, account):
         if account == config.main_token_contract:
             return defaultabi.eosio_token_abi
@@ -451,6 +455,10 @@ class ChainApiAsync(Client, ChainNative):
             token_name = config.main_token
         args = {"from":_from, "to":_to, "quantity":'%.4f %s'%(_amount,token_name), "memo":_memo}
         return await self.push_action(token_account, 'transfer', args, {_from:permission})
+
+    def set_abi(self, account, abi):
+        super().set_abi(account, abi)
+        self.db.set_abi(account, abi)
 
     async def get_abi(self, account):
         if account == config.main_token_contract:

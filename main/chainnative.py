@@ -28,7 +28,7 @@ class ChainNative(object):
 
     @staticmethod
     def set_abi(account, abi):
-        _eosapi.set_abi(account, abi)
+        return _eosapi.set_abi(account, abi)
 
     @staticmethod
     def pack_abi(abi):
