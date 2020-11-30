@@ -185,7 +185,7 @@ class ChainApi(Client, ChainNative):
             token_account = config.main_token_contract
         if not token_name:
             token_name = config.main_token
-        args = {"from":_from, "to":_to, "quantity":'%.4f %s'%(_amount,token_name), "memo":_memo}
+        args = {"from":_from, "to": to, "quantity":'%.4f %s'%(amount, token_name), "memo":memo}
         return self.push_action(token_account, 'transfer', args, {_from:permission})
 
     def set_abi(self, account, abi):
@@ -449,12 +449,12 @@ class ChainApiAsync(Client, ChainNative):
             return 0.0
         return 0.0
 
-    async def transfer(self, _from, _to, _amount, _memo='', token_account=None, token_name=None, permission='active'):
+    async def transfer(self, _from, to, amount, memo='', token_account=None, token_name=None, permission='active'):
         if not token_account:
             token_account = config.main_token_contract
         if not token_name:
             token_name = config.main_token
-        args = {"from":_from, "to":_to, "quantity":'%.4f %s'%(_amount,token_name), "memo":_memo}
+        args = {"from": _from, "to": to, "quantity":'%.4f %s'%(amount, token_name), "memo": memo}
         return await self.push_action(token_account, 'transfer', args, {_from:permission})
 
     def set_abi(self, account, abi):
