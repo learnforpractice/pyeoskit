@@ -166,3 +166,5 @@ def compile_with_eosio_cpp(contract_name, code):
         logger.error("error (code {}):".format(e.returncode))
         logger.error(e.output.decode('utf8'))
         return None
+    finally:
+        shutil.rmtree(temp_dir)
