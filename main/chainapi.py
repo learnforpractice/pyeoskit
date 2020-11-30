@@ -12,7 +12,7 @@ from .client import Client
 from .chainnative import ChainNative
 
 class ChainApi(Client, ChainNative):
-    def __init__(self, network='EOS', node_url = 'http://127.0.0.1:8888'):
+    def __init__(self, node_url = 'http://127.0.0.1:8888', network='EOS'):
         super().__init__(_async=False)
 
         config.get_abi = self.get_abi
@@ -180,7 +180,7 @@ class ChainApi(Client, ChainNative):
             return 0.0
         return 0.0
 
-    def transfer(self, _from, _to, _amount, _memo='', token_account=None, token_name=None, permission='active'):
+    def transfer(self, _from, to, amount, memo='', token_account=None, token_name=None, permission='active'):
         if not token_account:
             token_account = config.main_token_contract
         if not token_name:
@@ -196,7 +196,10 @@ class ChainApi(Client, ChainNative):
         if account == config.main_token_contract:
             return defaultabi.eosio_token_abi
         elif account == config.system_contract:
-            return defaultabi.eosio_system_abi[config.main_token]
+            if config.main_token in defaultabi.eosio_system_abi:
+                return defaultabi.eosio_system_abi[config.main_token]
+            else:
+                return defaultabi.eosio_system_abi['EOS']
 
         abi = self.db.get_abi(account)
         if not abi:
@@ -428,10 +431,9 @@ class ChainApiAsync(Client, ChainNative):
                 'stake_cpu_quantity': '%0.4f %s'%(stake_cpu, config.main_token),
                 'transfer': 1
             }
-
-        args = self.pack_args(config.system_contract, 'delegatebw', args)
-        act = [config.system_contract, 'delegatebw', args, {creator:'active'}]
-        actions.append(act)
+            args = self.pack_args(config.system_contract, 'delegatebw', args)
+            act = [config.system_contract, 'delegatebw', args, {creator:'active'}]
+            actions.append(act)
         return await self.push_actions(actions)
 
     async def get_balance(self, account, token_account=None, token_name=None):
@@ -439,7 +441,6 @@ class ChainApiAsync(Client, ChainNative):
             token_name = config.main_token
         if not token_account:
             token_account = config.main_token_contract
-        print(account, token_account, token_name)
         try:
             ret = await super().get_currency_balance(token_account, account, token_name)
             if ret:
