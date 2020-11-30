@@ -1,10 +1,14 @@
 import os
 import sys
+import shlex
 import shutil
 import hashlib
 import marshal
 import subprocess
 import tempfile
+from . import log
+
+logger = log.get_logger(__name__)
 
 def find_eosio_cdt_path():
     eosio_cpp = shutil.which('eosio-cpp')
@@ -100,14 +104,14 @@ class cpp_compiler(object):
 
         try:
             ret = subprocess.check_output(clang_7_args, stderr=subprocess.STDOUT)
-            print(ret.decode('utf8'))
+            logger.info(ret.decode('utf8'))
             ret = subprocess.check_output(wasm_ld_args, stderr=subprocess.STDOUT)
-            print(ret.decode('utf8'))
+            logger.info(ret.decode('utf8'))
             ret = subprocess.check_output(eosio_pp, stderr=subprocess.STDOUT)
-            print(ret.decode('utf8'))
+            logger.info(ret.decode('utf8'))
         except subprocess.CalledProcessError as e:
-            print("error (code {}):".format(e.returncode))
-            print(e.output.decode('utf8'))
+            logger.error("error (code {}):".format(e.returncode))
+            logger.error(e.output.decode('utf8'))
             return None
 
         with open(f'{tmp_path}.wasm', 'rb') as f:
@@ -118,8 +122,8 @@ def compile_cpp_file(src_path, includes=[], entry='apply', opt='O3'):
     return compiler.compile_cpp_file(opt)
 
 def compile_cpp_src(account_name, code, includes = [], entry='apply', opt='O3', force=False):
-    temp_dir = tempfile.mktemp()
-    src_file = temp_dir + '.cpp'
+    temp_dir = tempfile.mkdtemp()
+    src_file = os.path.join(temp_dir, f'{account_name}.cpp')
 
     with open(src_file, 'w') as f:
         f.write(code)
@@ -131,3 +135,34 @@ def compile_cpp_src(account_name, code, includes = [], entry='apply', opt='O3', 
             os.remove(file_name)
 
     return wasm_code
+
+def compile_with_eosio_cpp(contract_name, code):
+    '''
+    contract_name must match the class name in code, otherwise there will no abi generated
+    '''
+    temp_dir = tempfile.mkdtemp()
+    logger.info(temp_dir)
+    src_file = os.path.join(temp_dir, f'{contract_name}.cpp')
+    wasm_file = os.path.join(temp_dir, f'{contract_name}.wasm')
+    abi_file = os.path.join(temp_dir, f'{contract_name}.abi')
+
+    with open(src_file, 'w') as f:
+        f.write(code)
+    eosio_cpp_args = f"eosio-cpp -o {wasm_file} {src_file}";
+    eosio_cpp_args = shlex.split(eosio_cpp_args)
+
+    try:
+        ret = subprocess.check_output(eosio_cpp_args, stderr=subprocess.STDOUT)
+        with open(wasm_file, 'rb') as f:
+            code = f.read()
+        abi = ''
+        try:
+            with open(abi_file, 'r') as f:
+                abi = f.read()
+        except Exception as e:
+            logger.error(e)
+        return code, abi
+    except subprocess.CalledProcessError as e:
+        logger.error("error (code {}):".format(e.returncode))
+        logger.error(e.output.decode('utf8'))
+        return None
