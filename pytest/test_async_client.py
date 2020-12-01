@@ -41,7 +41,11 @@ class Test(object):
         wallet.create('test')
         wallet.import_key('test', '5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3')
 
-        api = ChainApiAsync('UUOS', 'http://127.0.0.1:8989')
+        config.main_token = 'UUOS'
+        config.main_token_contract = 'uuos.token'
+        config.system_contract = 'uuos'
+
+        api = ChainApiAsync('http://127.0.0.1:8888', 'UUOS')
         r = await api.get_info()
         logger.info(r)
         r = await api.get_account(config.system_contract)
