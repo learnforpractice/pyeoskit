@@ -88,7 +88,7 @@ class HttpClient(object):
 
         if _async:
             import httpx
-            self.async_client = httpx.AsyncClient()
+            self.async_client = httpx.AsyncClient(proxies={})
         else:
             self.async_client = None
 
