@@ -6,10 +6,14 @@ from . import config
 from . import wallet
 from . import _eosapi
 from . import defaultabi
+from . import wasmcompiler
+from . import log
 
 from .chaincache import ChainCache
 from .client import Client
 from .chainnative import ChainNative
+
+logger = log.get_logger(__name__)
 
 class ChainApi(Client, ChainNative):
     def __init__(self, node_url = 'http://127.0.0.1:8888', network='EOS'):
@@ -214,25 +218,39 @@ class ChainApi(Client, ChainNative):
 
     def set_contract(self, account, code, abi, vmtype=1, vmversion=0, sign=True, compress=0):
         actions = []
+        same_code = self.db.get_code(account) == code
+        same_abi =  self.get_abi(account) == abi
+
+        if self.db.get_code(account) == code:
+            logger.warning("contract is already running this version of code")
 
         setcode = {"account":account,
                 "vmtype":vmtype,
                 "vmversion":vmversion,
                 "code":code.hex()
-                }
-        setcode = self.pack_args(config.system_contract, 'setcode', setcode)
-        setcode = [config.system_contract, 'setcode', setcode, {account:'active'}]
-        actions.append(setcode)
+        }
 
-        abi = _eosapi.pack_abi(abi)
-        setabi = self.pack_args(config.system_contract, 'setabi', {'account':account, 'abi':abi.hex()})
-        setabi = [config.system_contract, 'setabi', setabi, {account:'active'}]
-        actions.append(setabi)
+        if not same_code:
+            setcode = self.pack_args(config.system_contract, 'setcode', setcode)
+            setcode = [config.system_contract, 'setcode', setcode, {account:'active'}]
+            actions.append(setcode)
 
-        ret = self.push_actions(actions, compress)
-        self.db.remove_code(account)
-        self.db.remove_abi(account)
-        self.clear_abi_cache(account)
+        origin_abi = abi
+        if not same_abi:
+            abi = _eosapi.pack_abi(abi)
+            setabi = self.pack_args(config.system_contract, 'setabi', {'account':account, 'abi':abi.hex()})
+            setabi = [config.system_contract, 'setabi', setabi, {account:'active'}]
+            actions.append(setabi)
+
+        ret = None
+        if actions:
+            ret = self.push_actions(actions, compress)
+
+        if not same_code:
+            self.db.set_code(account, code)
+
+        if not same_abi:
+            self.set_abi(account, origin_abi)
         return ret
 
     def publish_contract(self, account, code, abi, vmtype=1, vmversion=0, sign=True, compress=0):
@@ -291,7 +309,7 @@ class ChainApi(Client, ChainNative):
 
 
 class ChainApiAsync(Client, ChainNative):
-    def __init__(self, network='EOS', node_url = 'http://127.0.0.1:8888'):
+    def __init__(self, node_url = 'http://127.0.0.1:8888', network='EOS'):
         super().__init__(_async=True)
 
         config.get_abi = self.get_abi
@@ -478,27 +496,44 @@ class ChainApiAsync(Client, ChainNative):
                 self.db.set_abi(account, abi)
         return abi
 
+    async def compile(self, contract_name, src, vm_type):
+        return super().compile(contract_name, src, vm_type)
+
     async def set_contract(self, account, code, abi, vmtype=1, vmversion=0, sign=True, compress=0):
         actions = []
+        same_code = self.db.get_code(account) == code
+        same_abi =  self.get_abi(account) == abi
+
+        if self.db.get_code(account) == code:
+            logger.warning("contract is already running this version of code")
 
         setcode = {"account":account,
                 "vmtype":vmtype,
                 "vmversion":vmversion,
                 "code":code.hex()
-                }
-        setcode = self.pack_args(config.system_contract, 'setcode', setcode)
-        setcode = [config.system_contract, 'setcode', setcode, {account:'active'}]
-        actions.append(setcode)
+        }
 
-        abi = _eosapi.pack_abi(abi)
-        setabi = self.pack_args(config.system_contract, 'setabi', {'account':account, 'abi':abi.hex()})
-        setabi = [config.system_contract, 'setabi', setabi, {account:'active'}]
-        actions.append(setabi)
+        if not same_code:
+            setcode = self.pack_args(config.system_contract, 'setcode', setcode)
+            setcode = [config.system_contract, 'setcode', setcode, {account:'active'}]
+            actions.append(setcode)
 
-        ret = await self.push_actions(actions, compress)
-        self.db.remove_code(account)
-        self.db.remove_abi(account)
-        self.clear_abi_cache(account)
+        origin_abi = abi
+        if not same_abi:
+            abi = _eosapi.pack_abi(abi)
+            setabi = self.pack_args(config.system_contract, 'setabi', {'account':account, 'abi':abi.hex()})
+            setabi = [config.system_contract, 'setabi', setabi, {account:'active'}]
+            actions.append(setabi)
+
+        ret = None
+        if actions:
+            ret = await self.push_actions(actions, compress)
+
+        if not same_code:
+            self.db.set_code(account, code)
+
+        if not same_abi:
+            self.set_abi(account, origin_abi)
         return ret
 
     def deploy_contract(self, account, code, abi, vmtype=1, vmversion=0, sign=True, compress=0):
