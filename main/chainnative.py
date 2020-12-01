@@ -1,4 +1,5 @@
 from . import _eosapi
+from . import wasmcompiler
 
 class ChainNative(object):
 
@@ -102,6 +103,37 @@ class ChainNative(object):
         return _eosapi.get_public_key_prefix()
 
     @staticmethod
-    def compile(src):
+    def mp_compile(src):
         return _eosapi.compile_py(src)
+
+    def mp_make_frozen(self, code):
+        mpy_code = ((code, len(code)),)
+
+        code_region = b''
+        code_size_region = b''
+        for code, size in mpy_code:
+            code_region += code
+            code_size_region += int.to_bytes(size, 4, 'little')
+
+        name_region = b'main.mpy\x00'
+
+        region_sizes = b''
+        region_sizes += int.to_bytes(len(name_region), 4, 'little')
+        region_sizes += int.to_bytes(len(code_size_region), 4, 'little')
+        region_sizes += int.to_bytes(len(code_region), 4, 'little')
+
+        header = int.to_bytes(5, 4, 'little')
+        header += bytearray(60)
+        frozen_code = header + region_sizes + name_region + code_size_region + code_region
+        return frozen_code
+
+    def compile(self, contract_name, code, vm_type):
+        if vm_type == 0:
+            return wasmcompiler.compile_cpp_src(contract_name, code)
+        elif vm_type == 1:
+            code = self.mp_compile(code)
+            assert code
+            return self.mp_make_frozen(code)
+        else:
+            assert 0, f'unsupported vm type: {vm_type}'
 
