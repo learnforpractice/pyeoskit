@@ -24,6 +24,8 @@ from urllib3.exceptions import (
     ProtocolError,
 )
 
+from .attrdict import AttributeDict
+
 logger = logging.getLogger(__name__)
 
 
@@ -148,7 +150,7 @@ class HttpClient(object):
                     raise HttpAPIError(r.status_code, r.text)
 
                 if self.json_decode:
-                    return json.loads(r.text)
+                    return AttributeDict(json.loads(r.text))
                 else:
                     return r.text
 
@@ -165,9 +167,8 @@ class HttpClient(object):
                 logger.info('Request error', extra=extra)
                 raise e
             else:
-                return self._return(
-                    response=response,
-                    body=body)
+                ret = self._return(response=response, body=body)
+                return AttributeDict(ret)
 
     async def async_exec(self, api, endpoint, body=None):
         url = f'{self.node_url}/v1/{api}/{endpoint}'
@@ -180,7 +181,8 @@ class HttpClient(object):
         if not r.status_code in [200, 202, 201] or not result:
             raise HttpAPIError(r.status_code, result)
 
-        return json.loads(r.text)
+        ret = json.loads(r.text)
+        return AttributeDict(ret)
 
     def _return(self, response=None, body=None):
         """ Process the response status code and body (json).
