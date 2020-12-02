@@ -9,7 +9,7 @@ logger=logging.getLogger(__name__)
 test_dir = os.path.dirname(__file__)
 
 
-from pyeoskit.chainapi import ChainApi
+from uuoskit.chainapi import ChainApi
 
 class Test(object):
 

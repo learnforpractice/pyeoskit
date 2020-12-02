@@ -9,7 +9,7 @@ logger=logging.getLogger(__name__)
 test_dir = os.path.dirname(__file__)
 
 
-from pyeoskit import eosapi
+from uuoskit import eosapi
 
 class Test(object):
 

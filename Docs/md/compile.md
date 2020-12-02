@@ -36,8 +36,8 @@ python -m pip install cython==0.28.5
 ###  下载源代码
 
 ```
-git clone https://www.github.com/learnforpractice/pyeoskit
-cd pyeoskit
+git clone https://www.github.com/learnforpractice/uuoskit
+cd uuoskit
 git submodule update --init --recursive
 ```
 
@@ -66,6 +66,6 @@ CC=gcc CXX=g++ python3 setup.py sdist bdist_wheel  -- -DCMAKE_TOOLCHAIN_FILE=$(p
 
 编译成功后即可通过下面的命令来进行安装
 ```
-python3 -m pip install dist/pyeoskit-[SUFFIX].whl
+python3 -m pip install dist/uuoskit-[SUFFIX].whl
 ```
 注意在Windows平台下python3应该改成python

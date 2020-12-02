@@ -1,6 +1,6 @@
 ```
 set PATH=%PATH%;C:\Program Files (x86)\Windows Kits\10\bin\10.0.17763.0\x64
-set INCLUDE=%INCLUDE%;H:\pyeoskit\pthreads4
+set INCLUDE=%INCLUDE%;H:\uuoskit\pthreads4
 set LIBPATH=%LIBPATH%;C:\Boost\lib
 
 set LIB=%LIB%;C:\boost_1_67_0\lib64-msvc-14.0

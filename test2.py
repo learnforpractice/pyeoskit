@@ -1,4 +1,4 @@
-from pyeoskit import wallet
+from uuoskit import wallet
 psw = wallet.create('mywallet6')
 print(psw)
 wallet.import_key('mywallet6', '5JEcwbckBCdmji5j8ZoMHLEUS8TqQiqBG1DRx1X9DN124GUok9s')

@@ -20,7 +20,7 @@ class CustomImporter(object):
     def load_module(self, module_name):
         mod = sys.modules.get(module_name)
         if mod is None:
-            hello_module = sys.modules.get('pyeoskit._hello')
+            hello_module = sys.modules.get('uuoskit._hello')
             if not hello_module:
                 return
             hello_so = hello_module.__file__

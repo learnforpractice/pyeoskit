@@ -7,7 +7,7 @@ from libcpp.map cimport map
 from libcpp cimport bool
 
 import json
-from pyeoskit import config
+from uuoskit import config
 
 cdef extern from * :
     ctypedef long long int64_t

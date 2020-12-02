@@ -27,7 +27,7 @@ HunterGate(
 )
 
 
-project(pyeoskit)
+project(uuoskit)
 
 if( WIN32 )
 #looks like this flag can have different default on some machines.

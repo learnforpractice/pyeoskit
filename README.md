@@ -2,24 +2,24 @@ Python Toolkit for Eos
 
 # Releases
 
-[v0.6.0 releases](https://github.com/learnforpractice/pyeoskit/releases)
+[v0.6.0 releases](https://github.com/uuosio/uuoskit/releases)
 
 #### Installing Release on macOS
 
 ```
-python3 -m pip install https://github.com/learnforpractice/pyeoskit/releases/download/v0.3.0/pyeoskit-0.3.0-cp36-cp36m-macosx_10_9_x86_64.whl
+python3 -m pip install https://github.com/uuosio/uuoskit/releases/download/v0.3.0/uuoskit-0.3.0-cp36-cp36m-macosx_10_9_x86_64.whl
 ```
 
 #### Installing Release on Ubuntu
 
 ```
-python3 -m pip install https://github.com/learnforpractice/pyeoskit/releases/download/v0.3.0/pyeoskit-0.3.0-cp36-cp36m-linux_x86_64.whl
+python3 -m pip install https://github.com/uuosio/uuoskit/releases/download/v0.3.0/uuoskit-0.3.0-cp36-cp36m-linux_x86_64.whl
 ```
 
 #### Installing Release on Windows
 
 ```
-python -m pip install https://github.com/learnforpractice/pyeoskit/releases/download/v0.3.0/pyeoskit-0.3.0-cp36-cp36m-win_amd64.whl
+python -m pip install https://github.com/uuosio/uuoskit/releases/download/v0.3.0/uuoskit-0.3.0-cp36-cp36m-win_amd64.whl
 ```
 
 
@@ -59,8 +59,8 @@ python3 -m pip install cython==0.28.5
 ### Downloading Source Code
 
 ```
-git clone https://www.github.com/learnforpractice/pyeoskit
-cd pyeoskit
+git clone https://www.github.com/uuosio/uuoskit
+cd uuoskit
 git submodule update --init --recursive
 ```
 
@@ -89,7 +89,7 @@ CC=gcc CXX=g++ python3 setup.py sdist bdist_wheel  -- -DCMAKE_TOOLCHAIN_FILE=$(p
 
 ```
 ls dist
-python3 -m pip install dist/pyeoskit-[SUFFIX].whl
+python3 -m pip install dist/uuoskit-[SUFFIX].whl
 ```
 
 # Tutorials
@@ -97,8 +97,8 @@ python3 -m pip install dist/pyeoskit-[SUFFIX].whl
 #### Sneak peek
 
 ```python
-from pyeoskit import eosapi
-from pyeoskit import wallet
+from uuoskit import eosapi
+from uuoskit import wallet
 
 mywallet = 'mywallet'
 psw = wallet.create(mywallet)
@@ -108,8 +108,8 @@ print(psw)
 
 
 ```python
-from pyeoskit import eosapi
-from pyeoskit import wallet
+from uuoskit import eosapi
+from uuoskit import wallet
 psw = 'PW5JwNkkPH7Ji1KfNfKXc4NHYwtEsxAh471YSiUzctwj7kVCD4Bih'
 wallet.unlock(mywallet, psw)
 
@@ -127,8 +127,8 @@ eosapi.push_action('eosio.token', 'transfer', args, {'hello':'active'})
 #### Deploying Contract Example
 
 ```python
-from pyeoskit import eosapi
-from pyeoskit import wallet
+from uuoskit import eosapi
+from uuoskit import wallet
 import os
 if os.path.exists('mywallet.wallet'):
     os.remove('mywallet.wallet')
@@ -184,7 +184,7 @@ eosapi.set_contract('hello', code, abi, 1)
 eosapi.push_action('hello', 'sayhello', b'hello,world', {'hello':'active'})
 ```
 
-More examples in [Docs](https://github.com/learnforpractice/pyeoskit/tree/master/Docs)
+More examples in [Docs](https://github.com/uuosio/uuoskit/tree/master/Docs)
 
 
 # Acknowledgments

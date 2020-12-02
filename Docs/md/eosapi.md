@@ -1,7 +1,7 @@
 #导入eosapi模块
 
 ```python
-from pyeoskit import eosapi
+from uuoskit import eosapi
 ```
 
 # eosapi.create_key
@@ -32,7 +32,7 @@ eosapi.create_key()
 eosapi.create_account('eosio',account_name,owner_public_key,active_public_key)
 ```
 
-[更多wallet操作请看这里](https://github.com/learnforpractice/pyeoskit/blob/master/Docs/md/wallet.md)
+[更多wallet操作请看这里](https://github.com/learnforpractice/uuoskit/blob/master/Docs/md/wallet.md)
 
 # eosapi.get_info
 
@@ -221,8 +221,8 @@ eosapi.get_producers(True, "", 2)
 发送transaction
 
 ```python
-from pyeoskit import eosapi
-from pyeoskit import wallet
+from uuoskit import eosapi
+from uuoskit import wallet
 
 #wallet.unlock('testwallet', 'YOUR WALLET PASSWORD')
 
@@ -247,9 +247,9 @@ eosapi.push_transaction(trx)
 push 多个transaction
 
 ```python
-from pyeoskit import db
-from pyeoskit import eosapi
-from pyeoskit import wallet
+from uuoskit import db
+from uuoskit import eosapi
+from uuoskit import wallet
 
 #wallet.unlock('YOUR WALLET NAME', 'YOUR WALLET PASSWORD')
 

@@ -1,5 +1,5 @@
 ```
-from pyeoskit import wallet
+from uuoskit import wallet
 ```
 # wallet.create
 创建一个新的钱包

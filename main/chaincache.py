@@ -5,7 +5,7 @@ import time
 import pickle
 
 cache_path = os.path.expanduser('~')
-cache_path = os.path.join(cache_path, '.pyeoskit')
+cache_path = os.path.join(cache_path, '.uuoskit')
 if not os.path.exists(cache_path):
     os.mkdir(cache_path)
 cache_path = os.path.join(cache_path, 'db.pkl')

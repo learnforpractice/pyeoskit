@@ -38,7 +38,7 @@ def setup_uuos_network():
     main_token = 'UUOS'
     system_contract = 'uuos'
     main_token_contract = 'uuos.token'
-    from pyeoskit import eosapi
+    from uuoskit import eosapi
     eosapi.set_public_key_prefix(main_token)
 
 def setup_eos_network():
