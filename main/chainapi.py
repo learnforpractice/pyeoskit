@@ -236,6 +236,20 @@ class ChainApi(Client, ChainNative):
             self.db.set_abi(account, abi)
         return abi
 
+    def get_packed_abi(self, account):
+        abi = self.db.get_abi(account)
+        if isinstance(abi, bytes):
+            return abi
+
+        abi = super().get_abi(account)
+        if abi and 'abi' in abi:
+            abi = json.dumps(abi['abi'])
+            self.db.set_abi(account, abi)
+        else:
+            abi = ''
+            self.db.set_abi(account, abi)
+        return eosapi.pack_abi(abi)
+
     def set_contract(self, account, code, abi, vmtype=1, vmversion=0, sign=True, compress=0):
         actions = []
         old_code = self.get_code(account)
