@@ -4,7 +4,7 @@ import datetime
 
 from . import config
 from . import wallet
-from . import _eosapi
+from . import _uuosapi
 from . import defaultabi
 from . import wasmcompiler
 from . import log
@@ -34,7 +34,7 @@ class ChainApi(Client, ChainNative):
         return self.get_info()['chain_id']
 
     def push_transaction(self, trx, compress=0):
-        trx = _eosapi.pack_transaction(trx, compress)
+        trx = _uuosapi.pack_transaction(trx, compress)
         return super().push_transaction(trx)
 
     def push_action(self, contract, action, args, permissions, compress=0):
@@ -43,7 +43,7 @@ class ChainApi(Client, ChainNative):
         reference_block_id = chain_info['head_block_id']
         chain_id = chain_info['chain_id']
 
-        trx = _eosapi.gen_transaction([act], 60, reference_block_id)
+        trx = _uuosapi.gen_transaction([act], 60, reference_block_id)
 
         keys = []
         if isinstance(permissions, dict):
@@ -60,14 +60,14 @@ class ChainApi(Client, ChainNative):
             assert 0, 'bad permission type'
 #        print(keys)
         trx = wallet.sign_transaction(trx, keys, chain_id)
-        trx = _eosapi.pack_transaction(trx, compress)
+        trx = _uuosapi.pack_transaction(trx, compress)
         return super().push_transaction(trx)
 
     def push_actions(self, actions, compress=0):
         chain_info = self.get_info()
         reference_block_id = chain_info['last_irreversible_block_id']
         chain_id = chain_info['chain_id']
-        trx = _eosapi.gen_transaction(actions, 60, reference_block_id)
+        trx = _uuosapi.gen_transaction(actions, 60, reference_block_id)
         keys = []
         for a in actions:
             permissions = a[3]
@@ -75,7 +75,7 @@ class ChainApi(Client, ChainNative):
                 public_keys = self.get_available_public_keys(account, permissions[account])
                 keys.extend(public_keys)
         trx = wallet.sign_transaction(trx, keys, chain_id)
-        trx = _eosapi.pack_transaction(trx, compress)
+        trx = _uuosapi.pack_transaction(trx, compress)
 
         return super().push_transaction(trx)
 
@@ -86,7 +86,7 @@ class ChainApi(Client, ChainNative):
 
         trxs = []
         for aa in aaa:
-            trx = _eosapi.gen_transaction(aa, expiration, reference_block_id)
+            trx = _uuosapi.gen_transaction(aa, expiration, reference_block_id)
             keys = []
             for a in aa:
                 permissions = a[3]
@@ -94,7 +94,7 @@ class ChainApi(Client, ChainNative):
                     public_keys = self.get_available_public_keys(account, permissions[account])
                     keys.extend(public_keys)
             trx = wallet.sign_transaction(trx, keys, chain_id)
-            trx = _eosapi.pack_transaction(trx, 0)
+            trx = _uuosapi.pack_transaction(trx, 0)
             trxs.append(trx)
         return super().push_transactions(trxs)
 
@@ -237,7 +237,7 @@ class ChainApi(Client, ChainNative):
 
         origin_abi = abi
         if not same_abi:
-            abi = _eosapi.pack_abi(abi)
+            abi = _uuosapi.pack_abi(abi)
             setabi = self.pack_args(config.system_contract, 'setabi', {'account':account, 'abi':abi.hex()})
             setabi = [config.system_contract, 'setabi', setabi, {account:'active'}]
             actions.append(setabi)
@@ -271,7 +271,7 @@ class ChainApi(Client, ChainNative):
         return ret
 
     def deploy_abi(self, account, abi):
-        abi = _eosapi.pack_abi(abi)
+        abi = _uuosapi.pack_abi(abi)
         setabi = self.pack_args(config.system_contract, 'setabi', {'account':account, 'abi':abi.hex()})    
         ret = self.push_action(config.system_contract, 'setabi', setabi, {account:'active'})
         self.db.remove_abi(account)
@@ -327,7 +327,7 @@ class ChainApiAsync(Client, ChainNative):
         return self.get_info()['chain_id']
 
     def push_transaction(self, trx, compress=0):
-        trx = _eosapi.pack_transaction(trx, compress)
+        trx = _uuosapi.pack_transaction(trx, compress)
         return super().push_transaction(trx)
 
     async def push_action(self, contract, action, args, permissions, compress=0):
@@ -336,7 +336,7 @@ class ChainApiAsync(Client, ChainNative):
         reference_block_id = chain_info['last_irreversible_block_id']
         chain_id = chain_info['chain_id']
 
-        trx = _eosapi.gen_transaction([act], 60, reference_block_id)
+        trx = _uuosapi.gen_transaction([act], 60, reference_block_id)
 
         keys = []
         for account in permissions:
@@ -344,14 +344,14 @@ class ChainApiAsync(Client, ChainNative):
             keys.extend(public_keys)
 #        print(keys)
         trx = wallet.sign_transaction(trx, keys, chain_id)
-        trx = _eosapi.pack_transaction(trx, compress)
+        trx = _uuosapi.pack_transaction(trx, compress)
         return await super().push_transaction(trx)
 
     async def push_actions(self, actions, compress=0):
         chain_info = await self.get_info()
         reference_block_id = chain_info['last_irreversible_block_id']
         chain_id = chain_info['chain_id']
-        trx = _eosapi.gen_transaction(actions, 60, reference_block_id)
+        trx = _uuosapi.gen_transaction(actions, 60, reference_block_id)
         keys = []
         for a in actions:
             permissions = a[3]
@@ -359,7 +359,7 @@ class ChainApiAsync(Client, ChainNative):
                 public_keys = await self.get_available_public_keys(account, permissions[account])
                 keys.extend(public_keys)
         trx = wallet.sign_transaction(trx, keys, chain_id)
-        trx = _eosapi.pack_transaction(trx, compress)
+        trx = _uuosapi.pack_transaction(trx, compress)
 
         return await super().push_transaction(trx)
 
@@ -370,7 +370,7 @@ class ChainApiAsync(Client, ChainNative):
 
         trxs = []
         for aa in aaa:
-            trx = _eosapi.gen_transaction(aa, expiration, reference_block_id)
+            trx = _uuosapi.gen_transaction(aa, expiration, reference_block_id)
             keys = []
             for a in aa:
                 permissions = a[3]
@@ -378,7 +378,7 @@ class ChainApiAsync(Client, ChainNative):
                     public_keys = await self.get_available_public_keys(account, permissions[account])
                     keys.extend(public_keys)
             trx = wallet.sign_transaction(trx, keys, chain_id)
-            trx = _eosapi.pack_transaction(trx, 0)
+            trx = _uuosapi.pack_transaction(trx, 0)
             trxs.append(trx)
         return await super().push_transactions(trxs)
 
@@ -520,7 +520,7 @@ class ChainApiAsync(Client, ChainNative):
 
         origin_abi = abi
         if not same_abi:
-            abi = _eosapi.pack_abi(abi)
+            abi = _uuosapi.pack_abi(abi)
             setabi = self.pack_args(config.system_contract, 'setabi', {'account':account, 'abi':abi.hex()})
             setabi = [config.system_contract, 'setabi', setabi, {account:'active'}]
             actions.append(setabi)
@@ -551,7 +551,7 @@ class ChainApiAsync(Client, ChainNative):
         return ret
 
     async def deploy_abi(self, account, abi):
-        abi = _eosapi.pack_abi(abi)
+        abi = _uuosapi.pack_abi(abi)
         setabi = self.pack_args(config.system_contract, 'setabi', {'account':account, 'abi':abi.hex()})    
         ret = await self.push_action(config.system_contract, 'setabi', setabi, {account:'active'})
         self.db.remove_abi(account)

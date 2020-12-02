@@ -13,7 +13,7 @@ __all__ = (
 
 class CustomImporter(object):
     def find_module(self, fullname, mpath=None):
-        if fullname in ['_eosapi', '_block_log', 'pyobject', 'wallet']:
+        if fullname in ['_uuosapi', '_block_log', 'pyobject', 'wallet']:
             return self
         return
 
@@ -35,8 +35,8 @@ sys.meta_path.append(CustomImporter())
 
 import pyobject
 import wallet
-import _eosapi
+import _uuosapi
 import _block_log
 
 from . import chainapi
-eosapi = chainapi.ChainApi()
+uuosapi = chainapi.ChainApi()

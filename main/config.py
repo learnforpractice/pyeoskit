@@ -11,7 +11,7 @@ default_nodes = [
 'https://api2.eosdublin.io',
 'https://mainnet.eoscannon.io',
 'https://eos-api.privex.io',
-'https://eosapi.blockmatrix.network',
+'https://uuosapi.blockmatrix.network',
 'https://user-api.eoseoul.io',
 'https://api.eos.bitspace.no',
 'https://node.eosflare.io',
@@ -24,7 +24,7 @@ nodes = []
 def set_nodes(_nodes):
     global nodes
     nodes = _nodes
-#set in eosapi.py:EosApi.__init__
+#set in uuosapi.py:uuosapi.__init__
 get_abi = None
 
 main_token = 'EOS'
@@ -38,8 +38,8 @@ def setup_uuos_network():
     main_token = 'UUOS'
     system_contract = 'uuos'
     main_token_contract = 'uuos.token'
-    from uuoskit import eosapi
-    eosapi.set_public_key_prefix(main_token)
+    from uuoskit import uuosapi
+    uuosapi.set_public_key_prefix(main_token)
 
 def setup_eos_network():
     global main_token
@@ -48,4 +48,4 @@ def setup_eos_network():
     main_token = 'EOS'
     system_contract = 'eosio'
     main_token_contract = 'eosio.token'
-    eosapi.set_public_key_prefix(main_token)
+    uuosapi.set_public_key_prefix(main_token)

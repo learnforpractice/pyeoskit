@@ -1,12 +1,12 @@
 
 add_cython_target(_hello CXX)
-add_cython_target(_eosapi CXX)
+add_cython_target(_uuosapi CXX)
 add_cython_target(wallet CXX)
 add_cython_target(pyobject CXX)
 add_cython_target(_block_log CXX)
 
 set(SRCS ${_hello}
-         ${_eosapi}
+         ${_uuosapi}
          ${wallet}
          ${pyobject}
          ${_block_log}
@@ -15,7 +15,7 @@ set(SRCS ${_hello}
          json.cpp
          pyobject.cpp
          main.cpp 
-         eosapi.cpp
+         uuosapi.cpp
          hello.cpp
          cpp_object.cpp)
 

@@ -97,7 +97,7 @@ python3 -m pip install dist/uuoskit-[SUFFIX].whl
 #### Sneak peek
 
 ```python
-from uuoskit import eosapi
+from uuoskit import uuosapi
 from uuoskit import wallet
 
 mywallet = 'mywallet'
@@ -108,7 +108,7 @@ print(psw)
 
 
 ```python
-from uuoskit import eosapi
+from uuoskit import uuosapi
 from uuoskit import wallet
 psw = 'PW5JwNkkPH7Ji1KfNfKXc4NHYwtEsxAh471YSiUzctwj7kVCD4Bih'
 wallet.unlock(mywallet, psw)
@@ -121,13 +121,13 @@ args = {"from": 'hello',
         "quantity": '0.0001 EOS',
         "memo": 'hello,world'
 }
-eosapi.push_action('eosio.token', 'transfer', args, {'hello':'active'})
+uuosapi.push_action('eosio.token', 'transfer', args, {'hello':'active'})
 ```
 
 #### Deploying Contract Example
 
 ```python
-from uuoskit import eosapi
+from uuoskit import uuosapi
 from uuoskit import wallet
 import os
 if os.path.exists('mywallet.wallet'):
@@ -180,8 +180,8 @@ abi = b'''
   ]
 }
 '''
-eosapi.set_contract('hello', code, abi, 1)
-eosapi.push_action('hello', 'sayhello', b'hello,world', {'hello':'active'})
+uuosapi.set_contract('hello', code, abi, 1)
+uuosapi.push_action('hello', 'sayhello', b'hello,world', {'hello':'active'})
 ```
 
 More examples in [Docs](https://github.com/uuosio/uuoskit/tree/master/Docs)

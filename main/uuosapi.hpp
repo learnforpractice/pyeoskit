@@ -1,12 +1,12 @@
 /*
- * eosapi.hpp
+ * uuosapi.hpp
  *
  *  Created on: Oct 8, 2018
  *      Author: newworld
  */
 
-#ifndef MAIN_EOSAPI_HPP_
-#define MAIN_EOSAPI_HPP_
+#ifndef MAIN_uuosapi_HPP_
+#define MAIN_uuosapi_HPP_
 
 #include <vector>
 #include <stdint.h>
@@ -57,4 +57,4 @@ extern "C" {
 size_t micropython_compile_src(const char *src, char *output, size_t output_size, const char *source_file);
 }
 
-#endif /* MAIN_EOSAPI_HPP_ */
+#endif /* MAIN_uuosapi_HPP_ */

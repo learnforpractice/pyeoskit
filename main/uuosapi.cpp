@@ -1,4 +1,4 @@
-#include "eosapi.hpp"
+#include "uuosapi.hpp"
 #include "pyobject.hpp"
 #include <eosio/utilities/key_conversion.hpp>
 #include <eosio/chain/chain_id_type.hpp>
@@ -15,7 +15,7 @@
 
 using namespace std;
 
-string eosapi_get_abi(string& account);
+string uuosapi_get_abi(string& account);
 
 static fc::microseconds abi_serializer_max_time = fc::microseconds(100*1000);
 static uint32_t tx_max_net_usage = 0;
@@ -40,7 +40,7 @@ void pack_args_(string& account, uint64_t action, std::string& _args, std::strin
    try {
       auto itr = abi_cache.find(account);
       if (itr == abi_cache.end()) {
-         std::string _rawabi = eosapi_get_abi(account);
+         std::string _rawabi = uuosapi_get_abi(account);
          abi_def abi = fc::json::from_string(_rawabi).as<abi_def>();
          abi_cache[account] = std::make_shared<abi_serializer>(abi, abi_serializer_max_time);
       }
@@ -60,7 +60,7 @@ void unpack_args_(string& account, uint64_t action, std::string& _binargs, std::
    try {
       auto itr = abi_cache.find(account);
       if (itr == abi_cache.end()) {
-         std::string _rawabi = eosapi_get_abi(account);
+         std::string _rawabi = uuosapi_get_abi(account);
          abi_def abi = fc::json::from_string(_rawabi).as<abi_def>();
          abi_cache[account] = std::make_shared<abi_serializer>(abi, abi_serializer_max_time);
       }

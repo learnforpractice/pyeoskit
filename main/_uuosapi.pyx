@@ -13,7 +13,7 @@ cdef extern from * :
     ctypedef long long int64_t
     ctypedef unsigned long long uint64_t
 
-cdef extern from "eosapi.hpp":
+cdef extern from "uuosapi.hpp":
     void *malloc(size_t size);
 
     void pack_cpp_object_(int _type, string& msg, string& packed_message)
@@ -189,7 +189,7 @@ def get_public_key_prefix():
     get_public_key_prefix_(prefix)
     return prefix
 
-cdef extern string eosapi_get_abi(string& account):
+cdef extern string uuosapi_get_abi(string& account):
     return config.get_abi(account)
 
 def compile_py(src, src_type = 0):

@@ -11,11 +11,11 @@
 #include <Python.h>
 
 PyObject* init_wallet();
-PyObject* init__eosapi();
+PyObject* init__uuosapi();
 
 extern "C" {
    PyObject* PyInit_wallet();
-   PyObject* PyInit__eosapi();
+   PyObject* PyInit__uuosapi();
    PyObject* PyInit_pyobject();
    PyObject* PyInit_block_log();
 }

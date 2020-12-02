@@ -4,7 +4,7 @@ import shutil
 import hashlib
 import marshal
 import subprocess
-from uuoskit import eosapi, wallet
+from uuoskit import uuosapi, wallet
 from uuoskit import config
 
 config.main_token = 'UUOS'
@@ -17,13 +17,13 @@ psw = wallet.create('test')
 wallet.import_key('test', '5KH8vwQkP4QoTwgBtCV5ZYhKmv8mx56WeNrw9AZuhNRXTrPzgYc')
 wallet.import_key('test', '5JMXaLz5xnVvwrnvAGaZKQZFCDdeU6wjmuJY1rDnXiUZz7Gyi1o')
 
-#eosapi.set_nodes(['https://nodes.uuos.network:8443'])
-eosapi.set_nodes(['http://127.0.0.1:8888'])
+#uuosapi.set_nodes(['https://nodes.uuos.network:8443'])
+uuosapi.set_nodes(['http://127.0.0.1:8888'])
 
 def run_test_code(code, abi='', account_name='helloworld11'):
     publish_contract(account_name, code, abi)
     try:
-        r = eosapi.push_action(account_name, 'sayhello', b'hello,world', {account_name:'active'})
+        r = uuosapi.push_action(account_name, 'sayhello', b'hello,world', {account_name:'active'})
         print(r['processed']['action_traces'][0]['console'])
     except Exception as e:
         print(e)
@@ -34,7 +34,7 @@ def set_code(account_name, code):
     code = marshal.dumps(code)
     m.update(code)
     code_hash = m.hexdigest()
-    r = eosapi.get_code(account_name)
+    r = uuosapi.get_code(account_name)
     if code_hash == r['code_hash']:
         return
 
@@ -43,7 +43,7 @@ def set_code(account_name, code):
                "vmversion":0,
                "code":code.hex()
                }
-    eosapi.push_action(config.system_contract, 'setcode', setcode, {account_name:'active'})
+    uuosapi.push_action(config.system_contract, 'setcode', setcode, {account_name:'active'})
     
     return True
 
@@ -179,11 +179,11 @@ def publish_cpp_contract_from_file(account_name, file_name, includes = [], entry
     m.update(code)
     code_hash = m.hexdigest()
 
-    r = eosapi.get_code(account_name)
+    r = uuosapi.get_code(account_name)
     if code_hash != r['code_hash']:
         print('update contract')
         abi = open(f'{file_name}.abi', 'r').read()
-        r = eosapi.set_contract(account_name, code, abi, 0)
+        r = uuosapi.set_contract(account_name, code, abi, 0)
     return True
 #print(find_include_path())
 
@@ -193,9 +193,9 @@ def publish_cpp_contract(account_name, code, abi='', includes = [], entry='apply
     m = hashlib.sha256()
     m.update(code)
     code_hash = m.hexdigest()
-    r = eosapi.get_code(account_name)
+    r = uuosapi.get_code(account_name)
     if code_hash != r['code_hash']:
-        r = eosapi.set_contract(account_name, code, abi, vm_type)
+        r = uuosapi.set_contract(account_name, code, abi, vm_type)
     return True
 
 def publish_py_contract(account_name, code, abi, vm_type=1, includes = [], entry='apply'):
@@ -204,9 +204,9 @@ def publish_py_contract(account_name, code, abi, vm_type=1, includes = [], entry
     code = marshal.dumps(code)
     m.update(code)
     code_hash = m.hexdigest()
-    r = eosapi.get_code(account_name)
+    r = uuosapi.get_code(account_name)
     if code_hash != r['code_hash']:
-        eosapi.set_contract(account_name, code, abi, 1)
+        uuosapi.set_contract(account_name, code, abi, 1)
     return True
 
 def publish_contract(account_name, code, abi, vm_type=1, includes = [], entry='apply'):

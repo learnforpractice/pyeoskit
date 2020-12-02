@@ -279,7 +279,7 @@ class Client(HttpClient):
 
     def get_producers(self, json, lower_bound, limit) -> dict:
         """
-        Example: eosapi.get_producers(True, "", 100)
+        Example: uuosapi.get_producers(True, "", 100)
         """
         body = dict(
             json=json,

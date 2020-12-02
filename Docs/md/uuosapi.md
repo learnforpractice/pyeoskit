@@ -1,15 +1,15 @@
-#导入eosapi模块
+#导入uuosapi模块
 
 ```python
-from uuoskit import eosapi
+from uuoskit import uuosapi
 ```
 
-# eosapi.create_key
+# uuosapi.create_key
 
 创建一个新的密码对
 
 ```python
-eosapi.create_key()
+uuosapi.create_key()
 ```
 
 返回值
@@ -21,7 +21,7 @@ eosapi.create_key()
 }
 ```
 
-# eosapi.create_account
+# uuosapi.create_account
 
 创建一个新的账户
 创建账户前，要确定owner key和active key的私钥已经导入钱包，再使用对应的公钥创建账户
@@ -29,66 +29,66 @@ eosapi.create_key()
 ```python
 #需要先导入wallet
 #操作前要执行wallet.import_key(wallet_name,private_key)
-eosapi.create_account('eosio',account_name,owner_public_key,active_public_key)
+uuosapi.create_account('eosio',account_name,owner_public_key,active_public_key)
 ```
 
 [更多wallet操作请看这里](https://github.com/learnforpractice/uuoskit/blob/master/Docs/md/wallet.md)
 
-# eosapi.get_info
+# uuosapi.get_info
 
 请求链的信息
 
 ```
-eosapi.get_info()
+uuosapi.get_info()
 ```
-# eosapi.get_block
+# uuosapi.get_block
 
 请求块的信息
 
 ```python
-eosapi.get_block(block_num_or_id)
+uuosapi.get_block(block_num_or_id)
 ```
-# eosapi.get_block_header_state
+# uuosapi.get_block_header_state
 
 获取块生产者信息
 
 ```python
-eosapi.get_block_header_state(block_num_or_id)
+uuosapi.get_block_header_state(block_num_or_id)
 ```
 
-# eosapi.get_account
+# uuosapi.get_account
 
 获取帐户信息
 
 ```python
-eosapi.get_account('eosio')
+uuosapi.get_account('eosio')
 ```
 
-# eosapi.get_abi
+# uuosapi.get_abi
 获取合约的信息
 ```python
-eosapi.get_abi('eosio.token')
+uuosapi.get_abi('eosio.token')
 ```
 
-# eosapi.get_code
+# uuosapi.get_code
 
 获取智能合约代码
 ```python
-eosapi.get_code('eosio.token')
+uuosapi.get_code('eosio.token')
 ```
 
-# eosapi.get_raw_code_and_abi
+# uuosapi.get_raw_code_and_abi
 
 获取智能合约二进制代码和abi
 
 ```python
-eosapi.get_raw_code_and_abi('eosio.token')
+uuosapi.get_raw_code_and_abi('eosio.token')
 ```
 
-# eosapi.get_table_rows
+# uuosapi.get_table_rows
 
 ```python
-eosapi.get_table_rows(True, 'eosio.token', 'EOS', 'stat', 'EOS', '', '', 1) 
+uuosapi.get_table_rows(True, 'eosio.token', 'EOS', 'stat', 'EOS', '', '', 1) 
 ```
 
 ```python
@@ -104,13 +104,13 @@ eosapi.get_table_rows(True, 'eosio.token', 'EOS', 'stat', 'EOS', '', '', 1)
 }
 ```
 
-# eosapi.abi_json_to_bin
+# uuosapi.abi_json_to_bin
 
 将json序列化为十六进制
 
 ```python
 args = {'from':'inita', 'to':'initb', 'quantity':'1.0000 EOS', 'memo':'hello,world'}
-eosapi.abi_json_to_bin('eosio.token', 'transfer', args)
+uuosapi.abi_json_to_bin('eosio.token', 'transfer', args)
 ```
 
 返回
@@ -121,13 +121,13 @@ eosapi.abi_json_to_bin('eosio.token', 'transfer', args)
 }
 ```
 
-# eosapi.abi_bin_to_json
+# uuosapi.abi_bin_to_json
 
 将十六进制序列化为json
 
 ```python
 binargs = "000000000093dd74000000008093dd74102700000000000004454f53000000000b68656c6c6f2c776f726c64"
-eosapi.abi_bin_to_json('eosio.token', 'transfer', binargs)
+uuosapi.abi_bin_to_json('eosio.token', 'transfer', binargs)
 ```
 
 返回：
@@ -143,24 +143,24 @@ eosapi.abi_bin_to_json('eosio.token', 'transfer', binargs)
 }
 ```
 
-# eosapi.get_currency_balance
+# uuosapi.get_currency_balance
 
 获取账户余额信息
 
 ```python
-eosapi.get_currency_balance('eosio.token', 'eosio.saving' ,'EOS')
+uuosapi.get_currency_balance('eosio.token', 'eosio.saving' ,'EOS')
 ```
 
-# eosapi.get_required_keys
+# uuosapi.get_required_keys
 
 获取transaction所需的公钥
 
-# eosapi.get_currency_stats
+# uuosapi.get_currency_stats
 
 获取token的信息
 
 ```python
-eosapi.get_currency_stats('eosio.token', 'EOS')
+uuosapi.get_currency_stats('eosio.token', 'EOS')
 ```
 
 ```python
@@ -173,12 +173,12 @@ eosapi.get_currency_stats('eosio.token', 'EOS')
 }
 ```
 
-# eosapi.get_producers
+# uuosapi.get_producers
 
 获取block producers信息
 
 ```python
-eosapi.get_producers(True, "", 2)
+uuosapi.get_producers(True, "", 2)
 ```
 
 ```python
@@ -211,17 +211,17 @@ eosapi.get_producers(True, "", 2)
 ```
 
 
-# eosapi.push_block
+# uuosapi.push_block
 
 ```
 ```
 
-# eosapi.push_transaction
+# uuosapi.push_transaction
 
 发送transaction
 
 ```python
-from uuoskit import eosapi
+from uuoskit import uuosapi
 from uuoskit import wallet
 
 #wallet.unlock('testwallet', 'YOUR WALLET PASSWORD')
@@ -232,23 +232,23 @@ args = {"from": 'helloworld12',
         "memo": 'hello,world'
 }
 action = ['eosio.token', 'transfer', args, {'helloworld12':'active'}]
-reference_block_id = eosapi.get_info().last_irreversible_block_id
-trx = eosapi.gen_transaction([action], 120, reference_block_id)
+reference_block_id = uuosapi.get_info().last_irreversible_block_id
+trx = uuosapi.gen_transaction([action], 120, reference_block_id)
 public_keys = ['EOS4uFSpSqLovSD7cB7XgAkGxnAja3zASnQwuMjoQwP3cwyhdNFdX']
 
-info = eosapi.get_info()
+info = uuosapi.get_info()
 trx = wallet.sign_transaction(trx, public_keys, info.chain_id)
-trx = eosapi.pack_transaction(trx, 0)
-eosapi.push_transaction(trx)
+trx = uuosapi.pack_transaction(trx, 0)
+uuosapi.push_transaction(trx)
 ```
 
-# eosapi.push_transactions
+# uuosapi.push_transactions
 
 push 多个transaction
 
 ```python
 from uuoskit import db
-from uuoskit import eosapi
+from uuoskit import uuosapi
 from uuoskit import wallet
 
 #wallet.unlock('YOUR WALLET NAME', 'YOUR WALLET PASSWORD')
@@ -267,16 +267,16 @@ args2 = {"from": 'helloworld12',
 }
 action2 = ['eosio.token', 'transfer', args2, {'helloworld12':'active'}]
 
-r = eosapi.push_transactions([[action1, action2]])
+r = uuosapi.push_transactions([[action1, action2]])
 ```
 
-# eosapi.get_actions
+# uuosapi.get_actions
 获取账户的Actions列表
 
 pos和offset是指：从第pos条记录开始获取offset条Actions
 
 ```python
-eosapi.get_actions('eosio.token', 0, 1)
+uuosapi.get_actions('eosio.token', 0, 1)
 ```
 
 ```python
@@ -286,24 +286,24 @@ eosapi.get_actions('eosio.token', 0, 1)
 }
 ```
 
-# eosapi.get_transaction
+# uuosapi.get_transaction
 获取transaction交易细节
 ```
-eosapi.get_transaction(id)
+uuosapi.get_transaction(id)
 ```
 
-# eosapi.get_key_accounts
+# uuosapi.get_key_accounts
 获取公钥对应的账户
 ```
-eosapi.get_key_accounts(public_key)
+uuosapi.get_key_accounts(public_key)
 ```
 
 
-# eosapi.gen_transaction
+# uuosapi.gen_transaction
 生成一个未签名的transaction
 
 ```python
-reference_block_id = eosapi.get_info().last_irreversible_block_id
-eosapi.gen_transaction([['hello', 'sayhello', b'', {'hello':'active'}]], 60, reference_block_id)
+reference_block_id = uuosapi.get_info().last_irreversible_block_id
+uuosapi.gen_transaction([['hello', 'sayhello', b'', {'hello':'active'}]], 60, reference_block_id)
 ```
 
