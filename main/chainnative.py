@@ -1,3 +1,4 @@
+import json
 from . import _uuosapi
 from . import wasmcompiler
 
@@ -33,7 +34,13 @@ class ChainNative(object):
 
     @staticmethod
     def pack_abi(abi):
+        if isinstance(abi, dict):
+            abi = json.dumps(abi)
         return _uuosapi.pack_abi(abi)
+
+    @staticmethod
+    def unpack_abi(packed_abi):
+        return _uuosapi.unpack_abi(packed_abi)
 
     @staticmethod
     def gen_transaction(actions, expiration, reference_block_id):

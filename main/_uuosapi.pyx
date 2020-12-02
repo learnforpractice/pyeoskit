@@ -25,6 +25,7 @@ cdef extern from "uuosapi.hpp":
     bool set_abi_(string& account, string& _abi);
 
     void pack_abi_(string& _abi, string& out);
+    void unpack_abi_(string& _packed_abi, string& out);
 
     uint64_t s2n_(string& s);
     void n2s_(uint64_t n, string& s);
@@ -104,6 +105,11 @@ def pack_abi(string& _abi):
     cdef string out
     pack_abi_(_abi, out)
     return <bytes>out
+
+def unpack_abi(string& _packed_abi):
+    cdef string out
+    unpack_abi_(_packed_abi, out)
+    return out
 
 def gen_transaction(actions, int expiration, string& reference_block_id):
     cdef vector[action] v

@@ -96,6 +96,14 @@ void pack_abi_(std::string& _abi, std::string& out) {
    } FC_LOG_AND_DROP();
 }
 
+void unpack_abi_(std::string& _packed_abi, std::string& out) {
+   try {
+      vector<char> packed_abi(_packed_abi.c_str(), _packed_abi.c_str()+_packed_abi.size());
+      auto st = fc::raw::unpack<abi_def>(packed_abi);
+      out = fc::json::to_string(st);
+   } FC_LOG_AND_DROP();
+}
+
 PyObject* gen_transaction_(vector<chain::action>& v, int expiration, std::string& reference_block_id) {
    packed_transaction::compression_type compression = packed_transaction::none;
 

@@ -32,6 +32,7 @@ bool clear_abi_cache_(string& account);
 bool set_abi_(string& account, string& _abi);
 
 void pack_abi_(std::string& _abi, std::string& out);
+void unpack_abi_(std::string& _packed_abi, std::string& out);
 
 PyObject* gen_transaction_(vector<chain::action>& v, int expiration, std::string& reference_block_id);
 PyObject* sign_transaction_(std::string& trx_json_to_sign, std::string& str_private_key, std::string& chain_id);
