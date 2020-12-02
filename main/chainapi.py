@@ -192,6 +192,22 @@ class ChainApi(Client, ChainNative):
         args = {"from":_from, "to": to, "quantity":'%.4f %s'%(amount, token_name), "memo":memo}
         return self.push_action(token_account, 'transfer', args, {_from:permission})
 
+    def get_code(self, account):
+        code = self.db.get_code(account)
+        if code:
+            return code
+
+        try:
+            code = super().get_code(account)
+            code = base64.b64decode(code['wasm'])
+            self.db.set_code(code)
+            return code
+        except Exception as e:
+            return None
+
+    def set_code(self, account, code):
+        self.db.set_code(account, code)
+
     def set_abi(self, account, abi):
         super().set_abi(account, abi)
         self.db.set_abi(account, abi)
@@ -206,19 +222,21 @@ class ChainApi(Client, ChainNative):
                 return defaultabi.eosio_system_abi['EOS']
 
         abi = self.db.get_abi(account)
-        if not abi:
-            abi = super().get_abi(account)
-            if abi and 'abi' in abi:
-                abi = json.dumps(abi['abi'])
-                self.db.set_abi(account, abi)
-            else:
-                abi = ''
-                self.db.set_abi(account, abi)
+        if abi:
+            return abi
+
+        abi = super().get_abi(account)
+        if abi and 'abi' in abi:
+            abi = json.dumps(abi['abi'])
+            self.db.set_abi(account, abi)
+        else:
+            abi = ''
+            self.db.set_abi(account, abi)
         return abi
 
     def set_contract(self, account, code, abi, vmtype=1, vmversion=0, sign=True, compress=0):
         actions = []
-        same_code = self.db.get_code(account) == code
+        same_code = self.get_code(account) == code
         same_abi =  self.get_abi(account) == abi
 
         if self.db.get_code(account) == code:
@@ -474,6 +492,22 @@ class ChainApiAsync(Client, ChainNative):
             token_name = config.main_token
         args = {"from": _from, "to": to, "quantity":'%.4f %s'%(amount, token_name), "memo": memo}
         return await self.push_action(token_account, 'transfer', args, {_from:permission})
+
+    async def get_code(self, account):
+        code = self.db.get_code(account)
+        if code:
+            return code
+
+        try:
+            code = await super().get_code(account)
+            code = base64.b64decode(code['wasm'])
+            self.db.set_code(code)
+            return code
+        except Exception as e:
+            return None
+
+    def set_code(self, account, code):
+        self.db.set_code(account, code)
 
     def set_abi(self, account, abi):
         super().set_abi(account, abi)
