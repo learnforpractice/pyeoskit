@@ -1,6 +1,8 @@
 import time
 import json
+import base64
 import datetime
+import asyncio
 
 from . import config
 from . import wallet
@@ -200,7 +202,7 @@ class ChainApi(Client, ChainNative):
         try:
             code = super().get_code(account)
             code = base64.b64decode(code['wasm'])
-            self.db.set_code(code)
+            self.db.set_code(account, code)
             return code
         except Exception as e:
             return None
@@ -236,26 +238,30 @@ class ChainApi(Client, ChainNative):
 
     def set_contract(self, account, code, abi, vmtype=1, vmversion=0, sign=True, compress=0):
         actions = []
-        same_code = self.get_code(account) == code
+        old_code = self.get_code(account)
+        same_code = old_code == code
         same_abi =  self.get_abi(account) == abi
 
-        if self.db.get_code(account) == code:
+        if same_code:
             logger.warning("contract is already running this version of code")
 
-        setcode = {"account":account,
-                "vmtype":vmtype,
-                "vmversion":vmversion,
-                "code":code.hex()
-        }
-
         if not same_code:
+            setcode = {"account":account,
+                    "vmtype":vmtype,
+                    "vmversion":vmversion,
+                    "code":code.hex()
+            }
             setcode = self.pack_args(config.system_contract, 'setcode', setcode)
             setcode = [config.system_contract, 'setcode', setcode, {account:'active'}]
             actions.append(setcode)
 
         origin_abi = abi
         if not same_abi:
-            abi = _uuosapi.pack_abi(abi)
+            if abi:
+                abi = _uuosapi.pack_abi(abi)
+                assert abi
+            else:
+                abi = b''
             setabi = self.pack_args(config.system_contract, 'setabi', {'account':account, 'abi':abi.hex()})
             setabi = [config.system_contract, 'setabi', setabi, {account:'active'}]
             actions.append(setabi)
@@ -328,11 +334,18 @@ class ChainApi(Client, ChainNative):
 
 class ChainApiAsync(Client, ChainNative):
     def __init__(self, node_url = 'http://127.0.0.1:8888', network='EOS'):
+        self.sync_api = ChainApi(node_url, network)
+
         super().__init__(_async=True)
 
-        config.get_abi = self.get_abi
+        config.get_abi = self.sync_api.get_abi
+
         self.db = ChainCache(self, network)
         self.set_node(node_url)
+
+    def set_node(self, node_url):
+        self.sync_api.set_node(node_url)
+        super().set_node(node_url)
 
     def enable_decode(self, json_format):
         super().json_decode = json_format
@@ -501,7 +514,7 @@ class ChainApiAsync(Client, ChainNative):
         try:
             code = await super().get_code(account)
             code = base64.b64decode(code['wasm'])
-            self.db.set_code(code)
+            self.db.set_code(account, code)
             return code
         except Exception as e:
             return None
@@ -535,19 +548,18 @@ class ChainApiAsync(Client, ChainNative):
 
     async def set_contract(self, account, code, abi, vmtype=1, vmversion=0, sign=True, compress=0):
         actions = []
-        same_code = self.db.get_code(account) == code
-        same_abi =  self.get_abi(account) == abi
+        same_code = await self.get_code(account) == code
+        same_abi =  await self.get_abi(account) == abi
 
-        if self.db.get_code(account) == code:
+        if same_code:
             logger.warning("contract is already running this version of code")
 
-        setcode = {"account":account,
-                "vmtype":vmtype,
-                "vmversion":vmversion,
-                "code":code.hex()
-        }
-
         if not same_code:
+            setcode = {"account":account,
+                    "vmtype":vmtype,
+                    "vmversion":vmversion,
+                    "code":code.hex()
+            }
             setcode = self.pack_args(config.system_contract, 'setcode', setcode)
             setcode = [config.system_contract, 'setcode', setcode, {account:'active'}]
             actions.append(setcode)
@@ -555,6 +567,7 @@ class ChainApiAsync(Client, ChainNative):
         origin_abi = abi
         if not same_abi:
             abi = _uuosapi.pack_abi(abi)
+            assert abi
             setabi = self.pack_args(config.system_contract, 'setabi', {'account':account, 'abi':abi.hex()})
             setabi = [config.system_contract, 'setabi', setabi, {account:'active'}]
             actions.append(setabi)
@@ -586,6 +599,7 @@ class ChainApiAsync(Client, ChainNative):
 
     async def deploy_abi(self, account, abi):
         abi = _uuosapi.pack_abi(abi)
+        assert abi
         setabi = self.pack_args(config.system_contract, 'setabi', {'account':account, 'abi':abi.hex()})    
         ret = await self.push_action(config.system_contract, 'setabi', setabi, {account:'active'})
         self.db.remove_abi(account)
