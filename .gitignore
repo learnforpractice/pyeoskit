@@ -16,3 +16,4 @@ _skbuild
 dist
 data-dir
 logfile.log
+test.wallet
