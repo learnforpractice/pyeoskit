@@ -29,11 +29,6 @@ g_abi = r'''{
     "abi_extensions": []
 }'''
 
-g_code = '''
-def apply(receiver, code, action):
-    print('hello,world')
-'''
-
 class Test(object):
 
     @classmethod
@@ -58,14 +53,13 @@ class Test(object):
         assert api.get_code('hello') == b'abc'
 
     def test_set_code_get_code_async(self):
-        async def set_code_get_code_async(self):
+        async def set_code_get_code_async():
             api = ChainApiAsync('http://127.0.0.1:8888', 'UUOS')
             api.set_code('hello', b'abc')
             assert await api.get_code('hello') == b'abc'
 
         loop = asyncio.get_event_loop()
         loop.run_until_complete(set_code_get_code_async())
-        loop.close()
 
     def test_set_contract(self):
         config.main_token = 'UUOS'
@@ -83,8 +77,12 @@ class Test(object):
 
         account_name = 'helloworld11'
 
-        code = uuosapi.compile(account_name, g_code, 1)
-        r = uuosapi.deploy_contract(account_name, code, abi, 1)
+        code = '''
+def apply(receiver, code, action):
+    print('hello,worldd')
+'''
+        code = uuosapi.compile(account_name, code, 1)
+        r = uuosapi.deploy_contract(account_name, code, g_abi, 1)
         print('done!')
 
     def test_set_contract_async(self):
@@ -98,19 +96,21 @@ class Test(object):
             api = ChainApiAsync('http://127.0.0.1:8888', 'UUOS')
             account_name = 'helloworld11'
 
-            code = await api.compile(account_name, g_code, 1)
+            code = '''
+def apply(receiver, code, action):
+    print('hello,world, async')
+'''
+            code = await api.compile(account_name, code, 1)
             r = await api.deploy_contract(account_name, code, g_abi, 1)
             print('done!')
 
         loop = asyncio.get_event_loop()
         loop.run_until_complete(set_contract_async())
-        loop.close()
 
     def test_get_abi_sync(self):
         async def get_abi(account):
             return 'hellooo'
         loop = asyncio.get_event_loop()
         ret = loop.run_until_complete(get_abi('hello'))
-        loop.close()
         logger.info('+++++ret:%s', ret)
         assert ret == 'hellooo'
