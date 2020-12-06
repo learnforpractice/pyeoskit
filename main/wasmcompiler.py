@@ -104,11 +104,11 @@ class cpp_compiler(object):
 
         try:
             ret = subprocess.check_output(clang_7_args, stderr=subprocess.STDOUT)
-            logger.info(ret.decode('utf8'))
+            # logger.info(ret.decode('utf8'))
             ret = subprocess.check_output(wasm_ld_args, stderr=subprocess.STDOUT)
-            logger.info(ret.decode('utf8'))
+            # logger.info(ret.decode('utf8'))
             ret = subprocess.check_output(eosio_pp, stderr=subprocess.STDOUT)
-            logger.info(ret.decode('utf8'))
+            # logger.info(ret.decode('utf8'))
         except subprocess.CalledProcessError as e:
             logger.error("error (code {}):".format(e.returncode))
             logger.error(e.output.decode('utf8'))
