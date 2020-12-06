@@ -250,9 +250,14 @@ void get_public_key_prefix_(string& prefix) {
    prefix = fc::crypto::config::public_key_legacy_prefix;
 }
 
+extern "C" {
+   #include "softfloat.h"
+}
+
 __uint128_t string_to_long_double_(string& s) {
-   __uint128_t ret;
-   long double f = std::stold(s, 0);
-   memcpy(&ret, &f, sizeof(__uint128_t));
-   return ret;
+   float128_t ret;
+   size_t idx = 0;
+   long double f = std::stold(s, &idx);
+   extF80M_to_f128M( (extFloat80_t*)&f, &ret );
+   return *(__uint128_t *)&ret;
 }
