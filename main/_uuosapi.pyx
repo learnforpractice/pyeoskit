@@ -12,6 +12,7 @@ from uuoskit import config
 cdef extern from * :
     ctypedef long long int64_t
     ctypedef unsigned long long uint64_t
+    ctypedef int __uint128_t
 
 cdef extern from "uuosapi.hpp":
     void *malloc(size_t size);
@@ -61,6 +62,8 @@ cdef extern from "uuosapi.hpp":
     uint64_t string_to_symbol_(int precision, string& str);
     void set_public_key_prefix_(const string& prefix);
     void get_public_key_prefix_(string& prefix);
+
+    __uint128_t string_to_long_double_(string& s);
 
     size_t micropython_compile_src(const char *src, char *output, size_t output_size, const char *source_file);
 
@@ -207,3 +210,8 @@ def compile_py(src, src_type = 0):
     if not size:
         return None
     return <bytes>string(output.data(), size)
+
+def string_to_long_double(string& s):
+    cdef __uint128_t ret;
+    ret = string_to_long_double_(s);
+    return <bytes>string(<char *>&ret, 16);

@@ -250,4 +250,9 @@ void get_public_key_prefix_(string& prefix) {
    prefix = fc::crypto::config::public_key_legacy_prefix;
 }
 
-
+__uint128_t string_to_long_double_(string& s) {
+   __uint128_t ret;
+   long double f = std::stold(s, 0);
+   memcpy(&ret, &f, sizeof(__uint128_t));
+   return ret;
+}
