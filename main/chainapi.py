@@ -14,7 +14,7 @@ from . import log
 from .chaincache import ChainCache
 from .client import Client
 from .chainnative import ChainNative
-from exceptions import ChainException
+from .exceptions import ChainException
 
 logger = log.get_logger(__name__)
 
@@ -251,7 +251,7 @@ class ChainApi(Client, ChainNative):
             self.db.set_abi(account, abi)
         return eosapi.pack_abi(abi)
 
-    def set_contract(self, account, code, abi, vmtype=1, vmversion=0, sign=True, compress=0):
+    def set_contract(self, account, code, abi, vm_type=1, vm_version=0, sign=True, compress=0):
         actions = []
         old_code = self.get_code(account)
         same_code = old_code == code
@@ -262,8 +262,8 @@ class ChainApi(Client, ChainNative):
 
         if not same_code:
             setcode = {"account":account,
-                    "vmtype":vmtype,
-                    "vmversion":vmversion,
+                    "vmtype":vm_type,
+                    "vmversion":vm_version,
                     "code":code.hex()
             }
             setcode = self.pack_args(config.system_contract, 'setcode', setcode)
@@ -292,16 +292,16 @@ class ChainApi(Client, ChainNative):
             self.set_abi(account, origin_abi)
         return ret
 
-    def publish_contract(self, account, code, abi, vmtype=1, vmversion=0, sign=True, compress=0):
-        return self.set_contract(account, code, abi, vmtype, vmversion, sign, compress)
+    def publish_contract(self, account, code, abi, vm_type=1, vm_version=0, sign=True, compress=0):
+        return self.set_contract(account, code, abi, vm_type, vm_version, sign, compress)
 
-    def deploy_contract(self, account, code, abi, vmtype=1, vmversion=0, sign=True, compress=0):
-        return self.set_contract(account, code, abi, vmtype, vmversion, sign, compress)
+    def deploy_contract(self, account, code, abi, vm_type=1, vm_version=0, sign=True, compress=0):
+        return self.set_contract(account, code, abi, vm_type, vm_version, sign, compress)
 
-    def deploy_code(self, account, code, vmtype=0, vmversion=0):
+    def deploy_code(self, account, code, vm_type=0, vm_version=0):
         setcode = {"account":account,
-                "vmtype":vmtype,
-                "vmversion":vmversion,
+                "vmtype":vm_type,
+                "vmversion":vm_version,
                 "code":code.hex()
                 }
         setcode = self.pack_args(config.system_contract, 'setcode', setcode)
@@ -561,7 +561,7 @@ class ChainApiAsync(Client, ChainNative):
     async def compile(self, contract_name, src, vm_type):
         return super().compile(contract_name, src, vm_type)
 
-    async def set_contract(self, account, code, abi, vmtype=1, vmversion=0, sign=True, compress=0):
+    async def set_contract(self, account, code, abi, vm_type=1, vm_version=0, sign=True, compress=0):
         actions = []
         same_code = await self.get_code(account) == code
         same_abi =  await self.get_abi(account) == abi
@@ -571,8 +571,8 @@ class ChainApiAsync(Client, ChainNative):
 
         if not same_code:
             setcode = {"account":account,
-                    "vmtype":vmtype,
-                    "vmversion":vmversion,
+                    "vmtype":vm_type,
+                    "vmversion":vm_version,
                     "code":code.hex()
             }
             setcode = self.pack_args(config.system_contract, 'setcode', setcode)
@@ -598,13 +598,13 @@ class ChainApiAsync(Client, ChainNative):
             self.set_abi(account, origin_abi)
         return ret
 
-    def deploy_contract(self, account, code, abi, vmtype=1, vmversion=0, sign=True, compress=0):
-        return self.set_contract(account, code, abi, vmtype, vmversion, sign, compress)
+    def deploy_contract(self, account, code, abi, vm_type=1, vm_version=0, sign=True, compress=0):
+        return self.set_contract(account, code, abi, vm_type, vm_version, sign, compress)
 
-    async def deploy_code(self, account, code, vmtype=0, vmversion=0):
+    async def deploy_code(self, account, code, vm_type=0, vm_version=0):
         setcode = {"account":account,
-                "vmtype":vmtype,
-                "vmversion":vmversion,
+                "vmtype":vm_type,
+                "vmversion":vm_version,
                 "code":code.hex()
                 }
         setcode = self.pack_args(config.system_contract, 'setcode', setcode)
