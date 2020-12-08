@@ -14,8 +14,8 @@ import requests_unixsocket
 import certifi
 import urllib3
 from .exceptions import (
-    EosdNoResponse,
-    HttpAPIError,
+    NoResponse,
+    ChainException,
 )
 from urllib3.connection import HTTPConnection
 from urllib3.exceptions import (
@@ -23,8 +23,6 @@ from urllib3.exceptions import (
     ReadTimeoutError,
     ProtocolError,
 )
-
-from .attrdict import AttributeDict
 
 logger = logging.getLogger(__name__)
 
@@ -147,10 +145,10 @@ class HttpClient(object):
                 else:
                     r = self.session_unix.get(url)
                 if not r.status_code in [200, 202, 201]:
-                    raise HttpAPIError(r.status_code, r.text)
+                    raise ChainException(r.status_code, r.text)
 
                 if self.json_decode:
-                    return AttributeDict(json.loads(r.text))
+                    return json.loads(r.text)
                 else:
                     return r.text
 
@@ -168,7 +166,7 @@ class HttpClient(object):
                 raise e
             else:
                 ret = self._return(response=response, body=body)
-                return AttributeDict(ret)
+                return ret
 
     async def async_exec(self, api, endpoint, body=None):
         url = f'{self.node_url}/v1/{api}/{endpoint}'
@@ -179,10 +177,10 @@ class HttpClient(object):
 
         result = r.text
         if not r.status_code in [200, 202, 201] or not result:
-            raise HttpAPIError(r.status_code, result)
+            raise ChainException(r.status_code, result)
 
         ret = json.loads(r.text)
-        return AttributeDict(ret)
+        return ret
 
     def _return(self, response=None, body=None):
         """ Process the response status code and body (json).
@@ -192,22 +190,22 @@ class HttpClient(object):
             exception instead of returning None.
 
         Exceptions:
-            EosdNoResponse on no response.
-            HttpAPIError on non-200 response.
+            NoResponse on no response.
+            ChainException on non-200 response.
 
         Returns:
             Parsed response body.
         """
 
         if not response:
-            raise EosdNoResponse('eosd nodes have failed to respond, all retries exhausted.')
+            raise NoResponse('eosd nodes have failed to respond, all retries exhausted.')
         result = response.data.decode('cp437')
         if not response.status in [200, 202, 201] or not result:
             extra = dict(result=result, response=response, request_body=body)
             logger.info('non ok response: %s',
                         response.status,
                         extra=extra)
-            raise HttpAPIError(response.status, result)
+            raise ChainException(response.status, result)
 
         try:
             if self.json_decode:

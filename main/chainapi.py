@@ -14,6 +14,7 @@ from . import log
 from .chaincache import ChainCache
 from .client import Client
 from .chainnative import ChainNative
+from exceptions import ChainException
 
 logger = log.get_logger(__name__)
 
