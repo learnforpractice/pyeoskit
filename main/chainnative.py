@@ -110,8 +110,8 @@ class ChainNative(object):
         return _uuosapi.get_public_key_prefix()
 
     @staticmethod
-    def mp_compile(src):
-        return _uuosapi.compile_py(src)
+    def mp_compile(contract, src):
+        return _uuosapi.compile_py(contract, src)
 
     @staticmethod
     def string_to_long_double(s):
@@ -142,7 +142,7 @@ class ChainNative(object):
         if vm_type == 0:
             return wasmcompiler.compile_cpp_src(contract_name, code)
         elif vm_type == 1:
-            code = self.mp_compile(code)
+            code = self.mp_compile(contract_name, code)
             assert code
             return self.mp_make_frozen(code)
         else:

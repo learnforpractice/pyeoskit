@@ -201,12 +201,12 @@ def get_public_key_prefix():
 cdef extern string uuosapi_get_abi(string& account):
     return config.get_abi(account)
 
-def compile_py(src, src_type = 0):
+def compile_py(file_name, src, src_type = 0):
     cdef vector[char] output
     cdef size_t size
 
     output.resize(len(src) * 2 + 128)
-    size = micropython_compile_src(src, output.data(), output.size(), "contract.py")
+    size = micropython_compile_src(src, output.data(), output.size(), f"{file_name}.py")
     if not size:
         return None
     return <bytes>string(output.data(), size)
