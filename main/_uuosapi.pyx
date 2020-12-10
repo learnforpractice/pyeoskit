@@ -206,7 +206,7 @@ def compile_py(file_name, src, src_type = 0):
     cdef size_t size
 
     output.resize(len(src) * 2 + 128)
-    size = micropython_compile_src(src, output.data(), output.size(), f"{file_name}.mpy")
+    size = micropython_compile_src(src, output.data(), output.size(), f"{file_name}.py")
     if not size:
         return None
     return <bytes>string(output.data(), size)
