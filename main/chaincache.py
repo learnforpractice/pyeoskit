@@ -4,12 +4,6 @@ import json
 import time
 import pickle
 
-cache_path = os.path.expanduser('~')
-cache_path = os.path.join(cache_path, '.uuoskit')
-if not os.path.exists(cache_path):
-    os.mkdir(cache_path)
-cache_path = os.path.join(cache_path, 'db.pkl')
-
 default_db = {
     'UUOS': {'chain_info': None, 'accounts':{}, 'abis':{}, 'codes':{}},
     'EOS':  {'chain_info': None, 'accounts':{}, 'abis':{}, 'codes':{}},
@@ -20,25 +14,12 @@ class ChainCache(object):
         self.network = network
         self.client = client
         self.db = default_db
-        if os.path.exists(cache_path):
-            try:
-                with open(cache_path, 'rb') as f:
-                    self.db = pickle.load(f)
-            except:
-                with open(cache_path, 'wb') as f:
-                    pickle.dump(self.db, f)
-        else:
-            with open(cache_path, 'wb') as f:
-                pickle.dump(self.db, f)
 
     def reset(self):
         self.db = default_db
-        with open(cache_path, 'wb') as f:
-            pickle.dump(self.db, f)
 
     def save(self):
-        with open(cache_path, 'wb') as f:
-            pickle.dump(self.db, f)
+        pass
 
     def get_value(self, key):
         try:
@@ -63,8 +44,6 @@ class ChainCache(object):
 
     def set_code(self, account, code):
         self.db[self.network]['codes'][account] = code
-        with open(cache_path, 'wb') as f:
-            pickle.dump(self.db, f)
 
     def remove_code(self, account):
         if account in self.db[self.network]['codes']:
@@ -77,8 +56,6 @@ class ChainCache(object):
 
     def set_abi(self, account, abi):
         self.db[self.network]['abis'][account] = abi
-        with open(cache_path, 'wb') as f:
-            pickle.dump(self.db, f)
 
     def remove_abi(self, account):
         if account in self.db[self.network]['abis']:
@@ -88,8 +65,6 @@ class ChainCache(object):
         if not isinstance(info, dict):
             info = json.loads(info)
         self.db[self.network]['accounts'][account] = info
-        with open(cache_path, 'wb') as f:
-            pickle.dump(self.db, f)
 
     def get_account(self, account):
         try:
