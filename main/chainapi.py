@@ -208,6 +208,13 @@ class ChainApi(Client, ChainNative):
         except Exception as e:
             return None
 
+    def get_raw_code(self, account):
+        try:
+            code = super().get_code(account)
+            return code
+        except Exception as e:
+            return None
+
     def set_code(self, account, code):
         self.db.set_code(account, code)
 
@@ -251,7 +258,7 @@ class ChainApi(Client, ChainNative):
             self.db.set_abi(account, abi)
         return eosapi.pack_abi(abi)
 
-    def set_contract(self, account, code, abi, vm_type=1, vm_version=0, sign=True, compress=0):
+    def deploy_contract(self, account, code, abi, vm_type=0, vm_version=0, sign=True, compress=0):
         actions = []
         old_code = self.get_code(account)
         same_code = old_code == code
@@ -292,12 +299,6 @@ class ChainApi(Client, ChainNative):
             self.set_abi(account, origin_abi)
         return ret
 
-    def publish_contract(self, account, code, abi, vm_type=1, vm_version=0, sign=True, compress=0):
-        return self.set_contract(account, code, abi, vm_type, vm_version, sign, compress)
-
-    def deploy_contract(self, account, code, abi, vm_type=1, vm_version=0, sign=True, compress=0):
-        return self.set_contract(account, code, abi, vm_type, vm_version, sign, compress)
-
     def deploy_code(self, account, code, vm_type=0, vm_version=0):
         setcode = {"account":account,
                 "vmtype":vm_type,
@@ -333,6 +334,8 @@ class ChainApi(Client, ChainNative):
         if depth <= 0:
             return threshold
         info = self.get_account(account_name)
+        if not info:
+            raise Exception(f'account {account_name} does not exists!')
         for per in info['permissions']:
             if perm_name != per['perm_name']:
                 continue
@@ -561,7 +564,7 @@ class ChainApiAsync(Client, ChainNative):
     async def compile(self, contract_name, src, vm_type):
         return super().compile(contract_name, src, vm_type)
 
-    async def set_contract(self, account, code, abi, vm_type=1, vm_version=0, sign=True, compress=0):
+    async def deploy_contract(self, account, code, abi, vm_type=0, vm_version=0, sign=True, compress=0):
         actions = []
         same_code = await self.get_code(account) == code
         same_abi =  await self.get_abi(account) == abi
@@ -597,9 +600,6 @@ class ChainApiAsync(Client, ChainNative):
         if not same_abi:
             self.set_abi(account, origin_abi)
         return ret
-
-    def deploy_contract(self, account, code, abi, vm_type=1, vm_version=0, sign=True, compress=0):
-        return self.set_contract(account, code, abi, vm_type, vm_version, sign, compress)
 
     async def deploy_code(self, account, code, vm_type=0, vm_version=0):
         setcode = {"account":account,
