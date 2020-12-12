@@ -205,8 +205,11 @@ class HttpClient(object):
             logger.info('non ok response: %s',
                         response.status,
                         extra=extra)
+            try:
+                result = json.loads(result)
+            except JSONDecodeError as e:
+                pass
             raise ChainException(response.status, result)
-
         try:
             if self.json_decode:
                 result = json.loads(result)
