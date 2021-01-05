@@ -136,7 +136,7 @@ def compile_cpp_src(account_name, code, includes = [], entry='apply', opt='O3', 
 
     return wasm_code
 
-def compile_with_eosio_cpp(contract_name, code):
+def compile_with_eosio_cpp(contract_name, code, options=''):
     '''
     contract_name must match the class name in code, otherwise there will no abi generated
     '''
