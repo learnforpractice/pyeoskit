@@ -13,6 +13,16 @@ class ChainNative(object):
         return _uuosapi.s2n(s)
 
     @staticmethod
+    def s2b(s):
+        n = _uuosapi.s2n(s)
+        return int.to_bytes(n, 8, 'little')
+
+    @staticmethod
+    def b2s(b):
+        n = int.from_bytes(b, 'little')
+        return _uuosapi.n2s(n)
+
+    @staticmethod
     def string_to_symbol(precision, str_symbol):
         return _uuosapi.string_to_symbol(precision, str_symbol)
 
