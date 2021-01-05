@@ -195,7 +195,13 @@ void mp_warning(const char *category, const char *msg, ...);
 #endif
 
 #include <setjmp.h>
-int setjmp_ex (jmp_buf);
-_Noreturn void longjmp_ex (jmp_buf, int);
+
+#ifdef __WASM
+    int setjmp_ex (jmp_buf);
+    _Noreturn void longjmp_ex (jmp_buf, int);
+#else
+    #define setjmp_ex setjmp
+    #define longjmp_ex longjmp
+#endif
 
 #endif // MICROPY_INCLUDED_PY_RUNTIME_H

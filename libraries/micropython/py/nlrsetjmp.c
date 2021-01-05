@@ -28,7 +28,11 @@
 
 #if MICROPY_NLR_SETJMP
 
-_Noreturn void longjmp_ex (jmp_buf, int);
+#ifdef __WASM
+    _Noreturn void longjmp_ex (jmp_buf, int);
+#else
+    #define longjmp_ex longjmp
+#endif
 
 void nlr_jump(void *val) {
     nlr_buf_t **top_ptr = &MP_STATE_THREAD(nlr_top);

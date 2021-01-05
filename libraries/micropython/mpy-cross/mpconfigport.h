@@ -155,3 +155,5 @@ typedef int ssize_t;
 typedef mp_off_t off_t;
 
 #endif
+
+#define MICROPY_NLR_SETJMP (1)

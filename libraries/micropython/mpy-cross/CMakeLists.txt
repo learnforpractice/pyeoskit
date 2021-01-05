@@ -124,7 +124,11 @@ gccollect.c
 
 add_library(micropython ${SRC})
 
-target_compile_options(micropython PRIVATE -DBUILD_LIB ) # -Wno-visibility)
+if (APPLE)
+    target_compile_options(micropython PRIVATE -DBUILD_LIB )
+else()
+    target_compile_options(micropython PRIVATE -DBUILD_LIB -fPIC)
+endif()
 
 target_include_directories(micropython
    PRIVATE
@@ -134,16 +138,16 @@ target_include_directories(micropython
    ${CMAKE_CURRENT_SOURCE_DIR}/..
 )
 
-add_executable(mpy-cross ${SRC})
+# add_executable(mpy-cross ${SRC})
 
-#target_compile_options(micropython PRIVATE -DMAX_MEMORY_SIZE=131072 ${PYTHON_FLAGS}) # -Wno-visibility)
+# #target_compile_options(micropython PRIVATE -DMAX_MEMORY_SIZE=131072 ${PYTHON_FLAGS}) # -Wno-visibility)
 
-target_include_directories(mpy-cross
-   PRIVATE
-   ${CMAKE_CURRENT_SOURCE_DIR}/extmod/uuosio/intx/include
-   ${CMAKE_CURRENT_SOURCE_DIR}/extmod/uuosio/include
-   ${CMAKE_CURRENT_SOURCE_DIR}
-   ${CMAKE_CURRENT_SOURCE_DIR}/..
-)
+# target_include_directories(mpy-cross
+#    PRIVATE
+#    ${CMAKE_CURRENT_SOURCE_DIR}/extmod/uuosio/intx/include
+#    ${CMAKE_CURRENT_SOURCE_DIR}/extmod/uuosio/include
+#    ${CMAKE_CURRENT_SOURCE_DIR}
+#    ${CMAKE_CURRENT_SOURCE_DIR}/..
+# )
 
 
