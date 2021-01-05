@@ -4,9 +4,9 @@ import glob
 
 setup(
     name="uuoskit",
-    version="0.8.1",
-    description="toolkit for pyeos",
-    author='The pyeos team',
+    version="0.8.2",
+    description="Python Toolkit for EOSIO",
+    author='The UUOSIO Team',
     license="MIT",
     packages=['uuoskit'],
     # The extra '/' was *only* added to check that scikit-build can handle it.
