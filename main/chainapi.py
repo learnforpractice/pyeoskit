@@ -615,6 +615,15 @@ class ChainApiAsync(Client, ChainNative):
             ret = await self.push_actions(actions)
         return ret
 
+    async def deploy_module(self, account, module_name, code, deploy_type=1):
+        args = self.s2b(account) + self.s2b(module_name) + code
+        if deploy_type == 0:
+            contract = account
+        else:
+            contract = config.python_contract
+
+        return await self.push_action(contract, 'setmodule', args, {account:'active'})
+
     async def exec(self, account, args, permissions = {}):
         if isinstance(args, str):
             args = args.encode('utf8')
