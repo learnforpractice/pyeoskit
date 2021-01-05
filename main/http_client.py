@@ -120,7 +120,7 @@ class HttpClient(object):
     def hostname(self):
         return urlparse(self.node_url).hostname
 
-    def exec(self, api, endpoint, body=None):
+    def rpc_request(self, api, endpoint, body=None):
         if self._async:
             return self.async_exec(api, endpoint, body)
         else:
@@ -180,6 +180,8 @@ class HttpClient(object):
             raise ChainException(r.status_code, result)
 
         ret = json.loads(r.text)
+        if 'error' in ret:
+            raise ChainException(r.status_code, ret)
         return ret
 
     def _return(self, response=None, body=None):
@@ -213,6 +215,8 @@ class HttpClient(object):
         try:
             if self.json_decode:
                 result = json.loads(result)
+                if 'error' in result:
+                    raise ChainException(response.status, result)
         except JSONDecodeError as e:
             extra = dict(response=response, request_body=body, err=e)
             logger.info('failed to parse response', extra=extra)

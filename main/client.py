@@ -53,7 +53,7 @@ class Client(HttpClient):
             symbol=symbol,
         )
 
-        return self.exec(
+        return self.rpc_request(
             api='chain',
             endpoint='get_currency_balance',
             body=body
@@ -67,7 +67,7 @@ class Client(HttpClient):
             symbol=symbol,
         )
 
-        return self.exec(
+        return self.rpc_request(
             api='chain',
             endpoint='get_currency_stats',
             body=body
@@ -79,7 +79,7 @@ class Client(HttpClient):
         body = dict(
         )
 
-        return self.exec(
+        return self.rpc_request(
             api='chain',
             endpoint='get_info',
             body=body
@@ -93,7 +93,7 @@ class Client(HttpClient):
             search_by_block_num = search_by_block_num,
             reverse = reverse,
         )
-        return self.exec(
+        return self.rpc_request(
             api='chain',
             endpoint='get_activated_protocol_features',
             body=body
@@ -106,7 +106,7 @@ class Client(HttpClient):
             block_num_or_id=block_num_or_id,
         )
 
-        return self.exec(
+        return self.rpc_request(
             api='chain',
             endpoint='get_block',
             body=body
@@ -119,7 +119,7 @@ class Client(HttpClient):
             block_num_or_id=block_num_or_id,
         )
 
-        return self.exec(
+        return self.rpc_request(
             api='chain',
             endpoint='get_block_header_state',
             body=body
@@ -132,7 +132,7 @@ class Client(HttpClient):
             account_name=account_name,
         )
 
-        return self.exec(
+        return self.rpc_request(
             api='chain',
             endpoint='get_account',
             body=body
@@ -146,7 +146,7 @@ class Client(HttpClient):
             code_as_wasm=code_as_wasm,
         )
 
-        return self.exec(
+        return self.rpc_request(
             api='chain',
             endpoint='get_code',
             body=body
@@ -159,7 +159,7 @@ class Client(HttpClient):
             account_name=account_name,
         )
 
-        return self.exec(
+        return self.rpc_request(
             api='chain',
             endpoint='get_code_hash',
             body=body
@@ -172,7 +172,7 @@ class Client(HttpClient):
             account_name=account_name,
         )
 
-        return self.exec(
+        return self.rpc_request(
             api='chain',
             endpoint='get_abi',
             body=body
@@ -185,7 +185,7 @@ class Client(HttpClient):
             account_name=account_name,
         )
 
-        return self.exec(
+        return self.rpc_request(
             api='chain',
             endpoint='get_raw_code_and_abi',
             body=body
@@ -199,7 +199,7 @@ class Client(HttpClient):
             abi_hash=abi_hash
         )
 
-        return self.exec(
+        return self.rpc_request(
             api='chain',
             endpoint='get_raw_abi',
             body=body
@@ -226,7 +226,7 @@ class Client(HttpClient):
             encode_type=encode_type
         )
 
-        return self.exec(
+        return self.rpc_request(
             api='chain',
             endpoint='get_table_rows',
             body=body
@@ -243,7 +243,7 @@ class Client(HttpClient):
             limit=10
         )
 
-        return self.exec(
+        return self.rpc_request(
             api='chain',
             endpoint='get_table_by_scope',
             body=body
@@ -258,7 +258,7 @@ class Client(HttpClient):
             symbol=symbol
         )
 
-        return self.exec(
+        return self.rpc_request(
             api='chain',
             endpoint='get_currency_balance',
             body=body
@@ -271,7 +271,7 @@ class Client(HttpClient):
             symbol=symbol
         )
 
-        return self.exec(
+        return self.rpc_request(
             api='chain',
             endpoint='get_currency_stats',
             body=body
@@ -287,7 +287,7 @@ class Client(HttpClient):
             limit=limit
         )
 
-        return self.exec(
+        return self.rpc_request(
             api='chain',
             endpoint='get_producers',
             body=body
@@ -298,7 +298,7 @@ class Client(HttpClient):
         body = dict(
         )
 
-        return self.exec(
+        return self.rpc_request(
             api='chain',
             endpoint='get_producer_schedule',
             body=body
@@ -312,7 +312,7 @@ class Client(HttpClient):
             limit=limit
         )
 
-        return self.exec(
+        return self.rpc_request(
             api='chain',
             endpoint='get_scheduled_transactions',
             body=body
@@ -327,7 +327,7 @@ class Client(HttpClient):
             args=args,
         )
 
-        return self.exec(
+        return self.rpc_request(
             api='chain',
             endpoint='abi_json_to_bin',
             body=body
@@ -342,7 +342,7 @@ class Client(HttpClient):
             binargs=binargs,
         )
 
-        return self.exec(
+        return self.rpc_request(
             api='chain',
             endpoint='abi_bin_to_json',
             body=body
@@ -358,7 +358,7 @@ class Client(HttpClient):
             binargs=args,
         )
 
-        return self.exec(
+        return self.rpc_request(
             api='contract',
             endpoint='call_contract',
             body=body
@@ -372,7 +372,7 @@ class Client(HttpClient):
             available_keys=available_keys,
         )
 
-        return self.exec(
+        return self.rpc_request(
             api='chain',
             endpoint='get_required_keys',
             body=body
@@ -385,7 +385,7 @@ class Client(HttpClient):
             block=block,
         )
 
-        return self.exec(
+        return self.rpc_request(
             api='chain',
             endpoint='push_block',
             body=body
@@ -398,7 +398,7 @@ class Client(HttpClient):
         body = dict(
             signed_transaction
         )
-        return self.exec(
+        return self.rpc_request(
             api='chain',
             endpoint='push_transaction',
             body=body
@@ -414,7 +414,7 @@ class Client(HttpClient):
 
         body = trxs
 
-        return self.exec(
+        return self.rpc_request(
             api='chain',
             endpoint='push_transactions',
             body=body
@@ -432,7 +432,7 @@ class Client(HttpClient):
             offset=offset,
         )
 
-        return self.exec(
+        return self.rpc_request(
             api='history',
             endpoint='get_actions',
             body=body
@@ -446,7 +446,7 @@ class Client(HttpClient):
             block_num_hint=block_num_hint
         )
 
-        return self.exec(
+        return self.rpc_request(
             api='history',
             endpoint='get_transaction',
             body=body
@@ -458,7 +458,7 @@ class Client(HttpClient):
             public_key=public_key,
         )
 
-        return self.exec(
+        return self.rpc_request(
             api='history',
             endpoint='get_key_accounts',
             body=body
@@ -470,7 +470,7 @@ class Client(HttpClient):
             public_key=public_key,
         )
 
-        return self.exec(
+        return self.rpc_request(
             api='history',
             endpoint='get_key_accounts_ex',
             body=body
@@ -482,7 +482,7 @@ class Client(HttpClient):
             controlling_account=controlling_account,
         )
 
-        return self.exec(
+        return self.rpc_request(
             api='history',
             endpoint='get_controlled_accounts',
             body=body
@@ -490,7 +490,7 @@ class Client(HttpClient):
 
     def get_history_db_size(self) -> dict:
         body = None
-        return self.exec(
+        return self.rpc_request(
             api='history',
             endpoint='get_db_size',
             body=body
@@ -500,7 +500,7 @@ class Client(HttpClient):
         """ Retrieve accounts has the specified key. """
         body = dict()
 
-        return self.exec(
+        return self.rpc_request(
             api='db_size',
             endpoint='get',
             body=body
@@ -510,7 +510,7 @@ class Client(HttpClient):
         """ Connect to a node address. """
         body = json.dumps(address)
 
-        return self.exec(
+        return self.rpc_request(
             api='net',
             endpoint='connect',
             body=body
@@ -520,7 +520,7 @@ class Client(HttpClient):
         """ Disconnect from a node address. """
         body = json.dumps(address)
 
-        return self.exec(
+        return self.rpc_request(
             api='net',
             endpoint='disconnect',
             body=body
@@ -530,7 +530,7 @@ class Client(HttpClient):
         """ Retrieve connection status. """
         body = json.dumps(address)
 
-        return self.exec(
+        return self.rpc_request(
             api='net',
             endpoint='status',
             body=body
@@ -540,7 +540,7 @@ class Client(HttpClient):
         """ Get node connections. """
         body = dict()
 
-        return self.exec(
+        return self.rpc_request(
             api='net',
             endpoint='connections',
             body=body
@@ -550,7 +550,7 @@ class Client(HttpClient):
         """ Retrieve supported apis. """
         body = dict()
 
-        return self.exec(
+        return self.rpc_request(
             api='node',
             endpoint='get_supported_apis',
             body=body
@@ -560,7 +560,7 @@ class Client(HttpClient):
         """ Retrieve supported apis. """
         body = json.dumps(enable)
 
-        return self.exec(
+        return self.rpc_request(
             api='debug',
             endpoint='enable_debug',
             body=body
@@ -570,7 +570,7 @@ class Client(HttpClient):
         """  """
         body = dict()
 
-        return self.exec(
+        return self.rpc_request(
             api='debug',
             endpoint='is_debug_enabled',
             body=body
@@ -582,7 +582,7 @@ class Client(HttpClient):
             name=name,
             path=shared_lib_path
         )
-        return self.exec(
+        return self.rpc_request(
             api='debug',
             endpoint='add_debug_contract',
             body=body
@@ -592,7 +592,7 @@ class Client(HttpClient):
         """ """
         body = json.dumps(name)
 
-        return self.exec(
+        return self.rpc_request(
             api='debug',
             endpoint='clear_debug_contract',
             body=body
@@ -607,7 +607,7 @@ class Client(HttpClient):
             logger=logger,
             level = level
         )
-        return self.exec(
+        return self.rpc_request(
             api='debug',
             endpoint='set_logger_level',
             body=body
@@ -615,7 +615,7 @@ class Client(HttpClient):
 
     def pause(self):
         body = None
-        return self.exec(
+        return self.rpc_request(
             api='producer',
             endpoint='pause',
             body=body
@@ -623,7 +623,7 @@ class Client(HttpClient):
 
     def resume(self):
         body = None
-        return self.exec(
+        return self.rpc_request(
             api='producer',
             endpoint='resume',
             body=body
@@ -631,7 +631,7 @@ class Client(HttpClient):
 
     def paused(self):
         body = None
-        return self.exec(
+        return self.rpc_request(
             api='producer',
             endpoint='paused',
             body=body
@@ -639,7 +639,7 @@ class Client(HttpClient):
 
     def get_runtime_options(self):
         body = None
-        return self.exec(
+        return self.rpc_request(
             api='producer',
             endpoint='get_runtime_options',
             body=body
@@ -685,7 +685,7 @@ class Client(HttpClient):
         if incoming_defer_ratio is not None:
             body['incoming_defer_ratio']=incoming_defer_ratio
 
-        return self.exec(
+        return self.rpc_request(
             api='producer',
             endpoint='update_runtime_options',
             body=body
@@ -697,7 +697,7 @@ class Client(HttpClient):
             accounts=accounts
         )
 
-        return self.exec(
+        return self.rpc_request(
             api='producer',
             endpoint='add_greylist_accounts',
             body=body
@@ -709,7 +709,7 @@ class Client(HttpClient):
             accounts=accounts
         )
 
-        return self.exec(
+        return self.rpc_request(
             api='producer',
             endpoint='remove_greylist_accounts',
             body=body
@@ -719,7 +719,7 @@ class Client(HttpClient):
         """ """
         body = None
 
-        return self.exec(
+        return self.rpc_request(
             api='producer',
             endpoint='get_greylist',
             body=body
@@ -729,7 +729,7 @@ class Client(HttpClient):
         """ """
         body = None
 
-        return self.exec(
+        return self.rpc_request(
             api='producer',
             endpoint='get_whitelist_blacklist',
             body=body
@@ -752,7 +752,7 @@ class Client(HttpClient):
             action_blacklist=action_blacklist,
             key_blacklist=key_blacklist
         )
-        return self.exec(
+        return self.rpc_request(
             api='producer',
             endpoint='set_whitelist_blacklist',
             body=body
@@ -761,7 +761,7 @@ class Client(HttpClient):
     def get_integrity_hash(self) -> dict:
         """  """
         body = None
-        return self.exec(
+        return self.rpc_request(
             api='producer',
             endpoint='get_integrity_hash',
             body=body
@@ -773,7 +773,7 @@ class Client(HttpClient):
             head_block_id=head_block_id,
             snapshot_name=snapshot_name,
         )
-        return self.exec(
+        return self.rpc_request(
             api='producer',
             endpoint='create_snapshot',
             body=body
@@ -784,7 +784,7 @@ class Client(HttpClient):
         body = dict(
             protocol_features_to_activate=protocol_features,
         )
-        return self.exec(
+        return self.rpc_request(
             api='producer',
             endpoint='schedule_protocol_feature_activations',
             body=body
@@ -793,7 +793,7 @@ class Client(HttpClient):
     def get_scheduled_protocol_feature_activations(self) -> dict:
         """  """
         body = dict()
-        return self.exec(
+        return self.rpc_request(
             api='producer',
             endpoint='get_scheduled_protocol_feature_activations',
             body=body
@@ -802,7 +802,7 @@ class Client(HttpClient):
     def get_supported_protocol_features(self, exclude_disabled=False, exclude_unactivatable=False) -> dict:
         """  """
         body = dict(exclude_disabled=exclude_disabled, exclude_unactivatable=exclude_unactivatable)
-        return self.exec(
+        return self.rpc_request(
             api='producer',
             endpoint='get_supported_protocol_features',
             body=body
@@ -815,7 +815,7 @@ class Client(HttpClient):
             upper_bound=upper_bound,
             limit=limit,
         )
-        return self.exec(
+        return self.rpc_request(
             api='producer',
             endpoint='get_account_ram_corrections',
             body=body
@@ -827,7 +827,7 @@ class Client(HttpClient):
         * to pass all actions
         """
         body = json.dumps(filter_in)
-        return self.exec(
+        return self.rpc_request(
             api='action_publisher',
             endpoint='set_filter_on',
             body=body
@@ -839,7 +839,7 @@ class Client(HttpClient):
         * to pass all action
         """
         body = json.dumps(filter_out)
-        return self.exec(
+        return self.rpc_request(
             api='action_publisher',
             endpoint='set_filter_out',
             body=body
@@ -849,7 +849,7 @@ class Client(HttpClient):
         """
         """
         body = None
-        return self.exec(
+        return self.rpc_request(
             api='action_publisher',
             endpoint='clear_filter_on',
             body=body
@@ -859,7 +859,7 @@ class Client(HttpClient):
         """
         """
         body = None
-        return self.exec(
+        return self.rpc_request(
             api='action_publisher',
             endpoint='clear_filter_out',
             body=body
