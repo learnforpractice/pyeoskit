@@ -1,5 +1,8 @@
 Python Toolkit for EOSIO
 
+# Latest Release
+[uuoskit v0.8.2](https://github.com/uuosio/uuoskit/releases)
+
 # Building from Source Code
 
 ### Installing Prerequirements(macOS X and linux)
