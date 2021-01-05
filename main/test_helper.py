@@ -27,6 +27,7 @@ except Exception as e:
     import os
     import sys
     import asyncio
+    from uuoskit import wallet
 
     def _load_code():
         with open('code.py', 'r') as f:
@@ -46,4 +47,32 @@ except Exception as e:
 
     if os.path.exists('test.wallet'):
         os.remove('test.wallet')
+    wallet.create('test')
 
+def print_console(r):
+    print('\n===================== CONSOLE OUTPUT BEGIN =====================\n')
+    print(r['processed']['action_traces'][0]['console'])
+    print('\n===================== CONSOLE OUTPUT END =====================\n')
+
+def run_test():
+    import os
+    import sys
+    import asyncio
+    import argparse
+    from uuoskit import config
+    config.setup_eos_test_network()
+#    config.setup_uuos_test_network()
+
+    parser = argparse.ArgumentParser(description='')
+    parser.add_argument('--test-dir', type=str, default='tests/test_helloworld', help='test directory')
+    args = parser.parse_args()
+    os.chdir(args.test_dir)
+
+    with open('test.py', 'r') as f:
+        src = f.read()
+        a = compile(src, "__main__", 'exec')
+        m = type(sys)('__main__')
+        print('Test is running, please wait...')
+        exec(a, m.__dict__)
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(m.run_test())
