@@ -260,43 +260,30 @@ class ChainApi(Client, ChainNative):
 
     def deploy_contract(self, account, code, abi, vm_type=0, vm_version=0, sign=True, compress=0):
         actions = []
-        old_code = self.get_code(account)
-        same_code = old_code == code
-        same_abi =  self.get_abi(account) == abi
+        setcode = {"account":account,
+                "vmtype":vm_type,
+                "vmversion":vm_version,
+                "code":code.hex()
+        }
+        setcode = self.pack_args(config.system_contract, 'setcode', setcode)
+        setcode = [config.system_contract, 'setcode', setcode, {account:'active'}]
+        actions.append(setcode)
 
-        if same_code:
-            logger.warning("contract is already running this version of code")
+        if abi:
+            if isinstance(abi, dict):
+                abi = json.dumps(abi)
+            abi = _uuosapi.pack_abi(abi)
+            assert abi
+        else:
+            abi = b''
+        setabi = self.pack_args(config.system_contract, 'setabi', {'account':account, 'abi':abi.hex()})
+        setabi = [config.system_contract, 'setabi', setabi, {account:'active'}]
+        actions.append(setabi)
 
-        if not same_code:
-            setcode = {"account":account,
-                    "vmtype":vm_type,
-                    "vmversion":vm_version,
-                    "code":code.hex()
-            }
-            setcode = self.pack_args(config.system_contract, 'setcode', setcode)
-            setcode = [config.system_contract, 'setcode', setcode, {account:'active'}]
-            actions.append(setcode)
+        ret = self.push_actions(actions, compress)
+        if 'error' in ret:
+            raise Exception(ret['error'])
 
-        origin_abi = abi
-        if not same_abi:
-            if abi:
-                abi = _uuosapi.pack_abi(abi)
-                assert abi
-            else:
-                abi = b''
-            setabi = self.pack_args(config.system_contract, 'setabi', {'account':account, 'abi':abi.hex()})
-            setabi = [config.system_contract, 'setabi', setabi, {account:'active'}]
-            actions.append(setabi)
-
-        ret = None
-        if actions:
-            ret = self.push_actions(actions, compress)
-
-        if not same_code:
-            self.db.set_code(account, code)
-
-        if not same_abi:
-            self.set_abi(account, origin_abi)
         return ret
 
     def deploy_code(self, account, code, vm_type=0, vm_version=0):
@@ -311,6 +298,9 @@ class ChainApi(Client, ChainNative):
         return ret
 
     def deploy_abi(self, account, abi):
+        if isinstance(abi, dict):
+            abi = json.dumps(abi)
+
         abi = _uuosapi.pack_abi(abi)
         setabi = self.pack_args(config.system_contract, 'setabi', {'account':account, 'abi':abi.hex()})    
         ret = self.push_action(config.system_contract, 'setabi', setabi, {account:'active'})
@@ -566,40 +556,81 @@ class ChainApiAsync(Client, ChainNative):
 
     async def deploy_contract(self, account, code, abi, vm_type=0, vm_version=0, sign=True, compress=0):
         actions = []
-        same_code = await self.get_code(account) == code
-        same_abi =  await self.get_abi(account) == abi
+        setcode = {"account":account,
+                "vmtype":vm_type,
+                "vmversion":vm_version,
+                "code":code.hex()
+        }
+        setcode = self.pack_args(config.system_contract, 'setcode', setcode)
+        setcode = [config.system_contract, 'setcode', setcode, {account:'active'}]
+        actions.append(setcode)
 
-        if same_code:
-            logger.warning("contract is already running this version of code")
+        abi = _uuosapi.pack_abi(abi)
+        assert abi
+        setabi = self.pack_args(config.system_contract, 'setabi', {'account':account, 'abi':abi.hex()})
+        setabi = [config.system_contract, 'setabi', setabi, {account:'active'}]
+        actions.append(setabi)
 
-        if not same_code:
+        ret = None
+        if actions:
+            ret = await self.push_actions(actions, compress)
+
+        return ret
+
+    async def deploy_python_contract(self, account, code, abi, deploy_type=0):
+        actions = []
+        if deploy_type == 0:
             setcode = {"account":account,
-                    "vmtype":vm_type,
-                    "vmversion":vm_version,
+                    "vmtype": 1,
+                    "vmversion": 0,
                     "code":code.hex()
             }
             setcode = self.pack_args(config.system_contract, 'setcode', setcode)
             setcode = [config.system_contract, 'setcode', setcode, {account:'active'}]
             actions.append(setcode)
 
-        origin_abi = abi
-        if not same_abi:
             abi = _uuosapi.pack_abi(abi)
             assert abi
             setabi = self.pack_args(config.system_contract, 'setabi', {'account':account, 'abi':abi.hex()})
             setabi = [config.system_contract, 'setabi', setabi, {account:'active'}]
             actions.append(setabi)
 
+        elif deploy_type == 1:
+            args = self.s2b(account) + code
+            setcode = [config.python_contract, 'setcode', args, {account:'active'}]
+            actions.append(setcode)
+
+            setabi = self.s2b(account)
+            abi = _uuosapi.pack_abi(abi)
+            assert abi
+            setabi += abi
+
+            setabi = [config.python_contract, 'setabi', setabi, {account:'active'}]
+            actions.append(setabi)
+        else:
+            assert 0
+
         ret = None
         if actions:
-            ret = await self.push_actions(actions, compress)
-
-        if not same_code:
-            self.db.set_code(account, code)
-
-        if not same_abi:
-            self.set_abi(account, origin_abi)
+            ret = await self.push_actions(actions)
         return ret
+
+    async def exec(self, account, args, permissions = {}):
+        if isinstance(args, str):
+            args = args.encode('utf8')
+
+        if not isinstance(args, bytes):
+            args = str(args)
+            args = args.encode('utf8')
+        
+        if not permissions:
+            permissions = {account: 'active'}
+
+        args = self.s2b(account) + args
+        if config.contract_deploy_type == 1:
+            return await self.push_action(config.python_contract, 'exec', args, permissions)
+        else:
+            return await self.push_action(account, 'exec', args, permissions)
 
     async def deploy_code(self, account, code, vm_type=0, vm_version=0):
         setcode = {"account":account,
