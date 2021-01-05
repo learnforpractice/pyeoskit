@@ -1,3 +1,5 @@
+import json
+
 class NoResponse(BaseException):
     pass
 
@@ -12,4 +14,9 @@ class ChainException(Exception):
                 status_code, response)
         super().__init__(msg)
         self.status_code = status_code
-        self.error = response
+        self.json = response
+
+    def __str__(self):
+        if isinstance(self.json, dict):
+            return json.dumps(self.json, indent=' ')
+        return str(self.json)
