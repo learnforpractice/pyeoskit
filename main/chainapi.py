@@ -308,6 +308,96 @@ class ChainApi(Client, ChainNative):
         self.clear_abi_cache(account)
         return ret
 
+
+    def deploy_python_contract(self, account, code, abi, deploy_type=0):
+        actions = []
+        origin_abi = abi
+        if deploy_type == 0:
+            setcode = {"account":account,
+                    "vmtype": 1,
+                    "vmversion": 0,
+                    "code":code.hex()
+            }
+            setcode = self.pack_args(config.system_contract, 'setcode', setcode)
+            setcode = [config.system_contract, 'setcode', setcode, {account:'active'}]
+            actions.append(setcode)
+
+            abi = _uuosapi.pack_abi(abi)
+            if abi:
+                setabi = self.pack_args(config.system_contract, 'setabi', {'account':account, 'abi':abi.hex()})
+                setabi = [config.system_contract, 'setabi', setabi, {account:'active'}]
+                actions.append(setabi)
+
+        elif deploy_type == 1:
+            args = self.s2b(account) + code
+            setcode = [config.python_contract, 'setcode', args, {account:'active'}]
+            actions.append(setcode)
+
+            abi = _uuosapi.pack_abi(abi)
+            if abi:
+                setabi = self.s2b(account) + abi
+                setabi = [config.python_contract, 'setabi', setabi, {account:'active'}]
+                actions.append(setabi)
+        else:
+            assert 0
+
+        ret = None
+        if actions:
+            ret = self.push_actions(actions)
+
+        self.set_abi(account, origin_abi)
+        return ret
+
+    def deploy_python_code(self, account, code, deploy_type=0):
+        actions = []
+        if deploy_type == 0:
+            setcode = {"account":account,
+                    "vmtype": 1,
+                    "vmversion": 0,
+                    "code":code.hex()
+            }
+            setcode = self.pack_args(config.system_contract, 'setcode', setcode)
+            setcode = [config.system_contract, 'setcode', setcode, {account:'active'}]
+            actions.append(setcode)
+
+        elif deploy_type == 1:
+            args = self.s2b(account) + code
+            setcode = [config.python_contract, 'setcode', args, {account:'active'}]
+            actions.append(setcode)
+        else:
+            assert 0
+
+        ret = None
+        if actions:
+            ret = self.push_actions(actions)
+        return ret
+
+    def deploy_module(self, account, module_name, code, deploy_type=1):
+        args = self.s2b(account) + self.s2b(module_name) + code
+        if deploy_type == 0:
+            contract = account
+        else:
+            contract = config.python_contract
+
+        return self.push_action(contract, 'setmodule', args, {account:'active'})
+
+    def exec(self, account, args, permissions = {}):
+        if isinstance(args, str):
+            args = args.encode('utf8')
+
+        if not isinstance(args, bytes):
+            args = str(args)
+            args = args.encode('utf8')
+        
+        if not permissions:
+            permissions = {account: 'active'}
+
+        args = self.s2b(account) + args
+        if config.contract_deploy_type == 1:
+            return self.push_action(config.python_contract, 'exec', args, permissions)
+        else:
+            return self.push_action(account, 'exec', args, permissions)
+
     def get_public_keys(self, account_name, perm_name):
         keys = []
         for public_key in self.get_keys(account_name, perm_name):
@@ -579,6 +669,7 @@ class ChainApiAsync(Client, ChainNative):
 
     async def deploy_python_contract(self, account, code, abi, deploy_type=0):
         actions = []
+        origin_abi = abi
         if deploy_type == 0:
             setcode = {"account":account,
                     "vmtype": 1,
@@ -607,6 +698,30 @@ class ChainApiAsync(Client, ChainNative):
 
             setabi = [config.python_contract, 'setabi', setabi, {account:'active'}]
             actions.append(setabi)
+        else:
+            assert 0
+
+        ret = None
+        if actions:
+            ret = await self.push_actions(actions)
+        self.set_abi(account, origin_abi)
+        return ret
+
+    async def deploy_python_code(self, account, code, deploy_type=0):
+        actions = []
+        if deploy_type == 0:
+            setcode = {"account":account,
+                    "vmtype": 1,
+                    "vmversion": 0,
+                    "code":code.hex()
+            }
+            setcode = self.pack_args(config.system_contract, 'setcode', setcode)
+            setcode = [config.system_contract, 'setcode', setcode, {account:'active'}]
+            actions.append(setcode)
+        elif deploy_type == 1:
+            args = self.s2b(account) + code
+            setcode = [config.python_contract, 'setcode', args, {account:'active'}]
+            actions.append(setcode)
         else:
             assert 0
 
