@@ -122,21 +122,31 @@ gccollect.c
 ../lib/utils/gchelper_generic.c
 )
 
+if(WIN32)
+    set(SRC ${SRC} ../ports/windows/fmode.c)
+endif()
+
 add_library(micropython ${SRC})
 
 if (APPLE)
     target_compile_options(micropython PRIVATE -DBUILD_LIB )
+elseif(WIN32)
+    target_compile_options(micropython PRIVATE -DBUILD_LIB)
 else()
     target_compile_options(micropython PRIVATE -DBUILD_LIB -fPIC)
 endif()
 
-target_include_directories(micropython
-   PRIVATE
-   ${CMAKE_CURRENT_SOURCE_DIR}/extmod/uuosio/intx/include
-   ${CMAKE_CURRENT_SOURCE_DIR}/extmod/uuosio/include
-   ${CMAKE_CURRENT_SOURCE_DIR}
-   ${CMAKE_CURRENT_SOURCE_DIR}/..
+set(INCS    ${CMAKE_CURRENT_SOURCE_DIR}/extmod/uuosio/intx/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/extmod/uuosio/include
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/..
 )
+
+if(WIN32)
+    set(INCS ${INCS} ${CMAKE_CURRENT_SOURCE_DIR}/../ports/windows/msvc)
+endif()
+
+target_include_directories(micropython PRIVATE ${INCS})
 
 # add_executable(mpy-cross ${SRC})
 
