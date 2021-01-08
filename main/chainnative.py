@@ -133,10 +133,6 @@ class ChainNative(object):
     def mp_compile(contract, src):
         return _uuosapi.compile_py(contract, src)
 
-    @staticmethod
-    def string_to_long_double(s):
-        return _uuosapi.string_to_long_double(s)
-
     def mp_make_frozen(self, code):
         mpy_code = ((code, len(code)),)
 

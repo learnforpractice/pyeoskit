@@ -287,11 +287,3 @@ void get_public_key_prefix_(string& prefix) {
 extern "C" {
    #include "softfloat.h"
 }
-
-__uint128_t string_to_long_double_(string& s) {
-   float128_t ret;
-   size_t idx = 0;
-   long double f = std::stold(s, &idx);
-   extF80M_to_f128M( (extFloat80_t*)&f, &ret );
-   return *(__uint128_t *)&ret;
-}
