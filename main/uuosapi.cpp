@@ -284,6 +284,3 @@ void get_public_key_prefix_(string& prefix) {
    prefix = fc::crypto::config::public_key_legacy_prefix;
 }
 
-extern "C" {
-   #include "softfloat.h"
-}
