@@ -1,3 +1,6 @@
+Archived, please move to [UUOSKit](https://github.com/uuosio/UUOSKit)
+
+
 Python Toolkit for Eos
 
 # Releases
