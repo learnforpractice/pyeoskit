@@ -35,6 +35,16 @@ class ChainNative(object):
         return _uuosapi.unpack_args(account, action, binargs)
 
     @staticmethod
+    def pack_abi_type(account, struct_name, args):
+        if isinstance(args, dict):
+            args = json.dumps(args)
+        return _uuosapi.pack_abi_type(account, struct_name, args)
+
+    @staticmethod
+    def unpack_abi_type(account, struct_name, binargs):
+        return _uuosapi.unpack_abi_type(account, struct_name, binargs)
+
+    @staticmethod
     def clear_abi_cache(account):
         return _uuosapi.clear_abi_cache(account)
 

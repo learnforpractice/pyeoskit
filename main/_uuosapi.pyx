@@ -23,6 +23,10 @@ cdef extern from "uuosapi.hpp":
     void pack_args_(string& account, uint64_t action, string& _args, string& binargs)
     void unpack_args_(string& account, uint64_t action, string& binargs, string& _args)
     bool clear_abi_cache_(string& account);
+
+    void pack_abi_type_(string& account, string& struct_name, string& _args, string& _binargs);
+    void unpack_abi_type_(string& account, string& struct_name, string& _binargs, string& _args );
+
     bool set_abi_(string& account, string& _abi);
 
     void pack_abi_(string& _abi, string& out);
@@ -97,6 +101,16 @@ def unpack_args(string& account, action, string& binargs):
         return _args;
 #        return json.loads(_args)
     raise Exception("unpack error!")
+
+def pack_abi_type(string& account, string& struct_name, string& _args):
+    cdef string _binargs
+    pack_abi_type_(account, struct_name, _args, _binargs)
+    return <bytes>_binargs
+
+def unpack_abi_type(string& account, string& struct_name, string& _binargs):
+    cdef string _args
+    unpack_abi_type_(account, struct_name, _binargs, _args)
+    return <bytes>_args
 
 def clear_abi_cache(string& account):
     return clear_abi_cache_(account);

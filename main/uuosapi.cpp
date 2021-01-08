@@ -71,6 +71,40 @@ void unpack_args_(string& account, uint64_t action, std::string& _binargs, std::
    } FC_LOG_AND_DROP();
 }
 
+void pack_abi_type_(string& account, string& struct_name, std::string& _args, std::string& _binargs) {
+   fc::variant args = fc::json::from_string(_args);
+
+   try {
+      auto itr = abi_cache.find(account);
+      if (itr == abi_cache.end()) {
+         std::string _rawabi = uuosapi_get_abi(account);
+         abi_def abi = fc::json::from_string(_rawabi).as<abi_def>();
+         abi_cache[account] = std::make_shared<abi_serializer>(abi, abi_serializer_max_time);
+      }
+      abi_serializer& abis = *abi_cache[account];
+
+      auto binargs = abis.variant_to_binary(struct_name, args, abi_serializer_max_time);
+      _binargs = std::string(binargs.begin(), binargs.end());
+   } FC_LOG_AND_DROP();
+}
+
+void unpack_abi_type_(string& account, string& struct_name, std::string& _binargs, std::string& _args ) {
+   bytes binargs = bytes(_binargs.data(), _binargs.data() + _binargs.size());
+
+   try {
+      auto itr = abi_cache.find(account);
+      if (itr == abi_cache.end()) {
+         std::string _rawabi = uuosapi_get_abi(account);
+         abi_def abi = fc::json::from_string(_rawabi).as<abi_def>();
+         abi_cache[account] = std::make_shared<abi_serializer>(abi, abi_serializer_max_time);
+      }
+      abi_serializer& abis = *abi_cache[account];
+
+      auto args = abis.binary_to_variant( struct_name, binargs, abi_serializer_max_time );
+      _args = fc::json::to_string(args);
+   } FC_LOG_AND_DROP();
+}
+
 bool set_abi_(string& account, string& _abi) {
    try {
       abi_def abi = fc::json::from_string(_abi).as<abi_def>();
