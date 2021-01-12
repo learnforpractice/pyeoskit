@@ -259,6 +259,7 @@ class ChainApi(Client, ChainNative):
         return eosapi.pack_abi(abi)
 
     def deploy_contract(self, account, code, abi, vm_type=0, vm_version=0, sign=True, compress=0):
+        origin_abi = abi
         actions = []
         setcode = {"account":account,
                 "vmtype":vm_type,
@@ -283,6 +284,8 @@ class ChainApi(Client, ChainNative):
         ret = self.push_actions(actions, compress)
         if 'error' in ret:
             raise Exception(ret['error'])
+
+        self.set_abi(account, origin_abi)
 
         return ret
 
@@ -755,6 +758,31 @@ class ChainApiAsync(Client, ChainNative):
             return await self.push_action(config.python_contract, 'exec', args, permissions)
         else:
             return await self.push_action(account, 'exec', args, permissions)
+
+    async def python_contract_get_table_rows(self,
+                    code,
+                    scope,
+                    table,
+                    lower_bound,
+                    upper_bound,
+                    limit=10):
+        args = {
+            'code': code,
+            'scope': scope,
+            'table': table,
+            'lowerbound': lower_bound,
+            'upperbound': upper_bound,
+            'limit': limit
+        }
+        try:
+            r = uuosapi.push_action(config.python_contract, 'gettablerows', args, {config.python_contract:'active'})
+        except Exception as e:
+            msg = e.json['error']['details'][0]['message']
+            # print(msg)
+            if msg.startswith('assertion failure with message: '):
+                start = msg.rfind(': ')
+                msg = msg[start + 2:]
+                return msg
 
     async def deploy_code(self, account, code, vm_type=0, vm_version=0):
         setcode = {"account":account,
