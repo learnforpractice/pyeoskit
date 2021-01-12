@@ -796,12 +796,13 @@ class ChainApiAsync(Client, ChainNative):
         return ret
 
     async def deploy_abi(self, account, abi):
+        origin_abi = abi
         abi = _uuosapi.pack_abi(abi)
         assert abi
         setabi = self.pack_args(config.system_contract, 'setabi', {'account':account, 'abi':abi.hex()})    
         ret = await self.push_action(config.system_contract, 'setabi', setabi, {account:'active'})
-        self.db.remove_abi(account)
-        self.clear_abi_cache(account)
+
+        self.set_abi(account, origin_abi)
         return ret
 
     async def get_public_keys(self, account_name, perm_name):
