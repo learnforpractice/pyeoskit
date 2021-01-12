@@ -103,6 +103,9 @@ def setup_eos_test_network(url = 'https://api.testnet.eos.io', deploy_type=1):
     global code_permission_name
     global contract_deploy_type
 
+    import os
+    from uuoskit import uuosapi, wallet
+
     contract_deploy_type = deploy_type
     network_url = url
 
@@ -111,5 +114,17 @@ def setup_eos_test_network(url = 'https://api.testnet.eos.io', deploy_type=1):
     main_token_contract = 'eosio.token'
     python_contract = 'ceyelqpjeeia'
     code_permission_name = 'eosio.code'
-    from uuoskit import uuosapi
     uuosapi.set_public_key_prefix('EOS')
+
+    if os.path.exists('test.wallet'):
+        os.remove('test.wallet')
+    wallet.create('test')
+    # import active key for hello
+    wallet.import_key('test', '5JRYimgLBrRLCBAcjHUWCYRv3asNedTYYzVgmiU4q2ZVxMBiJXL')
+    # import active key for helloworld11
+    wallet.import_key('test', '5Jbb4wuwz8MAzTB9FJNmrVYGXo4ABb7wqPVoWGcZ6x8V2FwNeDo')
+    # active key of ceyelqpjeeia
+    wallet.import_key('test', '5JfZz1kXF8TXsxQgwfsvZCUBeTQefYSsCLDSbSPmnbKQfFmtBny')
+
+    # active key of ebvjmdibybgq
+    wallet.import_key('test', '5KiVDjfHMHXzxrcLqZxGENrhCcCXBMSXP7paPbJWiMCDRMbStsF')

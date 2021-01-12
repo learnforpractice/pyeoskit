@@ -1,6 +1,9 @@
 load_code = None
 run = None
 
+test_account1 = 'ceyelqpjeeia'
+test_account2 = 'ebvjmdibybgq'
+
 def config_network():
     from uuoskit import config
     config.main_token = 'UUOS'
@@ -55,6 +58,11 @@ def print_console(r):
     print('\n===================== CONSOLE OUTPUT END =====================\n')
 
 def run_test():
+    global test_account1
+    global test_account2
+    test_account1 = 'ceyelqpjeeia'
+    test_account2 = 'ebvjmdibybgq'
+
     import os
     import sys
     import asyncio
@@ -70,8 +78,8 @@ def run_test():
 
     with open('test.py', 'r') as f:
         src = f.read()
-        a = compile(src, "__main__", 'exec')
-        m = type(sys)('__main__')
+        a = compile(src, "test.py", 'exec')
+        m = type(sys)('test')
         print('Test is running, please wait...')
         exec(a, m.__dict__)
         loop = asyncio.get_event_loop()

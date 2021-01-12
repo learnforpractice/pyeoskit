@@ -14,7 +14,10 @@ class ChainException(Exception):
                 status_code, response)
         super().__init__(msg)
         self.status_code = status_code
-        self.json = response
+        try:
+            self.json = json.loads(response)
+        except:
+            self.json = response
 
     def __str__(self):
         if isinstance(self.json, dict):
