@@ -21,7 +21,7 @@ namespace eosio {
          where the integer represents number of decimals. Number of decimals must be larger than zero.
        */
 
-      static uint64_t string_to_symbol_c(uint8_t precision, const char* str) {
+      static inline uint64_t string_to_symbol_c(uint8_t precision, const char* str) {
          uint32_t len = 0;
          while (str[len]) ++len;
 
