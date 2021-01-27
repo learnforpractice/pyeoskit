@@ -105,21 +105,25 @@ void unpack_abi_type_(string& account, string& struct_name, std::string& _binarg
    } FC_LOG_AND_DROP();
 }
 
-bool set_abi_(string& account, string& _abi) {
-   try {
-      abi_def abi = fc::json::from_string(_abi).as<abi_def>();
-      abi_cache[account] = std::make_shared<abi_serializer>(abi, abi_serializer_max_time);
-      return true;
-   } FC_LOG_AND_DROP();
-   return false;
-}
-
 bool clear_abi_cache_(string& account) {
    auto itr = abi_cache.find(account);
    if (itr != abi_cache.end()) {
       abi_cache.erase(itr);
       return true;
    }
+   return false;
+}
+
+bool set_abi_(string& account, string& _abi) {
+   try {
+      if (_abi.size()) {
+         abi_def abi = fc::json::from_string(_abi).as<abi_def>();
+         abi_cache[account] = std::make_shared<abi_serializer>(abi, abi_serializer_max_time);
+      } else {
+         clear_abi_cache_(account);
+      }
+      return true;
+   } FC_LOG_AND_DROP();
    return false;
 }
 
