@@ -315,8 +315,8 @@ class ChainApi(Client, ChainNative):
     def deploy_python_contract(self, account, code, abi, deploy_type=0):
         actions = []
         origin_abi = abi
-        if deploy_type == 0:
-            setcode = {"account":account,
+        if config.contract_deploy_type == 0:
+            setcode = {"account": account,
                     "vmtype": 1,
                     "vmversion": 0,
                     "code":code.hex()
@@ -331,15 +331,20 @@ class ChainApi(Client, ChainNative):
                 setabi = [config.system_contract, 'setabi', setabi, {account:'active'}]
                 actions.append(setabi)
 
-        elif deploy_type == 1:
+        elif config.contract_deploy_type in (1, 2):
+            if config.contract_deploy_type == 2:
+                python_contract = account
+            else:
+                python_contract = config.python_contract
+
             args = self.s2b(account) + code
-            setcode = [config.python_contract, 'setcode', args, {account:'active'}]
+            setcode = [python_contract, 'setcode', args, {account:'active'}]
             actions.append(setcode)
 
             abi = _uuosapi.pack_abi(abi)
             if abi:
                 setabi = self.s2b(account) + abi
-                setabi = [config.python_contract, 'setabi', setabi, {account:'active'}]
+                setabi = [python_contract, 'setabi', setabi, {account:'active'}]
                 actions.append(setabi)
         else:
             assert 0
