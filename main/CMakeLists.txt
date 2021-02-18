@@ -55,4 +55,4 @@ target_include_directories( hello
 
 python_extension_module(_hello)
 
-install(TARGETS _hello LIBRARY DESTINATION main)
+install(TARGETS _hello LIBRARY DESTINATION py)

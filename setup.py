@@ -10,7 +10,8 @@ setup(
     license="MIT",
     packages=['uuoskit'],
     # The extra '/' was *only* added to check that scikit-build can handle it.
-    package_dir={'uuoskit': 'main/'},
+    package_dir={'uuoskit': 'py'},
+    package_data={'uuoskit': ['data/*']},
     install_requires=[
         'urllib3>=1.21.1',
         'certifi',
@@ -19,4 +20,5 @@ setup(
         'prettytable',
         'requests_unixsocket'
     ],
+    include_package_data=True
 )
