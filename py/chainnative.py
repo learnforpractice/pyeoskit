@@ -28,11 +28,19 @@ class ChainNative(object):
 
     @staticmethod
     def pack_args(account, action, args):
-        return _uuosapi.pack_args(account, action, args)
+        ret = _uuosapi.pack_args(account, action, args)
+        if not ret:
+            error = _uuosapi.get_last_error()
+            raise Exception(error)
+        return ret
 
     @staticmethod
     def unpack_args(account, action, binargs):
-        return _uuosapi.unpack_args(account, action, binargs)
+        ret = _uuosapi.unpack_args(account, action, binargs)
+        if not ret:
+            error = _uuosapi.get_last_error()
+            raise Exception(error)
+        return ret
 
     @staticmethod
     def pack_abi_type(account, struct_name, args):
@@ -168,3 +176,6 @@ class ChainNative(object):
         else:
             assert 0, f'unsupported vm type: {vm_type}'
 
+    @staticmethod
+    def get_last_error():
+        return _uuosapi.get_last_error()
