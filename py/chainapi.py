@@ -40,7 +40,9 @@ class ChainApi(Client, ChainNative):
         trx = _uuosapi.pack_transaction(trx, compress)
         return super().push_transaction(trx)
 
-    def push_action(self, contract, action, args, permissions, compress=0):
+    def push_action(self, contract, action, args, permissions=None, compress=0):
+        if not permissions:
+            permissions = {contract:'active'}
         act = [contract, action, args, permissions]
         chain_info = self.get_info()
         reference_block_id = chain_info['head_block_id']
@@ -168,10 +170,9 @@ class ChainApi(Client, ChainNative):
                 'stake_cpu_quantity': '%0.4f %s'%(stake_cpu, config.main_token),
                 'transfer': 1
             }
-
-        args = self.pack_args(config.system_contract, 'delegatebw', args)
-        act = [config.system_contract, 'delegatebw', args, {creator:'active'}]
-        actions.append(act)
+            args = self.pack_args(config.system_contract, 'delegatebw', args)
+            act = [config.system_contract, 'delegatebw', args, {creator:'active'}]
+            actions.append(act)
         return self.push_actions(actions)
 
     def get_balance(self, account, token_account=None, token_name=None):
