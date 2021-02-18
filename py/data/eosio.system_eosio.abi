@@ -2,10 +2,6 @@
     "____comment": "This file was generated with eosio-abigen. DO NOT EDIT ",
     "version": "eosio::abi/1.1",
     "types": [
-        {
-            "new_type_name": "block_signing_authority",
-            "type": "variant_block_signing_authority_v0"
-        }
     ],
     "structs": [
         {
@@ -1085,10 +1081,6 @@
                 {
                     "name": "location",
                     "type": "uint16"
-                },
-                {
-                    "name": "producer_authority",
-                    "type": "block_signing_authority$"
                 }
             ]
         },
@@ -1181,28 +1173,6 @@
                 {
                     "name": "producer_key",
                     "type": "public_key"
-                },
-                {
-                    "name": "url",
-                    "type": "string"
-                },
-                {
-                    "name": "location",
-                    "type": "uint16"
-                }
-            ]
-        },
-        {
-            "name": "regproducer2",
-            "base": "",
-            "fields": [
-                {
-                    "name": "producer",
-                    "type": "name"
-                },
-                {
-                    "name": "producer_authority",
-                    "type": "block_signing_authority"
                 },
                 {
                     "name": "url",
@@ -2083,11 +2053,6 @@
             "ricardian_contract": "---\nspec_version: \"0.2.0\"\ntitle: Register as a Block Producer Candidate\nsummary: 'Register {{nowrap producer}} account as a block producer candidate'\nicon: http://127.0.0.1/ricardian_assets/eosio.contracts/icons/voting.png#db28cd3db6e62d4509af3644ce7d377329482a14bb4bfaca2aa5f1400d8e8a84\n---\n\nRegister {{producer}} account as a block producer candidate.\n\nURL: {{url}}\nLocation code: {{location}}\nBlock signing key: {{producer_key}}\n\n## Block Producer Agreement\n{{$clauses.BlockProducerAgreement}}"
         },
         {
-            "name": "regproducer2",
-            "type": "regproducer2",
-            "ricardian_contract": "---\nspec_version: \"0.2.0\"\ntitle: Register as a Block Producer Candidate\nsummary: 'Register {{nowrap producer}} account as a block producer candidate'\nicon: http://127.0.0.1/ricardian_assets/eosio.contracts/icons/voting.png#db28cd3db6e62d4509af3644ce7d377329482a14bb4bfaca2aa5f1400d8e8a84\n---\n\nRegister {{producer}} account as a block producer candidate.\n\nURL: {{url}}\nLocation code: {{location}}\nBlock signing authority:\n{{to_json producer_authority}}\n\n## Block Producer Agreement\n{{$clauses.BlockProducerAgreement}}"
-        },
-        {
             "name": "regproxy",
             "type": "regproxy",
             "ricardian_contract": "---\nspec_version: \"0.2.0\"\ntitle: Register/unregister as a Proxy\nsummary: 'Register/unregister {{nowrap proxy}} as a proxy account'\nicon: http://127.0.0.1/ricardian_assets/eosio.contracts/icons/voting.png#db28cd3db6e62d4509af3644ce7d377329482a14bb4bfaca2aa5f1400d8e8a84\n---\n\n{{#if isproxy}}\n{{proxy}} registers as a proxy that can vote on behalf of accounts that appoint it as their proxy.\n{{else}}\n{{proxy}} unregisters as a proxy that can vote on behalf of accounts that appoint it as their proxy.\n{{/if}}"
@@ -2409,9 +2374,5 @@
         }
     ],
     "variants": [
-        {
-            "name": "variant_block_signing_authority_v0",
-            "types": ["block_signing_authority_v0"]
-        }
     ]
 }
