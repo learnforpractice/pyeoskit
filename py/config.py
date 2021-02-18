@@ -53,10 +53,10 @@ def setup_uuos_network():
     global main_token_contract
     global code_permission_name
     main_token = 'UUOS'
-    system_contract = 'uuos'
-    main_token_contract = 'uuos.token'
+    system_contract = 'eosio'
+    main_token_contract = 'eosio.token'
     network_url = 'http://127.0.0.1:8888'
-    code_permission_name = 'uuos.code'
+    code_permission_name = 'eosio.code'
     from uuoskit import uuosapi
     uuosapi.set_public_key_prefix(main_token)
 
@@ -73,10 +73,10 @@ def setup_uuos_test_network(url = 'http://127.0.0.1:8888', deploy_type=1):
     network_url = url
 
     main_token = 'UUOS'
-    system_contract = 'uuos'
-    main_token_contract = 'uuos.token'
+    system_contract = 'eosio'
+    main_token_contract = 'eosio.token'
     python_contract = 'hello'
-    code_permission_name = 'uuos.code'
+    code_permission_name = 'eosio.code'
     from uuoskit import uuosapi
     uuosapi.set_public_key_prefix(main_token)
 
