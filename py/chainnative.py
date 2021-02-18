@@ -50,7 +50,11 @@ class ChainNative(object):
 
     @staticmethod
     def set_abi(account, abi):
-        return _uuosapi.set_abi(account, abi)
+        ret = _uuosapi.set_abi(account, abi)
+        if not ret:
+            error = _uuosapi.get_last_error()
+            raise Exception(error)
+        return ret
 
     @staticmethod
     def pack_abi(abi):
