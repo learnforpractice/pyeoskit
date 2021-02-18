@@ -1,4 +1,4 @@
-# cython: c_string_type=str, c_string_encoding=ascii
+# cython: c_string_type=str, c_string_encoding=utf8
 
 from cython.operator cimport dereference as deref, preincrement as inc
 from libcpp.string cimport string
@@ -68,6 +68,9 @@ cdef extern from "uuosapi.hpp":
     void get_public_key_prefix_(string& prefix);
 
     size_t micropython_compile_src(const char *src, char *output, size_t output_size, const char *source_file);
+
+    void get_last_error_(string& error)
+    void set_last_error_(const string& error);
 
 def N(string& s):
     return s2n_(s)
@@ -222,3 +225,12 @@ def compile_py(file_name, src, src_type = 0):
     if not size:
         return None
     return <bytes>string(output.data(), size)
+
+def get_last_error():
+    cdef string error
+    get_last_error_(error)
+    return error
+
+def set_last_error(const string& error):
+    set_last_error_(error)
+
