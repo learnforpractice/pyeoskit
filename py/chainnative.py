@@ -36,6 +36,8 @@ class ChainNative(object):
 
     @staticmethod
     def unpack_args(account, action, binargs):
+        if isinstance(binargs, str):
+            binargs = bytes.fromhex(binargs)
         ret = _uuosapi.unpack_args(account, action, binargs)
         if not ret:
             error = _uuosapi.get_last_error()
