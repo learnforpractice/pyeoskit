@@ -71,11 +71,12 @@ class ChainApiAsync(Client, ChainNative):
         fetched_keys = {}
         for a in actions:
             permissions = a[3]
-            key = account + permissions[account]
-            if not key in fetched_keys:
-                public_keys = self.get_available_public_keys(account, permissions[account])
-                keys.extend(public_keys)
-                fetched_keys[key] = True
+            for account in permissions:
+                key = account + permissions[account]
+                if not key in fetched_keys:
+                    public_keys = await self.get_available_public_keys(account, permissions[account])
+                    keys.extend(public_keys)
+                    fetched_keys[key] = True
 
         trx = wallet.sign_transaction(trx, keys, chain_id)
         trx = _uuosapi.pack_transaction(trx, compress)
@@ -128,10 +129,7 @@ class ChainApiAsync(Client, ChainNative):
         return keys
 
     async def get_account(self, account):
-        try:
-            return await super().get_account(account)
-        except Exception:
-            return None
+        return await super().get_account(account)
 
     async def create_account(self, creator, account, owner_key, active_key, ram_bytes=0, stake_net=0.0, stake_cpu=0.0, sign=True):
         actions = []
@@ -409,6 +407,8 @@ class ChainApiAsync(Client, ChainNative):
         if depth <= 0:
             return threshold
         info = await self.get_account(account_name)
+        if not info:
+            return 0
         for per in info['permissions']:
             if perm_name != per['perm_name']:
                 continue
