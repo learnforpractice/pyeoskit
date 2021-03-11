@@ -128,10 +128,7 @@ class ChainApi(Client, ChainNative):
         return keys
 
     def get_account(self, account):
-        try:
-            return super().get_account(account)
-        except Exception:
-            return None
+        return super().get_account(account)
 
     def create_account(self, creator, account, owner_key, active_key, ram_bytes=0, stake_net=0.0, stake_cpu=0.0, sign=True):
         actions = []
