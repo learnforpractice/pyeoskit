@@ -1,3 +1,4 @@
+import json
 from . import config
 from . import wallet
 from . import _uuosapi
