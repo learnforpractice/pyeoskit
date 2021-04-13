@@ -13,6 +13,8 @@
 
 #include <vector>
 
+#include "macro.hpp"
+
 using namespace std;
 
 static string s_error;
@@ -24,25 +26,6 @@ void get_last_error_(string& error) {
    error = s_error;
 }
 
-#undef FC_LOG_AND_DROP
-#define FC_LOG_AND_DROP( ... )  \
-   catch( const boost::interprocess::bad_alloc& ) {\
-      throw;\
-   } catch( fc::exception& er ) { \
-      set_last_error_(er.to_detail_string()); \
-   } catch( const std::exception& e ) {  \
-      fc::exception fce( \
-                FC_LOG_MESSAGE( warn, "rethrow ${what}: ",FC_FORMAT_ARG_PARAMS( __VA_ARGS__  )("what",e.what()) ), \
-                fc::std_exception_code,\
-                BOOST_CORE_TYPEID(e).name(), \
-                e.what() ) ; \
-      set_last_error_(fce.to_detail_string()); \
-   } catch( ... ) {  \
-      fc::unhandled_exception e( \
-                FC_LOG_MESSAGE( warn, "rethrow", FC_FORMAT_ARG_PARAMS( __VA_ARGS__) ), \
-                std::current_exception() ); \
-      set_last_error_(e.to_detail_string()); \
-   }
 
 string uuosapi_get_abi(string& account);
 
@@ -63,10 +46,9 @@ void n2s_(uint64_t n, std::string& s) {
 
 std::map<std::string, std::shared_ptr<abi_serializer>> abi_cache;
 
-void pack_args_(string& account, uint64_t action, std::string& _args, std::string& _binargs) {
-   fc::variant args = fc::json::from_string(_args);
-
+bool pack_args_(string& account, uint64_t action, std::string& _args, std::string& _binargs) {
    try {
+      fc::variant args = fc::json::from_string(_args);
       auto itr = abi_cache.find(account);
       if (itr == abi_cache.end()) {
          std::string _rawabi = uuosapi_get_abi(account);
@@ -80,13 +62,14 @@ void pack_args_(string& account, uint64_t action, std::string& _args, std::strin
 
       auto binargs = abis.variant_to_binary(action_type, args, abi_serializer_max_time);
       _binargs = std::string(binargs.begin(), binargs.end());
+      return true;
    } FC_LOG_AND_DROP();
+   return false;
 }
 
-void unpack_args_(string& account, uint64_t action, std::string& _binargs, std::string& _args ) {
-   bytes binargs = bytes(_binargs.data(), _binargs.data() + _binargs.size());
-
+bool unpack_args_(string& account, uint64_t action, std::string& _binargs, std::string& _args ) {
    try {
+      bytes binargs = bytes(_binargs.data(), _binargs.data() + _binargs.size());
       auto itr = abi_cache.find(account);
       if (itr == abi_cache.end()) {
          std::string _rawabi = uuosapi_get_abi(account);
@@ -97,13 +80,14 @@ void unpack_args_(string& account, uint64_t action, std::string& _binargs, std::
 
       auto args = abis.binary_to_variant( abis.get_action_type( action ), binargs, abi_serializer_max_time );
       _args = fc::json::to_string(args);
+      return true;
    } FC_LOG_AND_DROP();
+   return false;
 }
 
 void pack_abi_type_(string& account, string& struct_name, std::string& _args, std::string& _binargs) {
-   fc::variant args = fc::json::from_string(_args);
-
    try {
+      fc::variant args = fc::json::from_string(_args);
       auto itr = abi_cache.find(account);
       if (itr == abi_cache.end()) {
          std::string _rawabi = uuosapi_get_abi(account);
@@ -118,9 +102,8 @@ void pack_abi_type_(string& account, string& struct_name, std::string& _args, st
 }
 
 void unpack_abi_type_(string& account, string& struct_name, std::string& _binargs, std::string& _args ) {
-   bytes binargs = bytes(_binargs.data(), _binargs.data() + _binargs.size());
-
    try {
+      bytes binargs = bytes(_binargs.data(), _binargs.data() + _binargs.size());
       auto itr = abi_cache.find(account);
       if (itr == abi_cache.end()) {
          std::string _rawabi = uuosapi_get_abi(account);
@@ -172,9 +155,8 @@ void unpack_abi_(std::string& _packed_abi, std::string& out) {
 }
 
 PyObject* gen_transaction_(vector<chain::action>& v, int expiration, std::string& reference_block_id) {
-   packed_transaction::compression_type compression = packed_transaction::none;
-
    try {
+      packed_transaction::compression_type compression = packed_transaction::none;
       signed_transaction trx;
       for(auto& action: v) {
          trx.actions.push_back(action);

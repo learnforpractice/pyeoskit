@@ -20,8 +20,8 @@ cdef extern from "uuosapi.hpp":
     void pack_cpp_object_(int _type, string& msg, string& packed_message)
     void unpack_cpp_object_(int _type, string& packed_message, string& msg)
 
-    void pack_args_(string& account, uint64_t action, string& _args, string& binargs)
-    void unpack_args_(string& account, uint64_t action, string& binargs, string& _args)
+    bool pack_args_(string& account, uint64_t action, string& _args, string& binargs)
+    bool unpack_args_(string& account, uint64_t action, string& binargs, string& _args)
     bool clear_abi_cache_(string& account);
 
     void pack_abi_type_(string& account, string& struct_name, string& _args, string& _binargs);
@@ -90,18 +90,15 @@ def pack_args(string& account, action, _args):
     cdef string binargs
     cdef string args
     args = json.dumps(_args)
-    pack_args_(account, N(action), args, binargs)
-    if binargs.size():
-        return <bytes>binargs
-    raise Exception('pack error')
+    if not pack_args_(account, N(action), args, binargs):
+        raise Exception(get_last_error())
+    return <bytes>binargs
 
 def unpack_args(string& account, action, string& binargs):
     cdef string _args
-    unpack_args_(account, N(action), binargs, _args)
-    if _args.size():
-        return _args;
-#        return json.loads(_args)
-    raise Exception("unpack error!")
+    if not unpack_args_(account, N(action), binargs, _args):
+        raise Exception(get_last_error())
+    return _args;
 
 def pack_abi_type(string& account, string& struct_name, string& _args):
     cdef string _binargs

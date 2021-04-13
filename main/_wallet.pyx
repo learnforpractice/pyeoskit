@@ -28,7 +28,7 @@ cdef extern from "wallet_.h":
     object wallet_unlock_(string& name, string& password);
     object wallet_import_key_(string& name, string& wif_key, bool save);
     object wallet_remove_key_(string& name, string& password, const string& pub_key);
-    object sign_transaction_(string& trx, vector[string]& _public_keys, string& chain_id);
+    string sign_transaction_(string& trx, vector[string]& _public_keys, string& chain_id);
     object sign_digest_(string& _digest, string& _public_key)
 
 def create(string& name) :

@@ -32,7 +32,7 @@ PyObject* wallet_import_key_(std::string &name, std::string &wif_key, bool save)
 PyObject* wallet_remove_key_(string& name, string& password, const string& pub_key);
 PyObject* wallet_set_dir_(std::string &path_name);
 
-PyObject* sign_transaction_(string& trx, vector<string>& _public_keys, string& chain_id);
+string sign_transaction_(string& trx, vector<string>& _public_keys, string& chain_id);
 PyObject* sign_digest_(string& _digest, string& _public_key);
 
 #endif

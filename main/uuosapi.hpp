@@ -26,8 +26,8 @@ using namespace eosio::chain;
 uint64_t s2n_(std::string& str);
 void n2s_(uint64_t n, std::string& s);
 
-void pack_args_(string& account, uint64_t action, std::string& _args, std::string& binargs);
-void unpack_args_(string& account, uint64_t action, std::string& binargs, std::string& _args );
+bool pack_args_(string& account, uint64_t action, std::string& _args, std::string& binargs);
+bool unpack_args_(string& account, uint64_t action, std::string& binargs, std::string& _args );
 bool clear_abi_cache_(string& account);
 bool set_abi_(string& account, string& _abi);
 

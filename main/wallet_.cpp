@@ -8,6 +8,8 @@
 
 #include "pyobject.hpp"
 
+#include "macro.hpp"
+
 using namespace std;
 using namespace eosio;
 using namespace eosio::chain;
@@ -21,7 +23,7 @@ wallet_manager& wm() {
    return *wm;
 }
 
-PyObject* sign_transaction_(string& _trx, vector<string>& _public_keys, string& chain_id) {
+string sign_transaction_(string& _trx, vector<string>& _public_keys, string& chain_id) {
    try {
       signed_transaction trx = fc::json::from_string(_trx).as<signed_transaction>();
       flat_set<public_key_type> public_keys;
@@ -32,10 +34,9 @@ PyObject* sign_transaction_(string& _trx, vector<string>& _public_keys, string& 
 
       chain::chain_id_type id(chain_id);
       trx = wm().sign_transaction(trx, public_keys, id);
-      string s = fc::json::to_string(trx);
-      return py_new_string(s);
+      return fc::json::to_string(trx);
    } FC_LOG_AND_DROP();
-   return py_new_none();
+   return "";
 }
 
 PyObject* sign_digest_(string& _digest, string& _public_key) {
