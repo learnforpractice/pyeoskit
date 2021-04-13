@@ -1,13 +1,13 @@
 
 add_cython_target(_hello CXX)
 add_cython_target(_uuosapi CXX)
-add_cython_target(wallet CXX)
+add_cython_target(_wallet CXX)
 add_cython_target(pyobject CXX)
 add_cython_target(_block_log CXX)
 
 set(SRCS ${_hello}
          ${_uuosapi}
-         ${wallet}
+         ${_wallet}
          ${pyobject}
          ${_block_log}
          wallet_.cpp
@@ -55,4 +55,4 @@ target_include_directories( hello
 
 python_extension_module(_hello)
 
-install(TARGETS _hello LIBRARY DESTINATION py)
+install(TARGETS _hello LIBRARY DESTINATION pysrc)
