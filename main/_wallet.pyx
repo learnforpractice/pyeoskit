@@ -6,30 +6,28 @@ from libcpp.vector cimport vector
 from libcpp.map cimport map
 from libcpp cimport bool
 
-
 from typing import Dict, Tuple, List
 
-
 cdef extern from * :
-    ctypedef unsigned long long int64_t
+    ctypedef unsigned long long uint64_t
 
 cdef extern from "wallet_.h":
-    object wallet_create_(string& name);
-    object wallet_save_(string& name);
+    string wallet_create_(string& name);
+    bool wallet_open_(string& name);
+    bool wallet_save_(string& name);
+    bool wallet_set_dir_(string& path_name);
 
-    object wallet_open_(string& name);
-    object wallet_set_dir_(string& path_name);
-    object wallet_set_timeout_(int secs);
-    object wallet_list_wallets_();
-    object wallet_list_keys_(const string& name, const string& pw);
-    object wallet_get_public_keys_();
-    object wallet_lock_all_();
-    object wallet_lock_(string& name);
-    object wallet_unlock_(string& name, string& password);
-    object wallet_import_key_(string& name, string& wif_key, bool save);
-    object wallet_remove_key_(string& name, string& password, const string& pub_key);
+    bool wallet_set_timeout_(uint64_t secs);
+    string wallet_list_wallets_();
+    string wallet_list_keys_(const string& name, const string& pw);
+    string wallet_get_public_keys_();
+    bool wallet_lock_all_();
+    bool wallet_lock_(string& name);
+    bool wallet_unlock_(string& name, string& password);
+    bool wallet_import_key_(string& name, string& wif_key, bool save);
+    bool wallet_remove_key_(string& name, string& password, const string& pub_key);
     string sign_transaction_(string& trx, vector[string]& _public_keys, string& chain_id);
-    object sign_digest_(string& _digest, string& _public_key)
+    string sign_digest_(string& _digest, string& _public_key)
 
 def create(string& name) :
     return wallet_create_(name)
@@ -46,10 +44,10 @@ def set_dir(string& path_name):
 def set_timeout(secs):
     return wallet_set_timeout_(secs)
 
-def list_wallets() -> List[bytes]:
+def list_wallets():
     return wallet_list_wallets_();
 
-def list_keys(string& name, string& psw) -> Dict[str, str]:
+def list_keys(string& name, string& psw):
     return wallet_list_keys_(name, psw);
 
 def get_public_keys():

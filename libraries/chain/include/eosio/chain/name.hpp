@@ -6,7 +6,7 @@
 namespace eosio { namespace chain {
    using std::string;
 
-   static uint64_t char_to_symbol( char c ) {
+   constexpr uint64_t char_to_symbol( char c ) {
       if( c >= 'a' && c <= 'z' )
          return (c - 'a') + 6;
       if( c >= '1' && c <= '5' )
@@ -18,7 +18,7 @@ namespace eosio { namespace chain {
    // to its 5-bit slot starting with the highest slot for the first char.
    // The 13th char, if str is long enough, is encoded into 4-bit chunk
    // and placed in the lowest 4 bits. 64 = 12 * 5 + 4
-   static uint64_t string_to_name( const char* str )
+   constexpr uint64_t string_to_name( const char* str )
    {
       uint64_t name = 0;
       int i = 0;

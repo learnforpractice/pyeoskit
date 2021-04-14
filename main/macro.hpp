@@ -15,10 +15,14 @@ void get_last_error_(string& error);
                 fc::std_exception_code,\
                 BOOST_CORE_TYPEID(e).name(), \
                 e.what() ) ; \
-      set_last_error_(fce.to_detail_string()); \
+      string err = fce.to_detail_string(); \
+      elog(err); \
+      set_last_error_(err); \
    } catch( ... ) {  \
       fc::unhandled_exception e( \
                 FC_LOG_MESSAGE( warn, "rethrow", FC_FORMAT_ARG_PARAMS( __VA_ARGS__) ), \
                 std::current_exception() ); \
-      set_last_error_(e.to_detail_string()); \
+      string err = e.to_detail_string(); \
+      elog(err); \
+      set_last_error_(err); \
    }

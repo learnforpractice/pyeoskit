@@ -129,7 +129,12 @@ class ChainApiAsync(Client, ChainNative):
         return keys
 
     async def get_account(self, account):
-        return await super().get_account(account)
+        try:
+            return super().get_account(account)
+        except ChainException as e:
+            if e.json and e.json['error']['details']['message'].startswith('unknown key'):
+                return None
+            raise e
 
     async def create_account(self, creator, account, owner_key, active_key, ram_bytes=0, stake_net=0.0, stake_cpu=0.0, sign=True):
         actions = []
