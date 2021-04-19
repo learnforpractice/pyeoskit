@@ -129,10 +129,12 @@ class ChainApi(Client, ChainNative):
         return keys
 
     def get_account(self, account):
+        if not self.s2n(account):
+            raise ChainException('Invalid account name')
         try:
             return super().get_account(account)
         except ChainException as e:
-            if e.json and e.json['error']['details']['message'].startswith('unknown key'):
+            if e.json and e.json['error']['details'][0]['message'].startswith('unknown key'):
                 return None
             raise e
 

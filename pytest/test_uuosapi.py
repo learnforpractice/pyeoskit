@@ -151,3 +151,33 @@ class TestUUOSApi(object):
         a = await uuosapi_async.get_account('learnfortest')
         assert a
         logger.info(a)
+
+        logger.info('++++++++%s', uuosapi.s2n('notexists.a'))
+
+        a = uuosapi.get_account('notexists')
+        assert not a
+
+        a = await uuosapi_async.get_account('notexists')
+        assert not a
+
+
+        with pytest.raises(ChainException):
+            a = await uuosapi_async.get_account('notexists...')
+            assert not a
+            logger.info(a)
+
+    def test_chain_exception(self):
+        try:
+            raise ChainException('oops!')
+        except ChainException as e:
+            assert not e.json
+
+        try:
+            raise ChainException('{"a":1}')
+        except ChainException as e:
+            assert e.json
+
+        try:
+            raise ChainException({"a":1})
+        except ChainException as e:
+            assert e.json
