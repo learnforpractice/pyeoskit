@@ -55,5 +55,57 @@ ls dist
 python3 -m pip install dist/uuoskit-[SUFFIX].whl
 ```
 
+### Example1
+```python
+import os
+from uuoskit import uuosapi, wallet
+
+if os.path.exists('mywallet.wallet'):
+    os.remove('mywallet.wallet')
+psw = wallet.create('mywallet')
+#import your account private key here
+wallet.import_key('mywallet', '5K463ynhZoCDDa4RDcr63cUwWLTnKqmdcoTKTHBjqoKfv4u5V7p')
+
+uuosapi.set_node('https://eos.greymass.com')
+info = uuosapi.get_info()
+print(info)
+args = {
+    'from': 'test1',
+    'to': 'test2',
+    'quantity': '1.0000 EOS',
+    'memo': 'hello,world'
+}
+uuosapi.push_action('eosio.token', 'transfer', args, {'test1':'active'})
+```
+
+### Async Example
+```python
+import os
+import asyncio
+from uuoskit import wallet
+from uuoskit.chainapi import ChainApiAsync
+
+if os.path.exists('mywallet.wallet'):
+    os.remove('mywallet.wallet')
+psw = wallet.create('mywallet')
+#import your account private key here
+wallet.import_key('mywallet', '5K463ynhZoCDDa4RDcr63cUwWLTnKqmdcoTKTHBjqoKfv4u5V7p')
+
+async def test():
+    uuosapi = ChainApiAsync('https://eos.greymass.com')
+    info = await uuosapi.get_info()
+    print(info)
+    args = {
+        'from': 'test1',
+        'to': 'test2',
+        'quantity': '1.0000 EOS',
+        'memo': 'hello,world'
+    }
+    r = await uuosapi.push_action('eosio.token', 'transfer', args, {'test1':'active'})
+    print(r)
+
+asyncio.run(test())
+```
+
 ### License
 [MIT](./LICENSE)
