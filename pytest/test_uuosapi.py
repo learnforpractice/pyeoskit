@@ -74,7 +74,7 @@ class TestUUOSApi(object):
             r = uuosapi_async.gen_transaction([a], 60, self.info['last_irreversible_block_id'])
 
     @pytest.mark.asyncio
-    def test_sign_transaction(self):
+    async def test_sign_transaction(self):
         trx = '{"expiration":"2021-04-13T04:05:10","ref_block_num":6467,"ref_block_prefix":2631147246,"max_net_usage_words":0,"max_cpu_usage_ms":0,"delay_sec":0,"context_free_actions":[],"actions":[{"account":"eosio.token","name":"transfer","authorization":[{"actor":"testaccount","permission":"active"}],"data":"00f2d4142193b1ca0000000000ea3055e80300000000000004454f53000000000568656c6c6f"}],"transaction_extensions":[],"signatures":[],"context_free_data":[]}'
         priv_key = '5K463ynhZoCDDa4RDcr63cUwWLTnKqmdcoTKTHBjqoKfv4u5V7p'
         r = uuosapi.sign_transaction(trx, priv_key, self.info['chain_id'])
@@ -91,7 +91,7 @@ class TestUUOSApi(object):
             uuosapi_async.sign_transaction(trx, priv_key, self.info['chain_id'])
 
     @pytest.mark.asyncio
-    def test_pack_transaction(self):
+    async def test_pack_transaction(self):
         trx = '{"expiration":"2021-04-13T04:05:10","ref_block_num":6467,"ref_block_prefix":2631147246,"max_net_usage_words":0,"max_cpu_usage_ms":0,"delay_sec":0,"context_free_actions":[],"actions":[{"account":"eosio.token","name":"transfer","authorization":[{"actor":"testaccount","permission":"active"}],"data":"00f2d4142193b1ca0000000000ea3055e80300000000000004454f53000000000568656c6c6f"}],"transaction_extensions":[],"signatures":[],"context_free_data":[]}'
         r = uuosapi.pack_transaction(trx, True)
         logger.info(r)
@@ -110,7 +110,7 @@ class TestUUOSApi(object):
         assert r
 
     @pytest.mark.asyncio
-    def test_basic(self):
+    async def test_basic(self):
         priv_key = '5K463ynhZoCDDa4RDcr63cUwWLTnKqmdcoTKTHBjqoKfv4u5V7p'
         pub = uuosapi.get_public_key(priv_key)
         logger.info(pub)
@@ -119,3 +119,35 @@ class TestUUOSApi(object):
         key = uuosapi.create_key()
         logger.info(key)
         assert key
+
+    @pytest.mark.asyncio
+    async def test_get_table_rows(self):
+        symbol = uuosapi.string_to_symbol(4, 'EOS')
+        symbol_code = symbol >> 8
+        symbol_code = uuosapi.n2s(symbol_code)
+
+        r = uuosapi.get_table_rows(True, 'eosio.token', symbol_code, 'stat', '', '', 10)
+        logger.info(r)
+        assert r['rows']
+
+        r = uuosapi.get_table_rows(True, 'eosio.token', 'learnfortest', 'accounts', '', '', 10)
+        logger.info(r)
+        assert r['rows']
+
+        r = await uuosapi_async.get_table_rows(True, 'eosio.token', symbol_code, 'stat', '', '', 10)
+        logger.info(r)
+        assert r['rows']
+
+        r = await uuosapi_async.get_table_rows(True, 'eosio.token', 'learnfortest', 'accounts', '', '', 10)
+        logger.info(r)
+        assert r['rows']
+
+    @pytest.mark.asyncio
+    async def test_get_account(self):
+        a = uuosapi.get_account('learnfortest')
+        assert a
+        logger.info(a)
+
+        a = await uuosapi_async.get_account('learnfortest')
+        assert a
+        logger.info(a)

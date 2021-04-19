@@ -130,7 +130,7 @@ class ChainApiAsync(Client, ChainNative):
 
     async def get_account(self, account):
         try:
-            return super().get_account(account)
+            return await super().get_account(account)
         except ChainException as e:
             if e.json and e.json['error']['details']['message'].startswith('unknown key'):
                 return None
