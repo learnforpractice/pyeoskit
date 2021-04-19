@@ -154,7 +154,7 @@ void unpack_abi_(std::string& _packed_abi, std::string& out) {
    } FC_LOG_AND_DROP();
 }
 
-PyObject* gen_transaction_(vector<chain::action>& v, int expiration, std::string& reference_block_id) {
+string gen_transaction_(vector<chain::action>& v, int expiration, std::string& reference_block_id) {
    try {
       packed_transaction::compression_type compression = packed_transaction::none;
       signed_transaction trx;
@@ -174,14 +174,13 @@ PyObject* gen_transaction_(vector<chain::action>& v, int expiration, std::string
 
 //      trx.max_kcpu_usage = (tx_max_cpu_usage + 1023)/1024;
       trx.max_net_usage_words = (tx_max_net_usage + 7)/8;
-      std::string result = fc::json::to_string(fc::variant(trx));
-      return py_new_string(result);
+      return fc::json::to_string(fc::variant(trx));
    } FC_LOG_AND_DROP();
 
-   return py_new_none();
+   return "";
 }
 
-PyObject* sign_transaction_(std::string& trx_json_to_sign, std::string& str_private_key, std::string& chain_id) {
+string sign_transaction_(std::string& trx_json_to_sign, std::string& str_private_key, std::string& chain_id) {
    try {
       signed_transaction trx = fc::json::from_string(trx_json_to_sign).as<signed_transaction>();
 
@@ -192,14 +191,12 @@ PyObject* sign_transaction_(std::string& trx_json_to_sign, std::string& str_priv
 //      fc::from_variant(v, id);
 
       trx.sign(priv_key, id);
-      std::string s = fc::json::to_string(fc::variant(trx));
-      return py_new_string(s);
+      return fc::json::to_string(fc::variant(trx));
    } FC_LOG_AND_DROP();
-   return py_new_none();
+   return "";
 }
 
-
-PyObject* pack_transaction_(std::string& _signed_trx, int compress) {
+string pack_transaction_(std::string& _signed_trx, int compress) {
    try {
       signed_transaction signed_trx = fc::json::from_string(_signed_trx).as<signed_transaction>();
       packed_transaction::compression_type type;
@@ -210,46 +207,33 @@ PyObject* pack_transaction_(std::string& _signed_trx, int compress) {
       }
 
       auto packed_trx = packed_transaction(signed_trx, type);
-      std::string s = fc::json::to_string(packed_trx);
-      return py_new_string(s);
+      return fc::json::to_string(packed_trx);
    } FC_LOG_AND_DROP();
-   return py_new_none();
+   return "";
 }
 
-PyObject* unpack_transaction_(std::string& trx) {
+string unpack_transaction_(std::string& trx) {
    try {
       vector<char> s(trx.c_str(), trx.c_str()+trx.size());
       auto st = fc::raw::unpack<transaction>(s);
-      std::string ss = fc::json::to_string(st);
-      return py_new_string(ss);
+      return fc::json::to_string(st);
    } FC_LOG_AND_DROP();
-   return py_new_none();
+   return "";
 }
 
-PyObject* create_key_() {
+bool create_key_(string& pub, string& priv) {
    auto pk    = private_key_type::generate();
-   auto privs = std::string(pk);
-   auto pubs  = std::string(pk.get_public_key());
-
-   PyDict dict;
-   std::string key;
-
-   key = "public";
-   dict.add(key, pubs);
-
-   key = "private";
-   dict.add(key, privs);
-   return dict.get();
+   pub = std::string(pk);
+   priv  = std::string(pk.get_public_key());
+   return true;
 }
 
-PyObject* get_public_key_(std::string& wif_key) {
+string get_public_key_(std::string& wif_key) {
    try {
       private_key_type priv(wif_key);
-
-      std::string pub_key = std::string(priv.get_public_key());
-      return py_new_string(pub_key);
+      return std::string(priv.get_public_key());
    } FC_LOG_AND_DROP();
-   return py_new_none();
+   return "";
 }
 
 void from_base58_( std::string& pub_key, std::string& raw_pub_key ) {

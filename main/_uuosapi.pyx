@@ -49,13 +49,13 @@ cdef extern from "uuosapi.hpp":
         vector[permission_level]    authorization
         vector[char]                data
 
-    object gen_transaction_(vector[action]& v, int expiration, string& reference_block_id);
-    object sign_transaction_(string& trx_json_to_sign, string& str_private_key, string& chain_id);
-    object pack_transaction_(string& _signed_trx, int compress)
-    object unpack_transaction_(string& trx)
+    string gen_transaction_(vector[action]& v, int expiration, string& reference_block_id);
+    string sign_transaction_(string& trx_json_to_sign, string& str_private_key, string& chain_id);
+    string pack_transaction_(string& _signed_trx, int compress)
+    string unpack_transaction_(string& trx)
 
-    object create_key_()
-    object get_public_key_(string& wif_key)
+    bool create_key_(string& pub, string& priv)
+    string get_public_key_(string& wif_key)
 
     void from_base58_( string& pub_key, string& raw_pub_key );
     void to_base58_( string& raw_pub_key, string& pub_key );
@@ -167,7 +167,10 @@ def unpack_transaction(string& trx):
     return unpack_transaction_(trx)
 
 def create_key():
-    return create_key_()
+    cdef string pub
+    cdef string priv
+    create_key_(pub, priv)
+    return {'public': pub, 'private': priv}
 
 def get_public_key(string& wif_key):
     return get_public_key_(wif_key)

@@ -145,7 +145,7 @@ class HttpClient(object):
                 else:
                     r = self.session_unix.get(url)
                 if not r.status_code in [200, 202, 201]:
-                    raise ChainException(r.status_code, r.text)
+                    raise ChainException(r.text, r.status_code)
 
                 if self.json_decode:
                     return json.loads(r.text)
@@ -177,11 +177,11 @@ class HttpClient(object):
 
         result = r.text
         if not r.status_code in [200, 202, 201] or not result:
-            raise ChainException(r.status_code, result)
+            raise ChainException(result, r.status_code)
 
         ret = json.loads(r.text)
         if 'error' in ret:
-            raise ChainException(r.status_code, ret)
+            raise ChainException(ret, r.status_code)
         return ret
 
     def _return(self, response=None, body=None):
@@ -211,12 +211,12 @@ class HttpClient(object):
                 result = json.loads(result)
             except JSONDecodeError as e:
                 pass
-            raise ChainException(response.status, result)
+            raise ChainException(result, response.status)
         try:
             if self.json_decode:
                 result = json.loads(result)
                 if 'error' in result:
-                    raise ChainException(response.status, result)
+                    raise ChainException(result, response.status)
         except JSONDecodeError as e:
             extra = dict(response=response, request_body=body, err=e)
             logger.info('failed to parse response', extra=extra)

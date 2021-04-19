@@ -1,6 +1,15 @@
 import json
 from . import _uuosapi
 from . import wasmcompiler
+from .exceptions import ChainException
+
+def raise_last_error():
+    raise ChainException(_uuosapi.get_last_error())
+
+def check_result(r):
+    if not r:
+        raise ChainException(_uuosapi.get_last_error())
+    return r
 
 class ChainNative(object):
 
@@ -29,20 +38,14 @@ class ChainNative(object):
     @staticmethod
     def pack_args(account, action, args):
         ret = _uuosapi.pack_args(account, action, args)
-        if not ret:
-            error = _uuosapi.get_last_error()
-            raise Exception(error)
-        return ret
+        return check_result(ret)
 
     @staticmethod
     def unpack_args(account, action, binargs):
         if isinstance(binargs, str):
             binargs = bytes.fromhex(binargs)
         ret = _uuosapi.unpack_args(account, action, binargs)
-        if not ret:
-            error = _uuosapi.get_last_error()
-            raise Exception(error)
-        return ret
+        return check_result(ret)
 
     @staticmethod
     def pack_abi_type(account, struct_name, args):
@@ -61,10 +64,7 @@ class ChainNative(object):
     @staticmethod
     def set_abi(account, abi):
         ret = _uuosapi.set_abi(account, abi)
-        if not ret:
-            error = _uuosapi.get_last_error()
-            raise Exception(error)
-        return ret
+        return check_result(ret)
 
     @staticmethod
     def pack_abi(abi):
@@ -78,13 +78,15 @@ class ChainNative(object):
 
     @staticmethod
     def gen_transaction(actions, expiration, reference_block_id):
-        return _uuosapi.gen_transaction(actions, expiration, reference_block_id)
+        r = _uuosapi.gen_transaction(actions, expiration, reference_block_id)
+        return check_result(r)
 
     @staticmethod
     def sign_transaction(trx, private_key, chain_id):
         if isinstance(trx, dict):
             trx = json.loads(trx)
-        return _uuosapi.sign_transaction(trx, private_key, chain_id)
+        ret = _uuosapi.sign_transaction(trx, private_key, chain_id)
+        return check_result(ret)
 
     @staticmethod
     def pack_transaction(trx, compress=0):

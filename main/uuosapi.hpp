@@ -37,19 +37,20 @@ void unpack_abi_(std::string& _packed_abi, std::string& out);
 void pack_abi_type_(string& account, string& struct_name, std::string& _args, std::string& _binargs);
 void unpack_abi_type_(string& account, string& struct_name, std::string& _binargs, std::string& _args );
 
-PyObject* gen_transaction_(vector<chain::action>& v, int expiration, std::string& reference_block_id);
-PyObject* sign_transaction_(std::string& trx_json_to_sign, std::string& str_private_key, std::string& chain_id);
-PyObject* pack_transaction_(std::string& _signed_trx, int compress);
+string gen_transaction_(vector<chain::action>& v, int expiration, std::string& reference_block_id);
+string sign_transaction_(std::string& trx_json_to_sign, std::string& str_private_key, std::string& chain_id);
 
-PyObject* create_key_();
-PyObject* get_public_key_(std::string& wif_key);
+string pack_transaction_(std::string& _signed_trx, int compress);
+string unpack_transaction_(std::string& trx);
+
+bool create_key_(string& pub, string& priv);
+string get_public_key_(std::string& wif_key);
 
 void from_base58_( std::string& pub_key, std::string& raw_pub_key );
 void to_base58_( std::string& raw_pub_key, std::string& pub_key );
 
 void recover_key_( string& _digest, string& _sig, string& _pub );
 
-PyObject* unpack_transaction_(std::string& trx);
 
 void sign_digest_(string& _priv_key, string& _digest, string& out);
 
