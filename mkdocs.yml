@@ -1,0 +1,8 @@
+site_name: "Uuoskit"
+repo_url: "https://github.com/uuosio/UUOSKit/"
+site_dir: "site"
+docs_dir: "docs"
+
+theme:
+  name: readthedocs
+  include_sidebar: true

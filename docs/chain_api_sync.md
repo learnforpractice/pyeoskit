@@ -1,46 +1,30 @@
-import json
-from . import _uuosapi
-from . import wasmcompiler
-from .exceptions import ChainException
+# ChainApiSync
 
-def raise_last_error():
-    raise ChainException(_uuosapi.get_last_error())
+## create_key
 
-def check_result(r):
-    if not r:
-        raise ChainException(_uuosapi.get_last_error())
-    return r
+## n2s
+```
+@staticmethod
+def n2s(n):
+```
 
-class ChainNative(object):
+## s2n
+```
+@staticmethod
+def s2n(s):
+```
 
-    @staticmethod
-    def n2s(n):
-        '''convert integer to name string
-        Example:
-        ```python
-            from uuoskit import uuosapi
-            s = uuosapi.n2s(10927537166380695552)
-            print(s)
-        ```
-        ```
-            'myname'
-        ```
-        '''
-        return _uuosapi.n2s(n)
+## s2b
+```
+@staticmethod
+def s2b(s):
+```
 
-    @staticmethod
-    def s2n(s):
-        return _uuosapi.s2n(s)
-
-    @staticmethod
-    def s2b(s):
-        n = _uuosapi.s2n(s)
-        return int.to_bytes(n, 8, 'little')
-
-    @staticmethod
-    def b2s(b):
-        n = int.from_bytes(b, 'little')
-        return _uuosapi.n2s(n)
+## b2s
+```
+@staticmethod
+def b2s(b):
+```
 
     @staticmethod
     def string_to_symbol(precision, str_symbol):
