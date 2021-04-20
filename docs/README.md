@@ -9,10 +9,19 @@ Full Uuoskit project documentation can be found in [Modules](MODULES.md#uuoskit-
 - [Uuoskit Index](#uuoskit-index)
 - [Latest Release](#latest-release)
 - [Building from Source Code](#building-from-source-code)
-        - [Installing Prerequirements(macOS X and linux)](#installing-prerequirementsmacos-x-and-linux)
-        - [Downloading Source Code](#downloading-source-code)
-        - [Installation](#installation)
-  - [Uuoskit Modules](MODULES.md#uuoskit-modules)
+    - [Installing Prerequirements(macOS X and linux)](#installing-prerequirementsmacos-x-and-linux)
+    - [Downloading Source Code](#downloading-source-code)
+    - [Building on macOS](#building-on-macos)
+    - [Building on Ubuntu](#building-on-ubuntu)
+    - [Building on Centos](#building-on-centos)
+    - [Installation](#installation)
+    - [Example1](#example1)
+    - [Async Example](#async-example)
+- [wallet module](#wallet-module)
+- [ChainNative class](#chainnative-class)
+- [ChainApiSync class](#chainapisync-class)
+- [ChainApiAsync class](#chainapiasync-class)
+    - [License](#license)
 
 <h3>
   <a
@@ -120,6 +129,14 @@ async def test():
 
 asyncio.run(test())
 ```
+
+# [wallet module](pysrc/chainapi_sync.md)
+
+# [ChainNative class](pysrc/chainnative.md)
+
+# [ChainApiSync class](pysrc/chainapi_sync.md)
+
+# [ChainApiAsync class](pysrc/chainapi_async.md)
 
 ### License
 [MIT](./LICENSE)
