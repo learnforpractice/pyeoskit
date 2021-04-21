@@ -22,6 +22,7 @@ Full Uuoskit project documentation can be found in [Modules](MODULES.md#uuoskit-
 - [ChainApiSync class](#chainapisync-class)
 - [ChainApiAsync class](#chainapiasync-class)
 - [Client class](#client-class)
+- [Examples](#examples)
     - [License](#license)
 
 <h3>
@@ -140,6 +141,8 @@ asyncio.run(test())
 # [ChainApiAsync class](pysrc/chainapi_async.md)
 
 # [Client class](pysrc/client.md)
+
+# [Examples](examples/index.md)
 
 ### License
 [MIT](./LICENSE)
