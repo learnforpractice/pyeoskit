@@ -7,14 +7,14 @@ from . import wasmcompiler
 from . import log
 
 from .chaincache import ChainCache
-from .client import Client
+from .rpc_interface import RPCInterface
 from .chainnative import ChainNative
 from .exceptions import ChainException
 
 logger = log.get_logger(__name__)
 
 
-class ChainApi(Client, ChainNative):
+class ChainApi(RPCInterface, ChainNative):
     def __init__(self, node_url = 'http://127.0.0.1:8888', network='EOS'):
         super().__init__(_async=False)
 

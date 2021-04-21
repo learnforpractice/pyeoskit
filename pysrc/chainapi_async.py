@@ -6,7 +6,7 @@ from . import wasmcompiler
 from . import log
 
 from .chaincache import ChainCache
-from .client import Client
+from .rpc_interface import RPCInterface
 from .chainnative import ChainNative
 from .exceptions import ChainException
 
@@ -14,7 +14,7 @@ logger = log.get_logger(__name__)
 
 from .chainapi_sync import ChainApi
 
-class ChainApiAsync(Client, ChainNative):
+class ChainApiAsync(RPCInterface, ChainNative):
     def __init__(self, node_url = 'http://127.0.0.1:8888', network='EOS'):
         self.sync_api = ChainApi(node_url, network)
 

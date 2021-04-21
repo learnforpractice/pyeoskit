@@ -23,7 +23,7 @@ if os.path.exists('mywallet.wallet'):
 psw = wallet.create('mywallet')
 wallet.import_key('mywallet', '5K463ynhZoCDDa4RDcr63cUwWLTnKqmdcoTKTHBjqoKfv4u5V7p')
 
-uuosapi_async = ChainApiAsync('https://eos.greymass.com')
+uuosapi_async = None
 
 class TestUUOSApi(object):
 
@@ -31,13 +31,15 @@ class TestUUOSApi(object):
     def setup_class(cls):
         uuosapi.set_node('https://eos.greymass.com')
         cls.info = uuosapi.get_info()
+        uuosapi_async = ChainApiAsync('https://eos.greymass.com')
 
     @classmethod
     def teardown_class(cls):
         pass
 
     def setup_method(self, method):
-        pass
+        global uuosapi_async
+        uuosapi_async = ChainApiAsync('https://eos.greymass.com')
 
     def teardown_method(self, method):
         pass
@@ -83,11 +85,11 @@ class TestUUOSApi(object):
 
         trx = '{"expiration":"2021-04-13t04:05:10","ref_block_num":6467,"ref_block_prefix":2631147246,"max_net_usage_words":0,"max_cpu_usage_ms":0,"delay_sec":0,"context_free_actions":[],"actions":[{"account":"eosio.token","name":"transfer","authorization":[{"actor":"testaccount","permission":"active"}],"data":"00f2d4142193b1ca0000000000ea3055e80300000000000004454f53000000000568656c6c6f"}],"transaction_extensions":[],"signatures":[],"context_free_data":[]}'
         priv_key = '5K463ynhZoCDDa4RDcr63cUwWLTnKqmdcoTKTHBjqoKfv4u5V7p'
-        with pytest.raises(Exception):
+        with pytest.raises(ChainException):
             r = uuosapi.sign_transaction(trx, priv_key, self.info['chain_id'])
             logger.info(r)
 
-        with pytest.raises(Exception):
+        with pytest.raises(ChainException):
             uuosapi_async.sign_transaction(trx, priv_key, self.info['chain_id'])
 
     @pytest.mark.asyncio

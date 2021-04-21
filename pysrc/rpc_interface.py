@@ -4,7 +4,7 @@ import json
 from .http_client import HttpClient
 from . import config
 
-class Client(HttpClient):
+class RPCInterface(HttpClient):
     def __init__(self, nodes=None, _async=False, **kwargs):
         nodes =nodes or config.nodes or ['http://127.0.0.1:8888']
         super().__init__(nodes=nodes, _async=_async, **kwargs)
@@ -882,4 +882,4 @@ class WalletClient(HttpClient):
 
 
 if __name__ == '__main__':
-    client = Client(['http://127.0.0.1:8888'])
+    client = RPCInterface(['http://127.0.0.1:8888'])

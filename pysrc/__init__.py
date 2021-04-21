@@ -1,7 +1,7 @@
 import os
 import sys
 from .http_client import HttpClient
-from .client import Client, WalletClient
+from .rpc_interface import RPCInterface, WalletClient
 from . import _hello as hello
 
 __version__='0.7.0'
