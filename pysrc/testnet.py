@@ -50,6 +50,8 @@ class Testnet(object):
             wallet.import_key('mywallet', priv_key)
 
     def start_nodes(self, wait=False):
+        if not os.path.exists('tmp'):
+            os.mkdir('tmp')
         nodes = []
         args = 'run-uuos -m uuosio.main --verbose-http-errors  --http-max-response-time-ms 100 --p2p-listen-endpoint 127.0.0.1:9100 --data-dir dd --config-dir cd -p eosio --plugin eosio::producer_plugin --plugin eosio::chain_api_plugin --plugin eosio::producer_api_plugin --plugin eosio::history_api_plugin -e --resource-monitor-space-threshold 99 --http-server-address 127.0.0.1:9000 --block-interval-ms 1000 --contracts-console --access-control-allow-origin="*" --backing-store rocksdb'
         args = shlex.split(args)
@@ -101,7 +103,7 @@ class Testnet(object):
             del http_ports_copy[index]
 
             bp = f'genesisbp11{index+1}'
-            logfile = f'{bp}.log'
+            logfile = f'tmp/{bp}.log'
             pub = self.producer_keys[index]['public']
             priv = self.producer_keys[index]['private']
 
@@ -113,7 +115,7 @@ class Testnet(object):
             for port in p2p_ports:
                 p2p_peer_address += f'--p2p-peer-address 127.0.0.1:{port} '
 
-            dirs = f'--data-dir dd-{bp} --config-dir cd-{bp} -p {bp}'
+            dirs = f'--data-dir tmp/dd-{bp} --config-dir tmp/cd-{bp} -p {bp}'
             args = f'run-uuos -m uuosio.main {dirs} {signature_provider} {http_server_address} {p2p_listen_endpoint} {p2p_peer_address} --verbose-http-errors  --http-max-response-time-ms 100 --plugin eosio::producer_plugin --plugin eosio::chain_api_plugin --plugin eosio::producer_api_plugin --plugin eosio::history_api_plugin --resource-monitor-space-threshold 99 --block-interval-ms 1000 --contracts-console --access-control-allow-origin="*" --backing-store rocksdb'
             logger.info(args)
             args = shlex.split(args)
