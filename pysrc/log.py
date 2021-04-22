@@ -34,5 +34,5 @@ handler.setFormatter(formatter)
 
 def get_logger(name):
     logger=logging.getLogger(name)
-    logger.addHandler(handler)
+#    logger.addHandler(handler)
     return logger

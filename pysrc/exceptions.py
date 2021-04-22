@@ -1,12 +1,12 @@
 import json
 
-class NoResponse(BaseException):
+class NoResponse(Exception):
     pass
 
-class WalletException(BaseException):
+class WalletException(Exception):
     pass
 
-class ChainException(BaseException):
+class ChainException(Exception):
     def __init__(self, response, status_code=0):
         super().__init__(str(response))
         self.status_code = status_code
