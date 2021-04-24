@@ -264,6 +264,14 @@ class ChainApi(RPCInterface, ChainNative):
         return eosapi.pack_abi(abi)
 
     def deploy_contract(self, account, code, abi, vm_type=0, vm_version=0, sign=True, compress=0):
+        if vm_type == 0:
+            return self.deploy_wasm_contract(account, code, abi, vm_type, vm_version, sign, compress)
+        elif vm_type == 1:
+            return self.deploy_python_contract(account, code, abi, deploy_type)
+        else:
+            raise Exception(f'Unknown vm type {vm_type}')
+
+    def deploy_wasm_contract(self, account, code, abi, vm_type=0, vm_version=0, sign=True, compress=0):
         origin_abi = abi
         actions = []
         setcode = {"account":account,
@@ -318,17 +326,24 @@ class ChainApi(RPCInterface, ChainNative):
 
 
     def deploy_python_contract(self, account, code, abi, deploy_type=0):
+        '''Deploy a python contract to EOSIO based network
+        Args:
+            deploy_type (int) : 0 for UUOS network, 1 for EOS network
+        '''
         actions = []
         origin_abi = abi
         if config.contract_deploy_type == 0:
-            setcode = {"account": account,
-                    "vmtype": 1,
-                    "vmversion": 0,
-                    "code":code.hex()
+            setcode = {
+                "account": account,
+                "vmtype": 1,
+                "vmversion": 0,
+                "code":b'python contract'.hex()
             }
             setcode = self.pack_args(config.system_contract, 'setcode', setcode)
-            setcode = [config.system_contract, 'setcode', setcode, {account:'active'}]
-            actions.append(setcode)
+            try:
+                self.push_action(config.system_contract, 'setcode', setcode, {account:'active'})
+            except Exception as e:
+                assert e.json['error']['what'] == "Contract is already running this version of code"
 
             abi = _uuosapi.pack_abi(abi)
             if abi:
@@ -336,11 +351,12 @@ class ChainApi(RPCInterface, ChainNative):
                 setabi = [config.system_contract, 'setabi', setabi, {account:'active'}]
                 actions.append(setabi)
 
-        elif config.contract_deploy_type in (1, 2):
-            if config.contract_deploy_type == 2:
-                python_contract = account
-            else:
-                python_contract = config.python_contract
+            args = self.s2b(account) + code
+            setcode = [account, 'setcode', args, {account:'active'}]
+            actions.append(setcode)
+
+        elif config.contract_deploy_type == 1:
+            python_contract = config.python_contract
 
             args = self.s2b(account) + code
             setcode = [python_contract, 'setcode', args, {account:'active'}]
@@ -362,28 +378,7 @@ class ChainApi(RPCInterface, ChainNative):
         return ret
 
     def deploy_python_code(self, account, code, deploy_type=0):
-        actions = []
-        if deploy_type == 0:
-            setcode = {"account":account,
-                    "vmtype": 1,
-                    "vmversion": 0,
-                    "code":code.hex()
-            }
-            setcode = self.pack_args(config.system_contract, 'setcode', setcode)
-            setcode = [config.system_contract, 'setcode', setcode, {account:'active'}]
-            actions.append(setcode)
-
-        elif deploy_type == 1:
-            args = self.s2b(account) + code
-            setcode = [config.python_contract, 'setcode', args, {account:'active'}]
-            actions.append(setcode)
-        else:
-            assert 0
-
-        ret = None
-        if actions:
-            ret = self.push_actions(actions)
-        return ret
+        return self.deploy_python_contract(account, code, b'', deploy_type)
 
     def deploy_module(self, account, module_name, code, deploy_type=1):
         args = self.s2b(account) + self.s2b(module_name) + code

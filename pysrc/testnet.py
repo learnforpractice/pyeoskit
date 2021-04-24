@@ -372,7 +372,7 @@ def apply(a, b, c):
 
         try:
             uuosapi.schedule_protocol_feature_activations(['0ec7e080177b2c02b278d5088611686b49d739925a92d9bfcacd7fc6b74053bd']) #PREACTIVATE_FEATURE
-            time.sleep(3.0)
+            time.sleep(1.0)
             logger.info('set PREACTIVATE_FEATURE done!')
         except Exception as e:
             logger.exception(e)
