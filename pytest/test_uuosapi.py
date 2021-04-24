@@ -8,20 +8,26 @@ from uuoskit import uuosapi, config, wallet
 from uuoskit.chainapi import ChainApiAsync
 from uuoskit.exceptions import ChainException, WalletException
 
+from uuoskit.testnet import Testnet
+Testnet.__test__ = False
+
 logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(lineno)d %(module)s %(message)s')
 logger=logging.getLogger(__name__)
 test_dir = os.path.dirname(__file__)
 
-config.main_token = 'UUOS'
-config.main_token_contract = 'uuos.token'
-config.system_contract = 'uuos'
+# config.main_token = 'UUOS'
+# config.main_token_contract = 'uuos.token'
+# config.system_contract = 'uuos'
 
-uuosapi.set_node('http://127.0.0.1:8899')
+# uuosapi.set_node('http://127.0.0.1:8899')
+
+config.setup_uuos_network()
 
 if os.path.exists('mywallet.wallet'):
     os.remove('mywallet.wallet')
 psw = wallet.create('mywallet')
 wallet.import_key('mywallet', '5K463ynhZoCDDa4RDcr63cUwWLTnKqmdcoTKTHBjqoKfv4u5V7p')
+wallet.import_key('mywallet', '5Jbb4wuwz8MAzTB9FJNmrVYGXo4ABb7wqPVoWGcZ6x8V2FwNeDo')
 
 uuosapi_async = None
 
@@ -29,17 +35,22 @@ class TestUUOSApi(object):
 
     @classmethod
     def setup_class(cls):
-        uuosapi.set_node('https://eos.greymass.com')
+        uuosapi.set_node('http://127.0.0.1:9000')
+        uuosapi_async = ChainApiAsync('http://127.0.0.1:9000')
+
+        cls.testnet = Testnet(single_node=True)
+        cls.testnet.run()
         cls.info = uuosapi.get_info()
-        uuosapi_async = ChainApiAsync('https://eos.greymass.com')
+
 
     @classmethod
     def teardown_class(cls):
-        pass
+        cls.testnet.stop()
+        cls.testnet.cleanup()
 
     def setup_method(self, method):
         global uuosapi_async
-        uuosapi_async = ChainApiAsync('https://eos.greymass.com')
+        uuosapi_async = ChainApiAsync('http://127.0.0.1:9000')
 
     def teardown_method(self, method):
         pass
@@ -48,7 +59,7 @@ class TestUUOSApi(object):
         args = {
             'from': 'alice',
             'to': 'bob',
-            'quantity': '1.0000 EOS',
+            'quantity': '1.0000 UUOS',
             'memo': 'hello,world'
         }
         a = ['eosio.token', 'transfer', args, {'alice': 'active'}]
@@ -64,7 +75,7 @@ class TestUUOSApi(object):
         args = {
             'from': 'alice',
             'to': 'bob',
-            'quantity': '1.0000 EOS',
+            'quantity': '1.0000 UUOS',
             'typo_memo': 'hello,world'
         }
         a = ['eosio.token', 'transfer', args, {'alice': 'active'}]
@@ -116,7 +127,7 @@ class TestUUOSApi(object):
         priv_key = '5K463ynhZoCDDa4RDcr63cUwWLTnKqmdcoTKTHBjqoKfv4u5V7p'
         pub = uuosapi.get_public_key(priv_key)
         logger.info(pub)
-        assert pub == 'EOS8Znrtgwt8TfpmbVpTKvA2oB8Nqey625CLN8bCN3TEbgx86Dsvr'
+        assert pub == uuosapi.get_public_key_prefix() + '8Znrtgwt8TfpmbVpTKvA2oB8Nqey625CLN8bCN3TEbgx86Dsvr'
 
         key = uuosapi.create_key()
         logger.info(key)
@@ -124,7 +135,7 @@ class TestUUOSApi(object):
 
     @pytest.mark.asyncio
     async def test_get_table_rows(self):
-        symbol = uuosapi.string_to_symbol(4, 'EOS')
+        symbol = uuosapi.string_to_symbol(4, 'UUOS')
         symbol_code = symbol >> 8
         symbol_code = uuosapi.n2s(symbol_code)
 
@@ -183,3 +194,56 @@ class TestUUOSApi(object):
             raise ChainException({"a":1})
         except ChainException as e:
             assert e.json
+
+    def test_deploy_python_code_sync(self):
+        uuosapi.set_node('http://127.0.0.1:9000')
+        code = '''
+import chain
+def apply(a, b, c):
+    data = chain.read_action_data()
+    print(data)
+        '''
+
+        account = 'helloworld11'
+        config.python_contract = account
+        code = uuosapi.mp_compile(account, code)
+
+        uuosapi.deploy_python_contract(account, code, b'')
+
+        r = uuosapi.push_action(account, 'sayhello', b'hellooo,world', {account:'active'})
+        console = r['processed']['action_traces'][0]['console']
+        logger.info(console)
+        assert console == "b'hellooo,world'\r\n"
+
+        r = uuosapi.push_action(account, 'sayhello', b'goodbye,world', {account:'active'})
+        console = r['processed']['action_traces'][0]['console']
+        logger.info(console)
+        assert console == "b'goodbye,world'\r\n"
+
+    @pytest.mark.asyncio
+    async def test_deploy_python_code_async(self):
+        uuosapi_async = ChainApiAsync('http://127.0.0.1:9000')
+
+        code = '''
+import chain
+def apply(a, b, c):
+    data = chain.read_action_data()
+    print(data)
+    return
+        '''
+
+        account = 'helloworld11'
+        code = uuosapi_async.mp_compile(account, code)
+
+        async def run_code(code):
+            await uuosapi_async.deploy_python_contract(account, code, b'')
+
+            r = await uuosapi_async.push_action(account, 'sayhello', b'hellooo,world', {account:'active'})
+            console = r['processed']['action_traces'][0]['console']
+            assert console == "b'hellooo,world'\r\n"
+
+            r = await uuosapi_async.push_action(account, 'sayhello', b'goodbye,world', {account:'active'})
+            console = r['processed']['action_traces'][0]['console']
+            assert console == "b'goodbye,world'\r\n"
+
+        await run_code(code)
