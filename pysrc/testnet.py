@@ -4,8 +4,10 @@ import time
 import json
 import copy
 import shlex
+import shutil
 import random
 import hashlib
+import platform
 import subprocess
 
 from uuoskit import config
@@ -19,7 +21,28 @@ from uuosio import uuos
 logger = log.get_logger(__name__)
 
 class Testnet(object):
-    def __init__(self):
+    def __init__(self, single_node=False):
+        self.single_node = single_node
+
+        self.test_accounts = (
+            'hello',
+            'helloworld11',
+            'helloworld12',
+            'helloworld13',
+            'helloworld14',
+            'helloworld15',
+            'helloworld33',
+            'learnfortest',
+        )
+
+        self.producer_accounts = (
+            'genesisbp111',
+            'genesisbp112',
+            'genesisbp113',
+            'genesisbp114',
+            'genesisbp115'
+        )
+
         cur_dir = os.path.dirname(__file__)
 
         cur_dir = os.path.dirname(uuos.__file__)
@@ -52,24 +75,41 @@ class Testnet(object):
     def start_nodes(self, wait=False):
         if not os.path.exists('tmp'):
             os.mkdir('tmp')
-        nodes = []
-        args = 'run-uuos -m uuosio.main --verbose-http-errors  --http-max-response-time-ms 100 --p2p-listen-endpoint 127.0.0.1:9100 --data-dir dd --config-dir cd -p eosio --plugin eosio::producer_plugin --plugin eosio::chain_api_plugin --plugin eosio::producer_api_plugin --plugin eosio::history_api_plugin -e --resource-monitor-space-threshold 99 --http-server-address 127.0.0.1:9000 --block-interval-ms 1000 --contracts-console --access-control-allow-origin="*" --backing-store rocksdb'
+        self.nodes = []
+
+        bin_dir = shutil.which('run-uuos')
+        bin_dir = os.path.dirname(bin_dir)
+        uuos = os.path.join(bin_dir, 'uuos')
+
+        if platform.system() == 'Darwin':
+            os.environ['CHAIN_API_LIB'] = os.path.join(bin_dir, '../lib/libchain_api.dylib')
+            os.environ['VM_API_LIB'] = os.path.join(bin_dir, '../lib/libvm_api.dylib')
+            os.environ['PYTHON_SHARED_LIB_PATH'] = os.path.join(bin_dir, '../lib/libpython3.7m.dylib')
+        else:
+            os.environ['CHAIN_API_LIB'] = os.path.join(bin_dir, '../lib/libchain_api.so')
+            os.environ['VM_API_LIB'] = os.path.join(bin_dir, '../lib/libvm_api.so')
+            os.environ['PYTHON_SHARED_LIB_PATH'] = '/usr/lib/x86_64-linux-gnu/libpython3.7m.so'
+
+        config_dir = '--data-dir ./tmp/dd --config-dir ./tmp/cd'
+        args = f'{uuos} -m uuosio.main --verbose-http-errors  --http-max-response-time-ms 100 --p2p-listen-endpoint 127.0.0.1:9100 {config_dir} -p eosio --plugin eosio::producer_plugin --plugin eosio::chain_api_plugin --plugin eosio::producer_api_plugin --plugin eosio::history_api_plugin -e --resource-monitor-space-threshold 99 --http-server-address 127.0.0.1:9000 --block-interval-ms 1000 --contracts-console --access-control-allow-origin="*" --backing-store rocksdb'
+        logger.info(args)
         args = shlex.split(args)
         f = open('log.txt', 'a')
         f = sys.stdout
         p = subprocess.Popen(args, stdout=f, stderr=f)
-        nodes.append(p)
+        self.nodes.append(p)
 
         uuosapi.set_node('http://127.0.0.1:9000')
-        for i in range(10):
+        while True:
             try:
                 info = uuosapi.get_info()
-                print(info)
+                logger.info(info)
                 break
             except Exception as e:
-                print(e)
-            time.sleep(0.5)
-
+                logger.info(e)
+            time.sleep(1.0)
+        if self.single_node:
+            return
         self.producer_keys = [
             {
                 "public": "EOS7haGjz9YTepY31iZNfP13dzVXvsU5D2VHeJNZZjhxwMVyCrCFL",
@@ -116,13 +156,17 @@ class Testnet(object):
                 p2p_peer_address += f'--p2p-peer-address 127.0.0.1:{port} '
 
             dirs = f'--data-dir tmp/dd-{bp} --config-dir tmp/cd-{bp} -p {bp}'
-            args = f'run-uuos -m uuosio.main {dirs} {signature_provider} {http_server_address} {p2p_listen_endpoint} {p2p_peer_address} --verbose-http-errors  --http-max-response-time-ms 100 --plugin eosio::producer_plugin --plugin eosio::chain_api_plugin --plugin eosio::producer_api_plugin --plugin eosio::history_api_plugin --resource-monitor-space-threshold 99 --block-interval-ms 1000 --contracts-console --access-control-allow-origin="*" --backing-store rocksdb'
+            if http_port == 9001:
+                args = f'{uuos} -m uuosio.main -e {dirs} {signature_provider} {http_server_address} {p2p_listen_endpoint} {p2p_peer_address} --verbose-http-errors  --http-max-response-time-ms 100 --plugin eosio::producer_plugin --plugin eosio::chain_api_plugin --plugin eosio::producer_api_plugin --plugin eosio::history_api_plugin --resource-monitor-space-threshold 99 --block-interval-ms 1000 --contracts-console --access-control-allow-origin="*" --backing-store rocksdb'
+            else:
+                args = f'{uuos} -m uuosio.main {dirs} {signature_provider} {http_server_address} {p2p_listen_endpoint} {p2p_peer_address} --verbose-http-errors  --http-max-response-time-ms 100 --plugin eosio::producer_plugin --plugin eosio::chain_api_plugin --plugin eosio::producer_api_plugin --plugin eosio::history_api_plugin --resource-monitor-space-threshold 99 --block-interval-ms 1000 --contracts-console --access-control-allow-origin="*" --backing-store rocksdb'
+
             logger.info(args)
             args = shlex.split(args)
 
             f = open(logfile, 'a')
             p = subprocess.Popen(args, stdout=f, stderr=f)
-            nodes.append(p)
+            self.nodes.append(p)
 
             p2p_ports.append(p2p_listen_port)
 
@@ -138,8 +182,22 @@ class Testnet(object):
             self.init_testnet()
         except Exception as e:
             logger.exception(e)
-        p.wait()
+        # p.wait()
+        # print('done!')
+
+    def stop(self):
+        for p in self.nodes:
+            p.kill()
+        self.wait()
         print('done!')
+
+    def cleanup(self):
+        import shutil
+        shutil.rmtree('./tmp')
+
+    def wait(self):
+        for p in self.nodes:
+            p.wait()
 
     def deploy_contract(self, account_name, contract_name, contracts_path=None):
         logger.info('++++deploy_contract %s %s', account_name, contract_name)
@@ -234,18 +292,23 @@ def apply(a, b, c):
                 'waits': []
             }
         }
-        if not uuosapi.get_account(account):
-            actions = []
-            logger.info(('+++++++++create account', account))
-            newaccount['name'] = account
-            act = ['eosio', 'newaccount', newaccount, {'eosio':'active'}]
-            actions.append(act)
+        actions = []
+        logger.info(('+++++++++create account', account))
+        newaccount['name'] = account
+        act = ['eosio', 'newaccount', newaccount, {'eosio':'active'}]
+        actions.append(act)
+        try:
             r = uuosapi.push_actions(actions)
+        except Exception as e:
+            logger.info(e)
 
     def init_testnet(self):
-        # if uuosapi.get_account('helloworld11'):
-        #     return
+        self.init_accounts()
+        self.init_producer()
 
+    def init_accounts(self):
+        if uuosapi.get_account('helloworld11'):
+            return
         # formatter = logging.Formatter('%(asctime)s %(levelname)s %(module)s %(lineno)d %(message)s')
         # handler = logging.StreamHandler()
         # handler.setFormatter(formatter)
@@ -283,40 +346,33 @@ def apply(a, b, c):
             'EOS73ECcVHVWvuxJVm5ATnqBTCFMtA6WUsdDovdWH5NFHaXNq1hw1',
             'EOS8h8TmXCU7Pzo5XQKqyWwXAqLpPj4DPZCv5Wx9Y4yjRrB6R64ok',
             'EOS65jj8NPh2EzLwje3YRy4utVAATthteZyhQabpQubxHNJ44mem9',
-            'EOS5fVw435RSwW3YYWAX9qz548JFTWuFiBcHT3PGLryWaAMmxgjp1',
-            'EOS5fVw435RSwW3YYWAX9qz548JFTWuFiBcHT3PGLryWaAMmxgjp1',
-            'EOS5fVw435RSwW3YYWAX9qz548JFTWuFiBcHT3PGLryWaAMmxgjp1',
-            'EOS5fVw435RSwW3YYWAX9qz548JFTWuFiBcHT3PGLryWaAMmxgjp1',
-            'EOS5fVw435RSwW3YYWAX9qz548JFTWuFiBcHT3PGLryWaAMmxgjp1',
-            'EOS5fVw435RSwW3YYWAX9qz548JFTWuFiBcHT3PGLryWaAMmxgjp1',
-            'EOS5fVw435RSwW3YYWAX9qz548JFTWuFiBcHT3PGLryWaAMmxgjp1',
+            'EOS65jj8NPh2EzLwje3YRy4utVAATthteZyhQabpQubxHNJ44mem9',
+            'EOS65jj8NPh2EzLwje3YRy4utVAATthteZyhQabpQubxHNJ44mem9',
         )
 
-        test_accounts = (
-            'hello',
-            'helloworld11',
-            'helloworld12',
-            'helloworld13',
-            'helloworld14',
-            'helloworld15',
-            'helloworld33',
-            'learnfortest',
-            'genesisbp111',
-            'genesisbp112',
-            'genesisbp113',
-            'genesisbp114',
-            'genesisbp115',
+        producer_pub_keys = (
+            'EOS5fVw435RSwW3YYWAX9qz548JFTWuFiBcHT3PGLryWaAMmxgjp1',
+            'EOS5fVw435RSwW3YYWAX9qz548JFTWuFiBcHT3PGLryWaAMmxgjp1',
+            'EOS5fVw435RSwW3YYWAX9qz548JFTWuFiBcHT3PGLryWaAMmxgjp1',
+            'EOS5fVw435RSwW3YYWAX9qz548JFTWuFiBcHT3PGLryWaAMmxgjp1',
+            'EOS5fVw435RSwW3YYWAX9qz548JFTWuFiBcHT3PGLryWaAMmxgjp1',
         )
 
         i = 0
-        for a in test_accounts:
+        for a in self.test_accounts:
             key = pub_keys[i]
+            self.create_account(a, key, key)
+            i += 1
+
+        i = 0
+        for a in self.producer_accounts:
+            key = producer_pub_keys[i]
             self.create_account(a, key, key)
             i += 1
 
         try:
             uuosapi.schedule_protocol_feature_activations(['0ec7e080177b2c02b278d5088611686b49d739925a92d9bfcacd7fc6b74053bd']) #PREACTIVATE_FEATURE
-            time.sleep(6.0)
+            time.sleep(3.0)
             logger.info('set PREACTIVATE_FEATURE done!')
         except Exception as e:
             logger.exception(e)
@@ -422,17 +478,7 @@ def apply(a, b, c):
             args = {"from":"eosio", "to":"hello","quantity":f"600000000.0000 {config.main_token}","memo":""}
             r = uuosapi.push_action('eosio.token', 'transfer', args, {'eosio':'active'})
 
-        test_accounts = (
-            'hello',
-            'helloworld11',
-            'helloworld12',
-            'helloworld13',
-            'helloworld14',
-            'helloworld15',
-            'helloworld33',
-        )
-
-        for account in  test_accounts:
+        for account in  self.test_accounts:
             uuosapi.transfer('eosio', account, 10000.0)
             util.buyrambytes('eosio', account, 5*1024*1024)
             util.dbw(account, account, 1.0, 1000)
@@ -469,7 +515,7 @@ def apply(a, b, c):
             logger.info(uuosapi.get_balance('hello'))
             time.sleep(2.0)
 
-        for account in test_accounts:
+        for account in self.test_accounts:
             print('buy ram', account)
             util.buyrambytes('hello', account, 10*1024*1024)
             print('buy cpu', account)
@@ -482,16 +528,20 @@ def apply(a, b, c):
             }
             uuosapi.push_action('eosio', 'deposit', args, {'helloworld11': 'active'})
 
-        producers = (
-            'genesisbp111',
-            'genesisbp112',
-            'genesisbp113',
-            'genesisbp114',
-            'genesisbp115',
-        )
+    def init_producer(self):
+        if self.single_node:
+            return
+
+        a = uuosapi.get_producers(True, '0', 10)
+        logger.info(a)
+        if len(a['rows']) > 1:
+            return
+
+        logger.info('++++++register producers...')
+
 
         index = 0
-        for p in producers:
+        for p in self.producer_accounts:
             args = {
                 "producer": p,
                 "producer_key": self.producer_keys[index]['public'],
@@ -501,12 +551,13 @@ def apply(a, b, c):
             uuosapi.push_action('eosio', 'regproducer', args, {p:'active'})
             index += 1
 
+        logger.info('+++++++vote producers...')
         args = {
             "voter": '',
             "proxy": '',
-            "producers": producers
+            "producers": self.producer_accounts
         }
-        for account in test_accounts:
+        for account in self.test_accounts:
             args['voter'] = account
             uuosapi.push_action('eosio', 'voteproducer', args, {account:'active'})
 
