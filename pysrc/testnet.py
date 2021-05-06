@@ -21,9 +21,9 @@ from uuosio import uuos
 logger = log.get_logger(__name__)
 
 class Testnet(object):
-    def __init__(self, single_node=False):
+    def __init__(self, single_node=False, show_log=False):
         self.single_node = single_node
-
+        self.show_log = show_log
         self.test_accounts = (
             'hello',
             'helloworld11',
@@ -70,7 +70,7 @@ class Testnet(object):
         ]
 
         for priv_key in priv_keys:
-            wallet.import_key('mywallet', priv_key)
+            wallet.import_key('mywallet', priv_key, False)
 
     def start_nodes(self, wait=False):
         if not os.path.exists('tmp'):
@@ -91,23 +91,26 @@ class Testnet(object):
             os.environ['PYTHON_SHARED_LIB_PATH'] = '/usr/lib/x86_64-linux-gnu/libpython3.7m.so'
 
         config_dir = '--data-dir ./tmp/dd --config-dir ./tmp/cd'
-        args = f'{uuos} -m uuosio.main --verbose-http-errors  --http-max-response-time-ms 100 --p2p-listen-endpoint 127.0.0.1:9100 {config_dir} -p eosio --plugin eosio::producer_plugin --plugin eosio::chain_api_plugin --plugin eosio::producer_api_plugin --plugin eosio::history_api_plugin -e --resource-monitor-space-threshold 99 --http-server-address 127.0.0.1:9000 --block-interval-ms 1000 --contracts-console --access-control-allow-origin="*" --backing-store rocksdb'
+        args = f'{uuos} -m uuosio.main --verbose-http-errors  --http-max-response-time-ms 100 --p2p-listen-endpoint 127.0.0.1:9100 {config_dir} -p eosio --plugin eosio::producer_plugin --plugin eosio::chain_api_plugin --plugin eosio::producer_api_plugin --plugin eosio::history_api_plugin -e --resource-monitor-space-threshold 99 --http-server-address 127.0.0.1:9000 --block-interval-ms 1000 --contracts-console --access-control-allow-origin="*"' # --backing-store rocksdb'
         logger.info(args)
         args = shlex.split(args)
-        f = open('log.txt', 'a')
-        f = sys.stdout
+        if self.show_log:
+            f = sys.stdout
+        else:
+            f = open('log.txt', 'a')
+        # f = sys.stdout
         p = subprocess.Popen(args, stdout=f, stderr=f)
         self.nodes.append(p)
 
         uuosapi.set_node('http://127.0.0.1:9000')
         while True:
+            time.sleep(1.0)
             try:
                 info = uuosapi.get_info()
                 logger.info(info)
                 break
             except Exception as e:
                 logger.info(e)
-            time.sleep(1.0)
         if self.single_node:
             return
         self.producer_keys = [
@@ -157,9 +160,9 @@ class Testnet(object):
 
             dirs = f'--data-dir tmp/dd-{bp} --config-dir tmp/cd-{bp} -p {bp}'
             if http_port == 9001:
-                args = f'{uuos} -m uuosio.main -e {dirs} {signature_provider} {http_server_address} {p2p_listen_endpoint} {p2p_peer_address} --verbose-http-errors  --http-max-response-time-ms 100 --plugin eosio::producer_plugin --plugin eosio::chain_api_plugin --plugin eosio::producer_api_plugin --plugin eosio::history_api_plugin --resource-monitor-space-threshold 99 --block-interval-ms 1000 --contracts-console --access-control-allow-origin="*" --backing-store rocksdb'
+                args = f'{uuos} -m uuosio.main -e {dirs} {signature_provider} {http_server_address} {p2p_listen_endpoint} {p2p_peer_address} --verbose-http-errors  --http-max-response-time-ms 100 --plugin eosio::producer_plugin --plugin eosio::chain_api_plugin --plugin eosio::producer_api_plugin --plugin eosio::history_api_plugin --resource-monitor-space-threshold 99 --block-interval-ms 1000 --contracts-console --access-control-allow-origin="*"' # --backing-store rocksdb'
             else:
-                args = f'{uuos} -m uuosio.main {dirs} {signature_provider} {http_server_address} {p2p_listen_endpoint} {p2p_peer_address} --verbose-http-errors  --http-max-response-time-ms 100 --plugin eosio::producer_plugin --plugin eosio::chain_api_plugin --plugin eosio::producer_api_plugin --plugin eosio::history_api_plugin --resource-monitor-space-threshold 99 --block-interval-ms 1000 --contracts-console --access-control-allow-origin="*" --backing-store rocksdb'
+                args = f'{uuos} -m uuosio.main {dirs} {signature_provider} {http_server_address} {p2p_listen_endpoint} {p2p_peer_address} --verbose-http-errors  --http-max-response-time-ms 100 --plugin eosio::producer_plugin --plugin eosio::chain_api_plugin --plugin eosio::producer_api_plugin --plugin eosio::history_api_plugin --resource-monitor-space-threshold 99 --block-interval-ms 1000 --contracts-console --access-control-allow-origin="*"' # --backing-store rocksdb'
 
             logger.info(args)
             args = shlex.split(args)
@@ -293,7 +296,7 @@ def apply(a, b, c):
             }
         }
         actions = []
-        logger.info(('+++++++++create account', account))
+        # logger.info(('+++++++++create account', account))
         newaccount['name'] = account
         act = ['eosio', 'newaccount', newaccount, {'eosio':'active'}]
         actions.append(act)
@@ -315,9 +318,9 @@ def apply(a, b, c):
 
         config.setup_uuos_network()
 
-        if len(sys.argv) == 2:
-            print(sys.argv)
-            uuosapi.set_nodes([sys.argv[1]])
+        # if len(sys.argv) == 2:
+        #     print(sys.argv)
+        #     uuosapi.set_nodes([sys.argv[1]])
 
         key1 = 'EOS7ent7keWbVgvptfYaMYeF2cenMBiwYKcwEuc11uCbStsFKsrmV'
         key2 = 'EOS7ent7keWbVgvptfYaMYeF2cenMBiwYKcwEuc11uCbStsFKsrmV'
@@ -414,7 +417,7 @@ def apply(a, b, c):
         for digest in feature_digests: 
             try:
                 args = {'feature_digest': digest}
-                logger.info(f'activate {digest}')
+                # logger.info(f'activate {digest}')
                 uuosapi.push_action('eosio', 'activate', args, {'eosio':'active'})
             except Exception as e:
                 logger.error(e)
@@ -516,9 +519,9 @@ def apply(a, b, c):
             time.sleep(2.0)
 
         for account in self.test_accounts:
-            print('buy ram', account)
+            # print('buy ram', account)
             util.buyrambytes('hello', account, 10*1024*1024)
-            print('buy cpu', account)
+            # print('buy cpu', account)
             util.dbw('hello', account, 1.0, 1.0)
 
         if 0:
