@@ -62,7 +62,13 @@ def remove_key(name, password, pub_key):
     return _wallet.remove_key(name, password, pub_key)
 
 def sign_transaction(trx: str, public_keys: List[str], chain_id: str):
-    return _wallet.sign_transaction(trx, public_keys, chain_id)
+    ret = _wallet.sign_transaction(trx, public_keys, chain_id)
+    return check_result(ret)
+
+def sign_raw_transaction(trx: bytes, public_keys: List[str], chain_id: str):
+    assert isinstance(trx, bytes)
+    ret = _wallet.sign_raw_transaction(trx, public_keys, chain_id)
+    return check_result(ret)
 
 def sign_digest(digest, public_key: str):
     return _wallet.sign_digest(digest, public_key)

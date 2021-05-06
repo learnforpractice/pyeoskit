@@ -192,13 +192,14 @@ class ChainApiAsync(RPCInterface, ChainNative):
             return 0.0
         return 0.0
 
-    async def transfer(self, _from, to, amount, memo='', token_account=None, token_name=None, permission='active'):
+    async def transfer(self, _from, to, amount, memo='', token_account=None, token_name=None, token_precision=4, permission='active'):
         if not token_account:
             token_account = config.main_token_contract
         if not token_name:
             token_name = config.main_token
-        args = {"from": _from, "to": to, "quantity":'%.4f %s'%(amount, token_name), "memo": memo}
+        args = {"from":_from, "to": to, "quantity": f'%.{token_precision}f %s'%(amount, token_name), "memo":memo}
         return await self.push_action(token_account, 'transfer', args, {_from:permission})
+
 
     async def get_code(self, account):
         code = self.db.get_code(account)
