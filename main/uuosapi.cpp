@@ -223,8 +223,8 @@ string unpack_transaction_(std::string& trx) {
 
 bool create_key_(string& pub, string& priv) {
    auto pk    = private_key_type::generate();
-   pub = std::string(pk);
-   priv  = std::string(pk.get_public_key());
+   priv = std::string(pk);
+   pub  = std::string(pk.get_public_key());
    return true;
 }
 
