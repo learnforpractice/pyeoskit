@@ -206,7 +206,8 @@ class RPCInterface(HttpClient):
         )
 
     def get_table_rows(self, json, code, scope, table, lower_bound,
-                       upper_bound, limit, key_type='', index_position='', encode_type='dec') -> dict:
+                       upper_bound, limit, key_type='', index_position='', 
+                       reverse = False, show_payer = False) -> dict:
         """ Fetch smart contract data from an account. 
         key_type: "i64"|"i128"|"i256"|"float64"|"float128"|"sha256"|"ripemd160"
         index_position: "2"|"3"|"4"|"5"|"6"|"7"|"8"|"9"|"10"
@@ -217,13 +218,13 @@ class RPCInterface(HttpClient):
             code=code,
             scope=scope,
             table=table,
-            table_key='',
             lower_bound=lower_bound,
             upper_bound=upper_bound,
             limit=limit,
             key_type=key_type,
             index_position=index_position,
-            encode_type=encode_type
+            reverse = False,
+            show_payer = False
         )
 
         return self.rpc_request(
@@ -366,7 +367,10 @@ class RPCInterface(HttpClient):
 
     def get_required_keys(self, transaction, available_keys) -> dict:
         """ get_required_keys """
-
+        if isinstance(transaction, str):
+            transaction = json.loads(transaction)
+        else:
+            assert isinstance(transaction, dict)
         body = dict(
             transaction=transaction,
             available_keys=available_keys,
