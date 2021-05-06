@@ -51,7 +51,7 @@ class ChainNative(object):
         if isinstance(args, dict):
             args = json.dumps(args)
         else:
-            assert isinstance(args, str)
+            assert isinstance(args, (str, bytes))
         success, binargs = _uuosapi.pack_args(account, action, args)
         if not success:
             raise_last_error()
@@ -61,6 +61,8 @@ class ChainNative(object):
     def unpack_args(account, action, binargs):
         if isinstance(binargs, str):
             binargs = bytes.fromhex(binargs)
+        else:
+            assert isinstance(binargs, bytes)
         success, args = _uuosapi.unpack_args(account, action, binargs)
         if success:
             return json.loads(args)
@@ -97,6 +99,10 @@ class ChainNative(object):
 
     @staticmethod
     def gen_transaction(actions, expiration, reference_block_id):
+        for a in actions:
+            args = a[2]
+            if isinstance(args, dict):
+                a[2] = ChainNative.pack_args(a[0], a[1], args)
         r = _uuosapi.gen_transaction(actions, expiration, reference_block_id)
         return check_result(r)
 

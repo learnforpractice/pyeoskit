@@ -144,8 +144,8 @@ def gen_transaction(actions, int expiration, string& reference_block_id):
         act.authorization = pers
 
         args = a[2]
-        if isinstance(args, dict):
-            args = pack_args(account, action_name, args)
+#        if isinstance(args, dict):
+#            args = pack_args(account, action_name, args)
         act.data.resize(0)
         act.data.resize(len(args))
         memcpy(act.data.data(), args, len(args))
