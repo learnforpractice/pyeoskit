@@ -48,15 +48,23 @@ class ChainNative(object):
 
     @staticmethod
     def pack_args(account, action, args):
-        ret = _uuosapi.pack_args(account, action, args)
-        return check_result(ret)
+        if isinstance(args, dict):
+            args = json.dumps(args)
+        else:
+            assert isinstance(args, str)
+        success, binargs = _uuosapi.pack_args(account, action, args)
+        if not success:
+            raise_last_error()
+        return binargs
 
     @staticmethod
     def unpack_args(account, action, binargs):
         if isinstance(binargs, str):
             binargs = bytes.fromhex(binargs)
-        ret = _uuosapi.unpack_args(account, action, binargs)
-        return check_result(ret)
+        success, args = _uuosapi.unpack_args(account, action, binargs)
+        if success:
+            return json.loads(args)
+        raise_last_error()
 
     @staticmethod
     def pack_abi_type(account, struct_name, args):
@@ -125,7 +133,8 @@ class ChainNative(object):
 
     @staticmethod
     def recover_key(digest, sign):
-        return _uuosapi.recover_key(digest, sign)
+        ret = _uuosapi.recover_key(digest, sign)
+        return check_result(ret)
 
     @staticmethod
     def pack_cpp_object(obj_type, json_str):
