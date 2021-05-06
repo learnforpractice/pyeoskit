@@ -86,19 +86,15 @@ def n2s(uint64_t n):
 def string_to_symbol(int precision, string& _str):
     return string_to_symbol_(precision, _str)
 
-def pack_args(string& account, action, _args):
+def pack_args(string& account, action, string& args):
     cdef string binargs
-    cdef string args
-    args = json.dumps(_args)
-    if not pack_args_(account, N(action), args, binargs):
-        raise Exception(get_last_error())
-    return <bytes>binargs
+    success = pack_args_(account, N(action), args, binargs)
+    return success, <bytes>binargs
 
 def unpack_args(string& account, action, string& binargs):
-    cdef string _args
-    if not unpack_args_(account, N(action), binargs, _args):
-        raise Exception(get_last_error())
-    return _args;
+    cdef string args
+    success = unpack_args_(account, N(action), binargs, args)
+    return success, args
 
 def pack_abi_type(string& account, string& struct_name, string& _args):
     cdef string _binargs

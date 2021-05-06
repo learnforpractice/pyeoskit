@@ -1,6 +1,7 @@
 import os
 import sys
 import time
+import json
 import pytest
 import logging
 import hashlib
@@ -23,12 +24,6 @@ test_dir = os.path.dirname(__file__)
 
 config.setup_uuos_network()
 
-if os.path.exists('mywallet.wallet'):
-    os.remove('mywallet.wallet')
-psw = wallet.create('mywallet')
-wallet.import_key('mywallet', '5K463ynhZoCDDa4RDcr63cUwWLTnKqmdcoTKTHBjqoKfv4u5V7p')
-wallet.import_key('mywallet', '5Jbb4wuwz8MAzTB9FJNmrVYGXo4ABb7wqPVoWGcZ6x8V2FwNeDo')
-
 uuosapi_async = None
 
 class TestUUOSApi(object):
@@ -38,10 +33,13 @@ class TestUUOSApi(object):
         uuosapi.set_node('http://127.0.0.1:9000')
         uuosapi_async = ChainApiAsync('http://127.0.0.1:9000')
 
-        cls.testnet = Testnet(single_node=True)
+        cls.testnet = Testnet(single_node=True, show_log=False)
         cls.testnet.run()
         cls.info = uuosapi.get_info()
+        logger.info(cls.info)
 
+        # wallet.import_key('mywallet', '5K463ynhZoCDDa4RDcr63cUwWLTnKqmdcoTKTHBjqoKfv4u5V7p')
+        # wallet.import_key('mywallet', '5Jbb4wuwz8MAzTB9FJNmrVYGXo4ABb7wqPVoWGcZ6x8V2FwNeDo')
 
     @classmethod
     def teardown_class(cls):
@@ -247,3 +245,33 @@ def apply(a, b, c):
             assert console == "b'goodbye,world'\r\n"
 
         await run_code(code)
+
+    @pytest.mark.asyncio
+    async def test_pack_unpack_args(self):
+        args = {
+            'from': 'test1',
+            'to': 'test2',
+            'quantity': '0.0100 EOS',
+            'memo': 'hello'
+        }
+        r = uuosapi.pack_args('eosio.token', 'transfer', args)
+        assert r
+
+        r = uuosapi.pack_args('eosio.token', 'transfer', json.dumps(args))
+        assert r
+
+        r = uuosapi.unpack_args('eosio.token', 'transfer', r)
+        logger.info(r)
+
+        with pytest.raises(Exception):
+            r = uuosapi.unpack_args('eosio.token', 'transfer', {'a':1})
+
+        with pytest.raises(Exception):
+            r = uuosapi.unpack_args('eosio.token', 'transfer', json.dumps({'a':1}))
+
+        with pytest.raises(Exception):
+            r = uuosapi.unpack_args('eosio.token', 'transfer', b'hello')
+
+        with pytest.raises(Exception):
+            r = uuosapi.unpack_args('eosio.token', 'transfer', 'aabb')
+
