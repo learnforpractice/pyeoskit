@@ -41,6 +41,31 @@ string sign_transaction_(string& _trx, vector<string>& _public_keys, string& cha
    return "";
 }
 
+string sign_raw_transaction_(vector<char>& _trx, vector<string>& _public_keys, string& chain_id) {
+   try {
+      signed_transaction trx;
+      try {
+         transaction t = fc::raw::unpack<transaction>(_trx);
+         vector<signature_type> signatures;
+         vector<bytes> context_free_data;
+         trx = signed_transaction(std::move(t), signatures, context_free_data);
+      } catch (...) {
+         trx = fc::raw::unpack<signed_transaction>(_trx);
+      }
+
+      flat_set<public_key_type> public_keys;
+
+      for (auto key: _public_keys) {
+         public_keys.insert(public_key_type(key));
+      }
+
+      chain::chain_id_type id(chain_id);
+      trx = wm().sign_transaction(trx, public_keys, id);
+      return fc::json::to_string(trx);
+   } FC_LOG_AND_DROP();
+   return "";
+}
+
 string sign_digest_(string& _digest, string& _public_key) {
    try {
       chain::digest_type digest(_digest.c_str(), _digest.size());

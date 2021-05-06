@@ -44,6 +44,17 @@ class Test(object):
         r = wallet.sign_transaction(trx, ['EOS8Znrtgwt8TfpmbVpTKvA2oB8Nqey625CLN8bCN3TEbgx86Dsvr'], chain_id)
         logger.info(r)
         assert r
+
+    def test_sign_raw_transaction(self):
+        raw = '5277866015ca01ba7664000000000100a6823403ea3055000000572d3ccdcd0190b1ca97ae798d8a00000000a8ed32322c90b1ca97ae798d8a901544b44e056976010000000000000004454f53000000000b7465737420656f736a733200'
+        raw = bytes.fromhex(raw)
+        chain_id = 'aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906'
+        r = wallet.sign_raw_transaction(raw, ['EOS8Znrtgwt8TfpmbVpTKvA2oB8Nqey625CLN8bCN3TEbgx86Dsvr'], chain_id)
+        logger.info(r)
+        assert r
+
+        # uuosapi.unpack_transaction(raw)
+
     
     def test_basic(self):
         mywallet = 'mywallet2'
@@ -117,4 +128,3 @@ class Test(object):
 
         wallets = wallet.list_wallets()
         assert 'mywallet *' in wallets
-

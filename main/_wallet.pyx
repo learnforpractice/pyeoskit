@@ -5,6 +5,7 @@ from libcpp.string cimport string
 from libcpp.vector cimport vector
 from libcpp.map cimport map
 from libcpp cimport bool
+from libc.string cimport memcpy
 
 from typing import Dict, Tuple, List
 
@@ -27,6 +28,8 @@ cdef extern from "wallet_.h":
     bool wallet_import_key_(string& name, string& wif_key, bool save);
     bool wallet_remove_key_(string& name, string& password, const string& pub_key);
     string sign_transaction_(string& trx, vector[string]& _public_keys, string& chain_id);
+    string sign_raw_transaction_(vector[char]& _trx, vector[string]& _public_keys, string& chain_id);
+
     string sign_digest_(string& _digest, string& _public_key)
 
 def create(string& name) :
@@ -74,6 +77,17 @@ def sign_transaction(string& trx, _public_keys, string& chain_id):
     for key in _public_keys:
         public_keys.push_back(key)
     return sign_transaction_(trx, public_keys, chain_id);
+
+def sign_raw_transaction(string& trx, _public_keys, string& chain_id):
+    cdef vector[string] public_keys
+    cdef vector[char] _trx
+
+    _trx.resize(trx.size())
+    memcpy(_trx.data(), trx.c_str(), trx.size());
+
+    for key in _public_keys:
+        public_keys.push_back(key)
+    return sign_raw_transaction_(_trx, public_keys, chain_id);
 
 def sign_digest(_digest, string& public_key):
     cdef string digest
