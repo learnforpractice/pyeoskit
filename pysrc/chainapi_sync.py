@@ -1,7 +1,6 @@
 import json
 from . import config
 from . import wallet
-from . import _uuosapi
 from . import defaultabi
 from . import wasmcompiler
 from . import log
@@ -10,6 +9,8 @@ from .chaincache import ChainCache
 from .rpc_interface import RPCInterface
 from .chainnative import ChainNative
 from .exceptions import ChainException
+
+from typing import Union, Any, Dict, List
 
 logger = log.get_logger(__name__)
 
@@ -32,8 +33,11 @@ class ChainApi(RPCInterface, ChainNative):
     def get_chain_id(self):
         return self.get_info()['chain_id']
 
-    def push_transaction(self, trx, compress=0):
-        trx = _uuosapi.pack_transaction(trx, compress)
+    def push_transaction(self, trx: Union[str, dict], compress=0):
+        if isinstance(trx, dict):
+            trx = json.dumps(trx)
+        assert isinstance(trx, str)
+        trx = self.pack_transaction(trx, compress)
         return super().push_transaction(trx)
 
     def push_action(self, contract, action, args, permissions=None, compress=0):
@@ -44,7 +48,7 @@ class ChainApi(RPCInterface, ChainNative):
         reference_block_id = chain_info['head_block_id']
         chain_id = chain_info['chain_id']
 
-        trx = _uuosapi.gen_transaction([act], 60, reference_block_id)
+        trx = self.gen_transaction([act], 60, reference_block_id)
 
         keys = []
         if isinstance(permissions, dict):
@@ -61,14 +65,14 @@ class ChainApi(RPCInterface, ChainNative):
             assert 0, 'bad permission type'
 #        print(keys)
         trx = wallet.sign_transaction(trx, keys, chain_id)
-        trx = _uuosapi.pack_transaction(trx, compress)
+        trx = self.pack_transaction(trx, compress)
         return super().push_transaction(trx)
 
     def push_actions(self, actions, compress=0):
         chain_info = self.get_info()
         reference_block_id = chain_info['last_irreversible_block_id']
         chain_id = chain_info['chain_id']
-        trx = _uuosapi.gen_transaction(actions, 60, reference_block_id)
+        trx = self.gen_transaction(actions, 60, reference_block_id)
         keys = []
         fetched_keys = {}
         for a in actions:
@@ -80,7 +84,7 @@ class ChainApi(RPCInterface, ChainNative):
                     keys.extend(public_keys)
                     fetched_keys[key] = True
         trx = wallet.sign_transaction(trx, keys, chain_id)
-        trx = _uuosapi.pack_transaction(trx, compress)
+        trx = self.pack_transaction(trx, compress)
 
         return super().push_transaction(trx)
 
@@ -91,7 +95,7 @@ class ChainApi(RPCInterface, ChainNative):
 
         trxs = []
         for aa in aaa:
-            trx = _uuosapi.gen_transaction(aa, expiration, reference_block_id)
+            trx = self.gen_transaction(aa, expiration, reference_block_id)
             keys = []
             for a in aa:
                 permissions = a[3]
@@ -99,7 +103,7 @@ class ChainApi(RPCInterface, ChainNative):
                     public_keys = self.get_available_public_keys(account, permissions[account])
                     keys.extend(public_keys)
             trx = wallet.sign_transaction(trx, keys, chain_id)
-            trx = _uuosapi.pack_transaction(trx, 0)
+            trx = self.pack_transaction(trx, 0)
             trxs.append(trx)
         return super().push_transactions(trxs)
 
@@ -286,7 +290,7 @@ class ChainApi(RPCInterface, ChainNative):
         if abi:
             if isinstance(abi, dict):
                 abi = json.dumps(abi)
-            abi = _uuosapi.pack_abi(abi)
+            abi = self.pack_abi(abi)
             assert abi
         else:
             abi = b''
@@ -317,7 +321,7 @@ class ChainApi(RPCInterface, ChainNative):
         if isinstance(abi, dict):
             abi = json.dumps(abi)
 
-        abi = _uuosapi.pack_abi(abi)
+        abi = self.pack_abi(abi)
         setabi = self.pack_args(config.system_contract, 'setabi', {'account':account, 'abi':abi.hex()})    
         ret = self.push_action(config.system_contract, 'setabi', setabi, {account:'active'})
         self.db.remove_abi(account)
@@ -345,7 +349,7 @@ class ChainApi(RPCInterface, ChainNative):
             except Exception as e:
                 assert e.json['error']['what'] == "Contract is already running this version of code"
 
-            abi = _uuosapi.pack_abi(abi)
+            abi = self.pack_abi(abi)
             if abi:
                 setabi = self.pack_args(config.system_contract, 'setabi', {'account':account, 'abi':abi.hex()})
                 setabi = [config.system_contract, 'setabi', setabi, {account:'active'}]
@@ -362,7 +366,7 @@ class ChainApi(RPCInterface, ChainNative):
             setcode = [python_contract, 'setcode', args, {account:'active'}]
             actions.append(setcode)
 
-            abi = _uuosapi.pack_abi(abi)
+            abi = self.pack_abi(abi)
             if abi:
                 setabi = self.s2b(account) + abi
                 setabi = [python_contract, 'setabi', setabi, {account:'active'}]
