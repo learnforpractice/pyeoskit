@@ -3,6 +3,7 @@ import json
 
 from .http_client import HttpClient
 from . import config
+from typing import Dict, List, Union
 
 class RPCInterface(HttpClient):
     def __init__(self, nodes=None, _async=False, **kwargs):
@@ -365,7 +366,7 @@ class RPCInterface(HttpClient):
             body=body
         )
 
-    def get_required_keys(self, transaction, available_keys) -> dict:
+    def get_required_keys(self, transaction: Union[dict, str], available_keys) -> dict:
         """ get_required_keys """
         if isinstance(transaction, str):
             transaction = json.loads(transaction)
@@ -397,15 +398,13 @@ class RPCInterface(HttpClient):
 
     def push_transaction(self, signed_transaction) -> dict:
         """ Attempts to push the transaction into the pending queue. """
-        if not isinstance(signed_transaction, dict):
-            signed_transaction = json.loads(signed_transaction)
-        body = dict(
-            signed_transaction
-        )
+        if isinstance(signed_transaction, dict):
+            signed_transaction = json.dumps(signed_transaction)
+
         return self.rpc_request(
             api='chain',
             endpoint='push_transaction',
-            body=body
+            body=signed_transaction
         )
 
     def push_transactions(self, signed_transactions) -> dict:

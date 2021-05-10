@@ -1,4 +1,5 @@
 import json
+import json as json_
 from . import _uuosapi
 from . import wasmcompiler
 from .exceptions import ChainException
@@ -6,9 +7,11 @@ from .exceptions import ChainException
 def raise_last_error():
     raise ChainException(_uuosapi.get_last_error())
 
-def check_result(r):
+def check_result(r, json=False):
     if not r:
         raise ChainException(_uuosapi.get_last_error())
+    if json:
+        return json_.loads(r)
     return r
 
 class ChainNative(object):
@@ -58,15 +61,15 @@ class ChainNative(object):
         return binargs
 
     @staticmethod
-    def unpack_args(account, action, binargs):
+    def unpack_args(account, action, binargs, json=False):
         if isinstance(binargs, str):
             binargs = bytes.fromhex(binargs)
         else:
             assert isinstance(binargs, bytes)
         success, args = _uuosapi.unpack_args(account, action, binargs)
-        if success:
-            return json.loads(args)
-        raise_last_error()
+        if not success:
+            raise_last_error()
+        return check_result(args, json)
 
     @staticmethod
     def pack_abi_type(account, struct_name, args):
@@ -98,28 +101,36 @@ class ChainNative(object):
         return _uuosapi.unpack_abi(packed_abi)
 
     @staticmethod
-    def gen_transaction(actions, expiration, reference_block_id):
+    def gen_transaction(actions, expiration, reference_block_id, json=False):
         for a in actions:
             args = a[2]
             if isinstance(args, dict):
                 a[2] = ChainNative.pack_args(a[0], a[1], args)
         r = _uuosapi.gen_transaction(actions, expiration, reference_block_id)
-        return check_result(r)
+        return check_result(r, json)
 
     @staticmethod
-    def sign_transaction(trx, private_key, chain_id):
+    def sign_transaction(trx, private_key, chain_id, json=False):
         if isinstance(trx, dict):
-            trx = json.loads(trx)
+            trx = json.dumps(trx)
         ret = _uuosapi.sign_transaction(trx, private_key, chain_id)
+        return check_result(ret, json)
+
+    @staticmethod
+    def pack_transaction(trx, compress=0, json=False):
+        if isinstance(trx, dict):
+            trx = json.dumps(trx)
+        assert isinstance(trx, (dict, str, bytes))
+        ret = _uuosapi.pack_transaction(trx, compress)
+        return check_result(ret, json)
+
+    @staticmethod
+    def unpack_transaction(trx, json=False):
+        if isinstance(trx, str):
+            trx = bytes.fromhex(trx)
+        assert isinstance(trx, bytes)
+        ret = _uuosapi.unpack_transaction(trx)
         return check_result(ret)
-
-    @staticmethod
-    def pack_transaction(trx, compress=0):
-        return _uuosapi.pack_transaction(trx, compress)
-
-    @staticmethod
-    def unpack_transaction(trx):
-        return _uuosapi.unpack_transaction(trx)
 
     @staticmethod
     def create_key():
