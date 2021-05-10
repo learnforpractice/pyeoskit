@@ -48,9 +48,9 @@ class Testnet(object):
         cur_dir = os.path.dirname(uuos.__file__)
         self.cur_dir = os.path.join(cur_dir, 'tests')
 
-        if os.path.exists('mywallet.wallet'):
-            os.remove('mywallet.wallet')
-        psw = wallet.create('mywallet')
+        if os.path.exists('test.wallet'):
+            os.remove('test.wallet')
+        psw = wallet.create('test')
         print(psw)
         priv_keys = [
             '5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3',#EOS6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5GDW5CV
@@ -70,7 +70,7 @@ class Testnet(object):
         ]
 
         for priv_key in priv_keys:
-            wallet.import_key('mywallet', priv_key, False)
+            wallet.import_key('test', priv_key, False)
 
     def start_nodes(self, wait=False):
         if not os.path.exists('tmp'):
@@ -107,7 +107,7 @@ class Testnet(object):
             time.sleep(1.0)
             try:
                 info = uuosapi.get_info()
-                logger.info(info)
+                # logger.info(info)
                 break
             except Exception as e:
                 logger.info(e)
@@ -196,7 +196,8 @@ class Testnet(object):
 
     def cleanup(self):
         import shutil
-        shutil.rmtree('./tmp')
+        if os.path.exists('./tmp'):
+            shutil.rmtree('./tmp')
 
     def wait(self):
         for p in self.nodes:
