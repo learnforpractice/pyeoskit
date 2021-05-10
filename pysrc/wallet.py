@@ -1,4 +1,5 @@
 import json
+import json as json_
 from typing import List
 from typing import Dict
 
@@ -9,9 +10,11 @@ from .exceptions import WalletException
 def raise_last_error():
     raise WalletException(_uuosapi.get_last_error())
 
-def check_result(result):
+def check_result(result, json=False):
     if not result:
         raise_last_error()
+    if json:
+        return json_.loads(result)
     return result
 
 def create(name):
@@ -61,14 +64,14 @@ def import_key(name, wif_key, save=True):
 def remove_key(name, password, pub_key):
     return _wallet.remove_key(name, password, pub_key)
 
-def sign_transaction(trx: str, public_keys: List[str], chain_id: str):
+def sign_transaction(trx: str, public_keys: List[str], chain_id: str, json=False):
     ret = _wallet.sign_transaction(trx, public_keys, chain_id)
-    return check_result(ret)
+    return check_result(ret, json)
 
-def sign_raw_transaction(trx: bytes, public_keys: List[str], chain_id: str):
+def sign_raw_transaction(trx: bytes, public_keys: List[str], chain_id: str, json=False):
     assert isinstance(trx, bytes)
     ret = _wallet.sign_raw_transaction(trx, public_keys, chain_id)
-    return check_result(ret)
+    return check_result(ret, json)
 
 def sign_digest(digest, public_key: str):
     return _wallet.sign_digest(digest, public_key)
