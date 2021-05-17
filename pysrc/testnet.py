@@ -21,9 +21,13 @@ from uuosio import uuos
 logger = log.get_logger(__name__)
 
 class Testnet(object):
-    def __init__(self, single_node=False, show_log=False):
+    def __init__(self, host='127.0.0.1', single_node=False, show_log=False, log_config='', extra=''):
+        self.host=host
         self.single_node = single_node
         self.show_log = show_log
+        self.log_config = log_config
+        self.extra = extra
+
         self.test_accounts = (
             'hello',
             'helloworld11',
@@ -32,7 +36,6 @@ class Testnet(object):
             'helloworld14',
             'helloworld15',
             'helloworld33',
-            'learnfortest',
         )
 
         self.producer_accounts = (
@@ -90,19 +93,27 @@ class Testnet(object):
             os.environ['VM_API_LIB'] = os.path.join(bin_dir, '../lib/libvm_api.so')
             os.environ['PYTHON_SHARED_LIB_PATH'] = '/usr/lib/x86_64-linux-gnu/libpython3.7m.so'
 
-        config_dir = '--data-dir ./tmp/dd --config-dir ./tmp/cd'
-        args = f'{uuos} -m uuosio.main --verbose-http-errors  --http-max-response-time-ms 100 --p2p-listen-endpoint 127.0.0.1:9100 {config_dir} -p eosio --plugin eosio::producer_plugin --plugin eosio::chain_api_plugin --plugin eosio::producer_api_plugin --plugin eosio::history_api_plugin -e --resource-monitor-space-threshold 99 --http-server-address 127.0.0.1:9000 --block-interval-ms 1000 --contracts-console --access-control-allow-origin="*"' # --backing-store rocksdb'
+        if self.log_config:
+            configs = f'--data-dir ./tmp/dd --config-dir ./tmp/cd -l {self.log_config} {self.extra}'
+        else:
+            configs = f'--data-dir ./tmp/dd --config-dir ./tmp/cd {self.extra}'
+        args = f'{uuos} -m uuosio.main --verbose-http-errors  --http-max-response-time-ms 100 --p2p-listen-endpoint {self.host}:9100 {configs} -p eosio --plugin eosio::producer_plugin --plugin eosio::chain_api_plugin --plugin eosio::producer_api_plugin --plugin eosio::history_api_plugin -e --resource-monitor-space-threshold 99 --http-server-address {self.host}:9000 --block-interval-ms 1000 --contracts-console --access-control-allow-origin="*"' # --backing-store rocksdb'
         logger.info(args)
         args = shlex.split(args)
+        # if self.show_log:
+        #     f = sys.stdout
+        # else:
+        #     f = open('log.txt', 'a')
+        # f = sys.stdout
         if self.show_log:
-            f = sys.stdout
+            p = subprocess.Popen(args)
         else:
             f = open('log.txt', 'a')
-        # f = sys.stdout
-        p = subprocess.Popen(args, stdout=f, stderr=f)
+            p = subprocess.Popen(args, stdout=f, stderr=f)
+
         self.nodes.append(p)
 
-        uuosapi.set_node('http://127.0.0.1:9000')
+        uuosapi.set_node(f'http://{self.host}:9000')
         while True:
             time.sleep(1.0)
             try:
@@ -151,12 +162,12 @@ class Testnet(object):
             priv = self.producer_keys[index]['private']
 
             signature_provider = f'--signature-provider={pub}=KEY:{priv}'
-            http_server_address = f'--http-server-address 127.0.0.1:{http_port}'
-            p2p_listen_endpoint = f'--p2p-listen-endpoint 127.0.0.1:{p2p_listen_port}'
+            http_server_address = f'--http-server-address {self.host}:{http_port}'
+            p2p_listen_endpoint = f'--p2p-listen-endpoint {self.host}:{p2p_listen_port}'
 
             p2p_peer_address = ''
             for port in p2p_ports:
-                p2p_peer_address += f'--p2p-peer-address 127.0.0.1:{port} '
+                p2p_peer_address += f'--p2p-peer-address {self.host}:{port} '
 
             dirs = f'--data-dir tmp/dd-{bp} --config-dir tmp/cd-{bp} -p {bp}'
             if http_port == 9001:
@@ -317,7 +328,7 @@ def apply(a, b, c):
         # handler = logging.StreamHandler()
         # handler.setFormatter(formatter)
 
-        config.setup_uuos_network()
+        # config.setup_eos_network()
 
         # if len(sys.argv) == 2:
         #     print(sys.argv)
