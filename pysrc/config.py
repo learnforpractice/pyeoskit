@@ -25,7 +25,6 @@ def set_nodes(_nodes):
     global nodes
     nodes = _nodes
 #set in uuosapi.py:uuosapi.__init__
-get_abi = None
 
 main_token = 'EOS'
 system_contract = 'eosio'
@@ -42,6 +41,7 @@ def config_network(_system_contract, _main_token_contract, _main_token):
     global system_contract
     global main_token
     global main_token_contract
+    global code_permission_name
 
     system_contract = _system_contract
     main_token_contract = _main_token_contract
@@ -75,8 +75,9 @@ def setup_uuos_test_network(url = 'http://127.0.0.1:8888', deploy_type=1):
     main_token = 'UUOS'
     system_contract = 'eosio'
     main_token_contract = 'eosio.token'
-    python_contract = 'hello'
     code_permission_name = 'eosio.code'
+
+    python_contract = 'hello'
     from uuoskit import uuosapi
     uuosapi.set_public_key_prefix(main_token)
 
@@ -85,6 +86,7 @@ def setup_eos_network():
     global system_contract
     global main_token_contract
     global code_permission_name
+    global network_url
 
     main_token = 'EOS'
     system_contract = 'eosio'

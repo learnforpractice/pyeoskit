@@ -19,7 +19,6 @@ class ChainApi(RPCInterface, ChainNative):
     def __init__(self, node_url = 'http://127.0.0.1:8888', network='EOS'):
         super().__init__(_async=False)
 
-        config.get_abi = self.get_abi
         self.db = ChainCache(self, network)
         self.set_node(node_url)
 
@@ -34,9 +33,6 @@ class ChainApi(RPCInterface, ChainNative):
         return self.get_info()['chain_id']
 
     def push_transaction(self, trx: Union[str, dict], compress=0):
-        if isinstance(trx, dict):
-            trx = json.dumps(trx)
-        assert isinstance(trx, str)
         trx = self.pack_transaction(trx, compress)
         return super().push_transaction(trx)
 

@@ -1,3 +1,4 @@
+import json
 from . import config
 from . import wallet
 from . import defaultabi
@@ -18,8 +19,6 @@ class ChainApiAsync(RPCInterface, ChainNative):
         self.sync_api = ChainApi(node_url, network)
 
         super().__init__(_async=True)
-
-        config.get_abi = self.sync_api.get_abi
 
         self.db = ChainCache(self, network)
         self.set_node(node_url)

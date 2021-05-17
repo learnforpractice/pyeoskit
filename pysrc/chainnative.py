@@ -16,6 +16,9 @@ def check_result(r, json=False):
 
 class ChainNative(object):
 
+    def get_abi(self, account):
+        assert False, 'should be implemented by subclass'
+
     @staticmethod
     def n2s(n):
         '''convert integer to name string
@@ -49,23 +52,32 @@ class ChainNative(object):
     def string_to_symbol(precision, str_symbol):
         return _uuosapi.string_to_symbol(precision, str_symbol)
 
-    @staticmethod
-    def pack_args(account, action, args):
+    def check_abi(self, account):
+        if not _uuosapi.is_abi_cached(account):
+            abi = self.get_abi(account)
+            _uuosapi.set_abi(account, abi)
+
+    def pack_args(self, account, action, args):
         if isinstance(args, dict):
             args = json.dumps(args)
         else:
             assert isinstance(args, (str, bytes))
+
+        self.check_abi(account)
+
         success, binargs = _uuosapi.pack_args(account, action, args)
         if not success:
             raise_last_error()
         return binargs
 
-    @staticmethod
-    def unpack_args(account, action, binargs, json=False):
+    def unpack_args(self, account, action, binargs, json=False):
         if isinstance(binargs, str):
             binargs = bytes.fromhex(binargs)
         else:
             assert isinstance(binargs, bytes)
+
+        self.check_abi(account)
+
         success, args = _uuosapi.unpack_args(account, action, binargs)
         if not success:
             raise_last_error()
@@ -75,10 +87,14 @@ class ChainNative(object):
     def pack_abi_type(account, struct_name, args):
         if isinstance(args, dict):
             args = json.dumps(args)
+
+        self.check_abi(account)
+
         return _uuosapi.pack_abi_type(account, struct_name, args)
 
     @staticmethod
     def unpack_abi_type(account, struct_name, binargs):
+        self.check_abi(account)
         return _uuosapi.unpack_abi_type(account, struct_name, binargs)
 
     @staticmethod
@@ -100,26 +116,25 @@ class ChainNative(object):
     def unpack_abi(packed_abi):
         return _uuosapi.unpack_abi(packed_abi)
 
-    @staticmethod
-    def gen_transaction(actions, expiration, reference_block_id, json=False):
+    def gen_transaction(self, actions, expiration, reference_block_id, json=False):
         for a in actions:
             args = a[2]
             if isinstance(args, dict):
-                a[2] = ChainNative.pack_args(a[0], a[1], args)
+                a[2] = self.pack_args(a[0], a[1], args)
         r = _uuosapi.gen_transaction(actions, expiration, reference_block_id)
         return check_result(r, json)
 
     @staticmethod
     def sign_transaction(trx, private_key, chain_id, json=False):
         if isinstance(trx, dict):
-            trx = json.dumps(trx)
+            trx = json_.dumps(trx)
         ret = _uuosapi.sign_transaction(trx, private_key, chain_id)
         return check_result(ret, json)
 
     @staticmethod
     def pack_transaction(trx, compress=0, json=False):
         if isinstance(trx, dict):
-            trx = json.dumps(trx)
+            trx = json_.dumps(trx)
         assert isinstance(trx, (dict, str, bytes))
         ret = _uuosapi.pack_transaction(trx, compress)
         return check_result(ret, json)

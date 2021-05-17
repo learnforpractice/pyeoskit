@@ -23,6 +23,7 @@ cdef extern from "uuosapi.hpp":
     bool pack_args_(string& account, uint64_t action, string& _args, string& binargs)
     bool unpack_args_(string& account, uint64_t action, string& binargs, string& _args)
     bool clear_abi_cache_(string& account);
+    bool is_abi_cached_(string& account);
 
     void pack_abi_type_(string& account, string& struct_name, string& _args, string& _binargs);
     void unpack_abi_type_(string& account, string& struct_name, string& _binargs, string& _args );
@@ -107,7 +108,10 @@ def unpack_abi_type(string& account, string& struct_name, string& _binargs):
     return <bytes>_args
 
 def clear_abi_cache(string& account):
-    return clear_abi_cache_(account);
+    return clear_abi_cache_(account)
+
+def is_abi_cached(string& account):
+    return is_abi_cached_(account)
 
 def set_abi(string& account, string& abi):
     return set_abi_(account, abi)
@@ -208,9 +212,6 @@ def get_public_key_prefix():
     cdef string prefix
     get_public_key_prefix_(prefix)
     return prefix
-
-cdef extern string uuosapi_get_abi(string& account):
-    return config.get_abi(account)
 
 def compile_py(file_name, src, src_type = 0):
     cdef vector[char] output

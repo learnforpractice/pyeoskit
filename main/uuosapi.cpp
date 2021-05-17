@@ -26,9 +26,6 @@ void get_last_error_(string& error) {
    error = s_error;
 }
 
-
-string uuosapi_get_abi(string& account);
-
 static fc::microseconds abi_serializer_max_time = fc::microseconds(100*1000);
 static uint32_t tx_max_net_usage = 0;
 
@@ -51,9 +48,7 @@ bool pack_args_(string& account, uint64_t action, std::string& _args, std::strin
       fc::variant args = fc::json::from_string(_args);
       auto itr = abi_cache.find(account);
       if (itr == abi_cache.end()) {
-         std::string _rawabi = uuosapi_get_abi(account);
-         abi_def abi = fc::json::from_string(_rawabi).as<abi_def>();
-         abi_cache[account] = std::make_shared<abi_serializer>(abi, abi_serializer_max_time);
+         EOS_ASSERT(false, chain_exception, "no cached abi.");
       }
       abi_serializer& abis = *abi_cache[account];
 
@@ -72,9 +67,7 @@ bool unpack_args_(string& account, uint64_t action, std::string& _binargs, std::
       bytes binargs = bytes(_binargs.data(), _binargs.data() + _binargs.size());
       auto itr = abi_cache.find(account);
       if (itr == abi_cache.end()) {
-         std::string _rawabi = uuosapi_get_abi(account);
-         abi_def abi = fc::json::from_string(_rawabi).as<abi_def>();
-         abi_cache[account] = std::make_shared<abi_serializer>(abi, abi_serializer_max_time);
+         EOS_ASSERT(false, chain_exception, "no cached abi.");
       }
       abi_serializer& abis = *abi_cache[account];
 
@@ -90,9 +83,7 @@ void pack_abi_type_(string& account, string& struct_name, std::string& _args, st
       fc::variant args = fc::json::from_string(_args);
       auto itr = abi_cache.find(account);
       if (itr == abi_cache.end()) {
-         std::string _rawabi = uuosapi_get_abi(account);
-         abi_def abi = fc::json::from_string(_rawabi).as<abi_def>();
-         abi_cache[account] = std::make_shared<abi_serializer>(abi, abi_serializer_max_time);
+         EOS_ASSERT(false, chain_exception, "no cached abi.");
       }
       abi_serializer& abis = *abi_cache[account];
 
@@ -106,9 +97,7 @@ void unpack_abi_type_(string& account, string& struct_name, std::string& _binarg
       bytes binargs = bytes(_binargs.data(), _binargs.data() + _binargs.size());
       auto itr = abi_cache.find(account);
       if (itr == abi_cache.end()) {
-         std::string _rawabi = uuosapi_get_abi(account);
-         abi_def abi = fc::json::from_string(_rawabi).as<abi_def>();
-         abi_cache[account] = std::make_shared<abi_serializer>(abi, abi_serializer_max_time);
+         EOS_ASSERT(false, chain_exception, "no cached abi.");
       }
       abi_serializer& abis = *abi_cache[account];
 
@@ -124,6 +113,11 @@ bool clear_abi_cache_(string& account) {
       return true;
    }
    return false;
+}
+
+bool is_abi_cached_(string& account) {
+   auto itr = abi_cache.find(account);
+   return itr != abi_cache.end();
 }
 
 bool set_abi_(string& account, string& _abi) {
