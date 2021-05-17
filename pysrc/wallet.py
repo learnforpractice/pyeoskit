@@ -47,7 +47,9 @@ def list_keys(name, psw) -> Dict[str, str]:
 
 def get_public_keys():
     ret = _wallet.get_public_keys()
-    return json.loads(ret)
+    if ret:
+        return json.loads(ret)
+    return []
 
 def lock_all():
     return _wallet.lock_all()
@@ -65,6 +67,8 @@ def remove_key(name, password, pub_key):
     return _wallet.remove_key(name, password, pub_key)
 
 def sign_transaction(trx: str, public_keys: List[str], chain_id: str, json=False):
+    if isinstance(trx, dict):
+        trx = json_.dumps(trx)
     ret = _wallet.sign_transaction(trx, public_keys, chain_id)
     return check_result(ret, json)
 
