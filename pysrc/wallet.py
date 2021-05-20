@@ -69,8 +69,11 @@ def remove_key(name, password, pub_key):
 def sign_transaction(trx: str, public_keys: List[str], chain_id: str, json=False):
     if isinstance(trx, dict):
         trx = json_.dumps(trx)
-    ret = _wallet.sign_transaction(trx, public_keys, chain_id)
-    return check_result(ret, json)
+    tx_id, signatures = _wallet.sign_transaction(trx, public_keys, chain_id)
+
+    if tx_id and signatures:
+        return tx_id, json_.loads(signatures)
+    raise_last_error()
 
 def sign_raw_transaction(trx: bytes, public_keys: List[str], chain_id: str, json=False):
     assert isinstance(trx, bytes)

@@ -6,6 +6,7 @@ from libcpp.vector cimport vector
 from libcpp.map cimport map
 from libcpp cimport bool
 from libc.string cimport memcpy
+from libcpp.pair cimport pair
 
 from typing import Dict, Tuple, List
 
@@ -27,7 +28,7 @@ cdef extern from "wallet_.h":
     bool wallet_unlock_(string& name, string& password);
     bool wallet_import_key_(string& name, string& wif_key, bool save);
     bool wallet_remove_key_(string& name, string& password, const string& pub_key);
-    string sign_transaction_(string& trx, vector[string]& _public_keys, string& chain_id);
+    pair[string, string] sign_transaction_(string& trx, vector[string]& _public_keys, string& chain_id);
     string sign_raw_transaction_(vector[char]& _trx, vector[string]& _public_keys, string& chain_id);
 
     string sign_digest_(string& _digest, string& _public_key)
