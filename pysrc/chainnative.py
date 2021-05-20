@@ -1,5 +1,7 @@
 import json
 import json as json_
+import httpx
+
 from . import _uuosapi
 from . import wasmcompiler
 from .exceptions import ChainException
@@ -16,8 +18,14 @@ def check_result(r, json=False):
 
 class ChainNative(object):
 
-    def get_abi(self, account):
-        assert False, 'should be implemented by subclass'
+    def get_abi_sync(self, account):
+        args = {
+            'account_name': account
+        }
+        r = httpx.post(f'{self.node_url}/v1/chain/get_abi', json=args)
+        r = r.json()
+        abi = r['abi']
+        return json.dumps(abi)
 
     @staticmethod
     def n2s(n):
@@ -54,7 +62,7 @@ class ChainNative(object):
 
     def check_abi(self, account):
         if not _uuosapi.is_abi_cached(account):
-            abi = self.get_abi(account)
+            abi = self.get_abi_sync(account)
             _uuosapi.set_abi(account, abi)
 
     def pack_args(self, account, action, args):
