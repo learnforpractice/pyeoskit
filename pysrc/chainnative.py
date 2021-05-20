@@ -91,8 +91,7 @@ class ChainNative(object):
             raise_last_error()
         return check_result(args, json)
 
-    @staticmethod
-    def pack_abi_type(account, struct_name, args):
+    def pack_abi_type(self, account, struct_name, args):
         if isinstance(args, dict):
             args = json.dumps(args)
 
@@ -100,8 +99,7 @@ class ChainNative(object):
 
         return _uuosapi.pack_abi_type(account, struct_name, args)
 
-    @staticmethod
-    def unpack_abi_type(account, struct_name, binargs):
+    def unpack_abi_type(self, account, struct_name, binargs):
         self.check_abi(account)
         return _uuosapi.unpack_abi_type(account, struct_name, binargs)
 
