@@ -74,7 +74,7 @@ def sign_transaction(trx: Union[str, dict], public_keys: List[str], chain_id: st
 def sign_transaction_ex(trx: str, public_keys: List[str], chain_id: str, json=False):
     if isinstance(trx, dict):
         trx = json_.dumps(trx)
-    tx_id, signatures = _wallet.sign_transaction(trx, public_keys, chain_id)
+    tx_id, signatures = _wallet.sign_transaction_ex(trx, public_keys, chain_id)
 
     if tx_id and signatures:
         return tx_id, json_.loads(signatures)
