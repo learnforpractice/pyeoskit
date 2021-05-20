@@ -460,7 +460,10 @@ def apply(a, b, c):
                     logger.info('deploy eosio.system done!')
                     break
             except Exception as e:
-                logger.info(e)
+                pass
+                # logger.info(e)
+        else:
+            assert False, 'deploy eosio.system failed!'
 
         if True:
             args = dict(version = 0,
