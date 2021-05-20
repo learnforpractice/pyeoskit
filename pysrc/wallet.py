@@ -1,7 +1,6 @@
 import json
 import json as json_
-from typing import List
-from typing import Dict
+from typing import List, Dict, Union
 
 from . import _wallet
 from . import _uuosapi
@@ -66,7 +65,13 @@ def import_key(name, wif_key, save=True):
 def remove_key(name, password, pub_key):
     return _wallet.remove_key(name, password, pub_key)
 
-def sign_transaction(trx: str, public_keys: List[str], chain_id: str, json=False):
+def sign_transaction(trx: Union[str, dict], public_keys: List[str], chain_id: str, json=False):
+    if isinstance(trx, dict):
+        trx = json_.dumps(trx)
+    trx = _wallet.sign_transaction(trx, public_keys, chain_id)
+    return check_result(trx, json)
+
+def sign_transaction_ex(trx: str, public_keys: List[str], chain_id: str, json=False):
     if isinstance(trx, dict):
         trx = json_.dumps(trx)
     tx_id, signatures = _wallet.sign_transaction(trx, public_keys, chain_id)

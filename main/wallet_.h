@@ -32,7 +32,9 @@ bool wallet_unlock_(std::string &name, std::string &password);
 bool wallet_import_key_(std::string &name, std::string &wif_key, bool save);
 bool wallet_remove_key_(string& name, string& password, const string& pub_key);
 
-std::pair<string, string> sign_transaction_(string& trx, vector<string>& _public_keys, string& chain_id);
+string sign_transaction_(string& trx, vector<string>& _public_keys, string& chain_id);
+std::pair<string, string> sign_transaction_ex_(string& trx, vector<string>& _public_keys, string& chain_id);
+
 string sign_raw_transaction_(vector<char>& _trx, vector<string>& _public_keys, string& chain_id);
 
 string sign_digest_(string& _digest, string& _public_key);

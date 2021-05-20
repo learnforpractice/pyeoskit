@@ -28,7 +28,8 @@ cdef extern from "wallet_.h":
     bool wallet_unlock_(string& name, string& password);
     bool wallet_import_key_(string& name, string& wif_key, bool save);
     bool wallet_remove_key_(string& name, string& password, const string& pub_key);
-    pair[string, string] sign_transaction_(string& trx, vector[string]& _public_keys, string& chain_id);
+    string sign_transaction_(string& trx, vector[string]& _public_keys, string& chain_id);
+    pair[string, string] sign_transaction_ex_(string& trx, vector[string]& _public_keys, string& chain_id);
     string sign_raw_transaction_(vector[char]& _trx, vector[string]& _public_keys, string& chain_id);
 
     string sign_digest_(string& _digest, string& _public_key)
@@ -78,6 +79,14 @@ def sign_transaction(string& trx, _public_keys, string& chain_id):
     for key in _public_keys:
         public_keys.push_back(key)
     return sign_transaction_(trx, public_keys, chain_id);
+
+def sign_transaction_ex(string& trx, _public_keys, string& chain_id):
+    cdef vector[string] public_keys
+
+    for key in _public_keys:
+        public_keys.push_back(key)
+    return sign_transaction_ex_(trx, public_keys, chain_id);
+
 
 def sign_raw_transaction(string& trx, _public_keys, string& chain_id):
     cdef vector[string] public_keys

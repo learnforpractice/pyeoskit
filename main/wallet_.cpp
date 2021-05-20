@@ -25,7 +25,23 @@ wallet_manager& wm() {
    return *wm;
 }
 
-std::pair<string, string> sign_transaction_(string& _tx, vector<string>& _public_keys, string& chain_id) {
+string sign_transaction_(string& _tx, vector<string>& _public_keys, string& chain_id) {
+   try {
+      signed_transaction tx = fc::json::from_string(_tx).as<signed_transaction>();
+      flat_set<public_key_type> public_keys;
+
+      for (auto key: _public_keys) {
+         public_keys.insert(public_key_type(key));
+      }
+
+      chain::chain_id_type id(chain_id);
+      tx = wm().sign_transaction(tx, public_keys, id);
+      return fc::json::to_string(tx);
+   } FC_LOG_AND_DROP();
+   return "";
+}
+
+std::pair<string, string> sign_transaction_ex_(string& _tx, vector<string>& _public_keys, string& chain_id) {
    try {
       signed_transaction tx = fc::json::from_string(_tx).as<signed_transaction>();
       flat_set<public_key_type> public_keys;
