@@ -22,7 +22,7 @@ test_dir = os.path.dirname(__file__)
 
 # uuosapi.set_node('http://127.0.0.1:8899')
 
-config.setup_uuos_network()
+# config.setup_uuos_network()
 
 uuosapi_async = None
 
@@ -275,3 +275,21 @@ def apply(a, b, c):
         with pytest.raises(Exception):
             r = uuosapi.unpack_args('eosio.token', 'transfer', 'aabb')
 
+    def test_get_required_keys(self):
+        args = {
+            'from': 'helloworld11',
+            'to': 'helloworld12',
+            'quantity': '0.0100 EOS',
+            'memo': 'hello'
+        }
+        act = ['eosio.token', 'transfer', args, {'helloworld11': 'active'}]
+        chain_info = uuosapi.get_info()
+        reference_block_id = chain_info['head_block_id']
+        trx = uuosapi.gen_transaction([act], 60, reference_block_id)
+        keys = uuosapi.get_required_keys(trx, wallet.get_public_keys())
+        assert keys
+
+        chain_id = chain_info['chain_id']
+        trx = wallet.sign_transaction(trx, keys, chain_id, json=True)
+        assert trx['signatures']
+        # logger.info(trx)

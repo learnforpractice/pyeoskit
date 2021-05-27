@@ -9,6 +9,7 @@ from .chaincache import ChainCache
 from .rpc_interface import RPCInterface
 from .chainnative import ChainNative
 from .exceptions import ChainException
+from . import wallet
 
 logger = log.get_logger(__name__)
 
@@ -41,6 +42,10 @@ class ChainApiAsync(RPCInterface, ChainNative):
         trx = self.pack_transaction(trx, compress)
         return super().push_transaction(trx)
 
+    async def get_required_keys(self, trx, public_keys):
+        r = await super().get_required_keys(trx, public_keys)
+        return r['required_keys']
+
     async def push_action(self, contract, action, args, permissions=None, compress=0):
         if not permissions:
             permissions = {contract:'active'}
@@ -50,13 +55,8 @@ class ChainApiAsync(RPCInterface, ChainNative):
         chain_id = chain_info['chain_id']
 
         trx = self.gen_transaction([act], 60, reference_block_id)
-
-        keys = []
-        for account in permissions:
-            public_keys = await self.get_available_public_keys(account, permissions[account])
-            keys.extend(public_keys)
-#        print(keys)
-        trx = wallet.sign_transaction(trx, keys, chain_id)
+        required_keys = await self.get_required_keys(trx, wallet.get_public_keys())
+        trx = wallet.sign_transaction(trx, required_keys, chain_id)
         trx = self.pack_transaction(trx, compress)
         return await super().push_transaction(trx)
 
@@ -65,18 +65,8 @@ class ChainApiAsync(RPCInterface, ChainNative):
         reference_block_id = chain_info['last_irreversible_block_id']
         chain_id = chain_info['chain_id']
         trx = self.gen_transaction(actions, 60, reference_block_id)
-        keys = []
-        fetched_keys = {}
-        for a in actions:
-            permissions = a[3]
-            for account in permissions:
-                key = account + permissions[account]
-                if not key in fetched_keys:
-                    public_keys = await self.get_available_public_keys(account, permissions[account])
-                    keys.extend(public_keys)
-                    fetched_keys[key] = True
-
-        trx = wallet.sign_transaction(trx, keys, chain_id)
+        required_keys = await self.get_required_keys(trx, wallet.get_public_keys())
+        trx = wallet.sign_transaction(trx, required_keys, chain_id)
         trx = self.pack_transaction(trx, compress)
 
         return await super().push_transaction(trx)
@@ -90,13 +80,8 @@ class ChainApiAsync(RPCInterface, ChainNative):
         trxs = []
         for aa in aaa:
             trx = self.gen_transaction(aa, expiration, reference_block_id)
-            keys = []
-            for a in aa:
-                permissions = a[3]
-                for account in permissions:
-                    public_keys = await self.get_available_public_keys(account, permissions[account])
-                    keys.extend(public_keys)
-            trx = wallet.sign_transaction(trx, keys, chain_id)
+            required_keys = await self.get_required_keys(trx, wallet.get_public_keys())
+            trx = wallet.sign_transaction(trx, required_keys, chain_id)
             trx = self.pack_transaction(trx, 0)
             trxs.append(trx)
         return await super().push_transactions(trxs)
@@ -108,23 +93,6 @@ class ChainApiAsync(RPCInterface, ChainNative):
             return pub_key[4:]
         else:
             return pub_key
-
-    async def get_available_public_keys(self, account, permission):
-        wallet_public_keys = wallet.get_public_keys()
-        for i in range(len(wallet_public_keys)):
-            pub_key = wallet_public_keys[i]
-            wallet_public_keys[i] = self.strip_prefix(pub_key)
-
-        threshold, account_public_keys = await self.get_keys(account, permission)
-        keys = []
-        for key in account_public_keys:
-            _key = key['key']
-            if self.strip_prefix(_key) in wallet_public_keys:
-                keys.append(_key)
-                threshold -= key['weight']
-                if threshold <= 0:
-                    break
-        return keys
 
     async def get_account(self, account):
         if not self.s2n(account):
