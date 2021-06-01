@@ -105,3 +105,7 @@ class TestUUOSApi(object):
         trx = wallet.sign_transaction(trx, keys, chain_id, json=True)
         assert trx['signatures']
         logger.info(trx)
+
+    @pytest.mark.asyncio
+    async def test_push_action(self):
+        r = await uuosapi.push_action('hello', 'sayhello', b'hello')

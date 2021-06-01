@@ -293,3 +293,7 @@ def apply(a, b, c):
         trx = wallet.sign_transaction(trx, keys, chain_id, json=True)
         assert trx['signatures']
         # logger.info(trx)
+
+    def test_push_action(self):
+        r = uuosapi.push_action('hello', 'sayhello', b'hello')
+        print(r)
