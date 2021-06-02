@@ -95,7 +95,7 @@ action = [config.main_token_contract, 'transfer', args, {contract_name:'active'}
 
 info = uuosapi.get_info()
 reference_block_id = info['last_irreversible_block_id']
-trx = uuosapi.gen_transaction([action], 60, reference_block_id)
+trx = uuosapi.generate_transaction([action], 60, reference_block_id)
 print(trx)
 
 trx = uuosapi.sign_transaction(trx, '5JbDP55GXN7MLcNYKCnJtfKi9aD2HvHAdY7g8m67zFTAFkY1uBB', info.chain_id)

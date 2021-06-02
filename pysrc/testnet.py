@@ -402,10 +402,14 @@ def apply(a, b, c):
         contracts_path = os.path.join(contracts_path, 'contracts')
 
         if not uuosapi.get_raw_code_and_abi('eosio')['wasm']:
-            try:
-                self.deploy_contract('eosio', 'eosio.bios')
-            except Exception as e:
-                logger.exception(e)
+            for i in range(3):
+                try:
+                    self.deploy_contract('eosio', 'eosio.bios')
+                    break
+                except Exception as e:
+                    logger.info(e)
+        else:
+            raise Exception('deploy eosio.bios failed!')
 
         feature_digests = [
             '1a99a59d87e06e09ec5b028a9cbb7749b4a5ad8819004365d02dc4379a8b7241', #'ONLY_LINK_TO_EXISTING_PERMISSION' 

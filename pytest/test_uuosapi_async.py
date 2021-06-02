@@ -97,7 +97,7 @@ class TestUUOSApi(object):
         act = ['eosio.token', 'transfer', args, {'helloworld11': 'active'}]
         chain_info = await uuosapi.get_info()
         reference_block_id = chain_info['head_block_id']
-        trx = uuosapi.gen_transaction([act], 60, reference_block_id)
+        trx = uuosapi.generate_transaction([act], 60, reference_block_id)
         keys = await uuosapi.get_required_keys(trx, wallet.get_public_keys())
         assert keys
 

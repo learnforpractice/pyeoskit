@@ -61,11 +61,11 @@ class TestUUOSApi(object):
             'memo': 'hello,world'
         }
         a = ['eosio.token', 'transfer', args, {'alice': 'active'}]
-        r = uuosapi.gen_transaction([a], 60, self.info['last_irreversible_block_id'])
+        r = uuosapi.generate_transaction([a], 60, self.info['last_irreversible_block_id'])
         logger.info(r)
         assert r
 
-        r = uuosapi_async.gen_transaction([a], 60, self.info['last_irreversible_block_id'])
+        r = uuosapi_async.generate_transaction([a], 60, self.info['last_irreversible_block_id'])
         logger.info(r)
         assert r
 
@@ -79,10 +79,10 @@ class TestUUOSApi(object):
         a = ['eosio.token', 'transfer', args, {'alice': 'active'}]
 
         with pytest.raises(Exception):
-            r = uuosapi.gen_transaction([a], 60, self.info['last_irreversible_block_id'])
+            r = uuosapi.generate_transaction([a], 60, self.info['last_irreversible_block_id'])
 
         with pytest.raises(Exception):
-            r = uuosapi_async.gen_transaction([a], 60, self.info['last_irreversible_block_id'])
+            r = uuosapi_async.generate_transaction([a], 60, self.info['last_irreversible_block_id'])
 
     @pytest.mark.asyncio
     async def test_sign_transaction(self):
@@ -133,7 +133,7 @@ class TestUUOSApi(object):
 
     @pytest.mark.asyncio
     async def test_get_table_rows(self):
-        symbol = uuosapi.string_to_symbol(4, 'UUOS')
+        symbol = uuosapi.string_to_symbol(4, 'EOS')
         symbol_code = symbol >> 8
         symbol_code = uuosapi.n2s(symbol_code)
 
@@ -141,7 +141,7 @@ class TestUUOSApi(object):
         logger.info(r)
         assert r['rows']
 
-        r = uuosapi.get_table_rows(True, 'eosio.token', 'learnfortest', 'accounts', '', '', 10)
+        r = uuosapi.get_table_rows(True, 'eosio.token', 'helloworld11', 'accounts', '', '', 10)
         logger.info(r)
         assert r['rows']
 
@@ -149,7 +149,7 @@ class TestUUOSApi(object):
         logger.info(r)
         assert r['rows']
 
-        r = await uuosapi_async.get_table_rows(True, 'eosio.token', 'learnfortest', 'accounts', '', '', 10)
+        r = await uuosapi_async.get_table_rows(True, 'eosio.token', 'helloworld11', 'accounts', '', '', 10)
         logger.info(r)
         assert r['rows']
 
@@ -285,7 +285,7 @@ def apply(a, b, c):
         act = ['eosio.token', 'transfer', args, {'helloworld11': 'active'}]
         chain_info = uuosapi.get_info()
         reference_block_id = chain_info['head_block_id']
-        trx = uuosapi.gen_transaction([act], 60, reference_block_id)
+        trx = uuosapi.generate_transaction([act], 60, reference_block_id)
         keys = uuosapi.get_required_keys(trx, wallet.get_public_keys())
         assert keys
 

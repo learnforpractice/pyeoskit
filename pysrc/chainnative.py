@@ -130,6 +130,9 @@ class ChainNative(object):
         r = _uuosapi.gen_transaction(actions, expiration, reference_block_id)
         return check_result(r, json)
 
+    def generate_transaction(self, actions, expiration, reference_block_id, json=False):
+        return self.gen_transaction(actions, expiration, reference_block_id, json)
+
     @staticmethod
     def sign_transaction(trx, private_key, chain_id, json=False):
         if isinstance(trx, dict):

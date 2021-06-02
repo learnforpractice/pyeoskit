@@ -54,10 +54,10 @@ class ChainApiAsync(RPCInterface, ChainNative):
         chain_info = await self.get_info()
         reference_block_id = chain_info['last_irreversible_block_id']
         chain_id = chain_info['chain_id']
-        trx = self.gen_transaction([act], 60, reference_block_id)
+        trx = self.generate_transaction([act], 60, reference_block_id)
 
         dummy_act = [contract, action, b'', permissions]
-        dummy_trx = self.gen_transaction([dummy_act], 60, reference_block_id)
+        dummy_trx = self.generate_transaction([dummy_act], 60, reference_block_id)
         required_keys = await self.get_required_keys(dummy_trx, wallet.get_public_keys())
 
         trx = wallet.sign_transaction(trx, required_keys, chain_id)
@@ -68,12 +68,12 @@ class ChainApiAsync(RPCInterface, ChainNative):
         chain_info = await self.get_info()
         reference_block_id = chain_info['last_irreversible_block_id']
         chain_id = chain_info['chain_id']
-        trx = self.gen_transaction(actions, 60, reference_block_id)
+        trx = self.generate_transaction(actions, 60, reference_block_id)
 
         dummy_actions = copy.deepcopy(actions)
         for a in dummy_actions:
             a[2] = b''
-        dummy_trx = self.gen_transaction(dummy_actions, 60, reference_block_id)
+        dummy_trx = self.generate_transaction(dummy_actions, 60, reference_block_id)
         required_keys = await self.get_required_keys(dummy_trx, wallet.get_public_keys())
 
         trx = wallet.sign_transaction(trx, required_keys, chain_id)
@@ -89,7 +89,7 @@ class ChainApiAsync(RPCInterface, ChainNative):
 
         trxs = []
         for aa in aaa:
-            trx = self.gen_transaction(aa, expiration, reference_block_id)
+            trx = self.generate_transaction(aa, expiration, reference_block_id)
             required_keys = await self.get_required_keys(trx, wallet.get_public_keys())
             trx = wallet.sign_transaction(trx, required_keys, chain_id)
             trx = self.pack_transaction(trx, 0)
