@@ -21,12 +21,13 @@ from uuosio import uuos
 logger = log.get_logger(__name__)
 
 class Testnet(object):
-    def __init__(self, host='127.0.0.1', single_node=False, show_log=False, log_config='', extra=''):
+    def __init__(self, host='127.0.0.1', single_node=True, show_log=False, log_config='', extra=''):
         self.host=host
         self.single_node = single_node
         self.show_log = show_log
         self.log_config = log_config
         self.extra = extra
+        self.tmp_dir='.uuos-testnet'
 
         self.test_accounts = (
             'hello',
@@ -51,6 +52,7 @@ class Testnet(object):
         cur_dir = os.path.dirname(uuos.__file__)
         self.cur_dir = os.path.join(cur_dir, 'tests')
 
+        wallet.set_dir(self.tmp_dir)
         if os.path.exists('test.wallet'):
             os.remove('test.wallet')
         psw = wallet.create('test')
@@ -76,8 +78,8 @@ class Testnet(object):
             wallet.import_key('test', priv_key, False)
 
     def start_nodes(self, wait=False):
-        if not os.path.exists('tmp'):
-            os.mkdir('tmp')
+        if not os.path.exists(self.tmp_dir):
+            os.mkdir(self.tmp_dir)
         self.nodes = []
 
         bin_dir = shutil.which('run-uuos')
@@ -94,9 +96,9 @@ class Testnet(object):
             os.environ['PYTHON_SHARED_LIB_PATH'] = '/usr/lib/x86_64-linux-gnu/libpython3.7m.so'
 
         if self.log_config:
-            configs = f'--data-dir ./tmp/dd --config-dir ./tmp/cd -l {self.log_config} {self.extra}'
+            configs = f'--data-dir ./{self.tmp_dir}/dd --config-dir ./{self.tmp_dir}/cd -l {self.log_config} {self.extra}'
         else:
-            configs = f'--data-dir ./tmp/dd --config-dir ./tmp/cd {self.extra}'
+            configs = f'--data-dir ./{self.tmp_dir}/dd --config-dir ./{self.tmp_dir}/cd {self.extra}'
         args = f'{uuos} -m uuosio.main --verbose-http-errors  --http-max-response-time-ms 100 --p2p-listen-endpoint {self.host}:9100 {configs} -p eosio --plugin eosio::producer_plugin --plugin eosio::chain_api_plugin --plugin eosio::producer_api_plugin --plugin eosio::history_api_plugin -e --resource-monitor-space-threshold 99 --http-server-address {self.host}:9000 --block-interval-ms 1000 --contracts-console --access-control-allow-origin="*"' # --backing-store rocksdb'
         logger.info(args)
         args = shlex.split(args)
@@ -157,7 +159,7 @@ class Testnet(object):
             del http_ports_copy[index]
 
             bp = f'genesisbp11{index+1}'
-            logfile = f'tmp/{bp}.log'
+            logfile = f'{self.tmp_dir}/{bp}.log'
             pub = self.producer_keys[index]['public']
             priv = self.producer_keys[index]['private']
 
@@ -169,7 +171,7 @@ class Testnet(object):
             for port in p2p_ports:
                 p2p_peer_address += f'--p2p-peer-address {self.host}:{port} '
 
-            dirs = f'--data-dir tmp/dd-{bp} --config-dir tmp/cd-{bp} -p {bp}'
+            dirs = f'--data-dir {self.tmp_dir}/dd-{bp} --config-dir {self.tmp_dir}/cd-{bp} -p {bp}'
             if http_port == 9001:
                 args = f'{uuos} -m uuosio.main -e {dirs} {signature_provider} {http_server_address} {p2p_listen_endpoint} {p2p_peer_address} --verbose-http-errors  --http-max-response-time-ms 100 --plugin eosio::producer_plugin --plugin eosio::chain_api_plugin --plugin eosio::producer_api_plugin --plugin eosio::history_api_plugin --resource-monitor-space-threshold 99 --block-interval-ms 1000 --contracts-console --access-control-allow-origin="*"' # --backing-store rocksdb'
             else:
@@ -188,6 +190,9 @@ class Testnet(object):
             p.wait()
         return p
 
+    def start(self):
+        return self.run()
+
     def run(self):
         p = self.start_nodes()
         # p.wait()
@@ -203,12 +208,14 @@ class Testnet(object):
         for p in self.nodes:
             p.kill()
         self.wait()
+        self.nodes = []
         print('done!')
 
     def cleanup(self):
+        self.stop()
         import shutil
-        if os.path.exists('./tmp'):
-            shutil.rmtree('./tmp')
+        if os.path.exists(self.tmp_dir):
+            shutil.rmtree(self.tmp_dir)
 
     def wait(self):
         for p in self.nodes:
