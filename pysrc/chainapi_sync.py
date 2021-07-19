@@ -237,7 +237,7 @@ class ChainApi(RPCInterface, ChainNative):
         if vm_type == 0:
             return self.deploy_wasm_contract(account, code, abi, vm_type, vm_version, sign, compress)
         elif vm_type == 1:
-            return self.deploy_python_contract(account, code, abi, deploy_type)
+            return self.deploy_python_contract(account, code, abi)
         else:
             raise Exception(f'Unknown vm type {vm_type}')
 
