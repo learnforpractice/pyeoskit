@@ -52,6 +52,9 @@ class Testnet(object):
         cur_dir = os.path.dirname(uuos.__file__)
         self.cur_dir = os.path.join(cur_dir, 'tests')
 
+        if not os.path.exists(self.tmp_dir):
+            os.mkdir(self.tmp_dir)
+
         wallet.set_dir(self.tmp_dir)
         if os.path.exists('test.wallet'):
             os.remove('test.wallet')
@@ -78,8 +81,6 @@ class Testnet(object):
             wallet.import_key('test', priv_key, False)
 
     def start_nodes(self, wait=False):
-        if not os.path.exists(self.tmp_dir):
-            os.mkdir(self.tmp_dir)
         self.nodes = []
 
         bin_dir = shutil.which('run-uuos')
