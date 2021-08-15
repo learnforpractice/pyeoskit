@@ -2,8 +2,6 @@ import os
 import sys
 import shlex
 import shutil
-import hashlib
-import marshal
 import subprocess
 import tempfile
 from . import log
@@ -129,11 +127,7 @@ def compile_cpp_src(account_name, code, includes = [], entry='apply', opt='O3', 
         f.write(code)
     wasm_code = compile_cpp_file(src_file, includes, entry, opt=opt)
 
-    for ext in ('.cpp', '.obj', '.wasm'):
-        file_name = temp_dir + ext
-        if os.path.exists(file_name):
-            os.remove(file_name)
-
+    shutil.rmtree(temp_dir)
     return wasm_code
 
 def compile_with_eosio_cpp(contract_name, code, options=''):
@@ -168,3 +162,72 @@ def compile_with_eosio_cpp(contract_name, code, options=''):
         return None
     finally:
         shutil.rmtree(temp_dir)
+
+
+class go_compiler(object):
+
+    def __init__(self, go_file, includes = [], entry='apply'):
+        self.go_file = go_file
+        self.includes = includes
+        self.entry = entry
+        if not go_file.endswith('.go'):
+            raise Exception('Not a go file')
+
+    def compile_go_file(self, opt='O3'):
+        tinygo = shutil.which('tinygo')
+        if not tinygo:
+            raise Exception('tinygo not found')
+        wasm_file = self.go_file[:-3] + '.wasm'
+        compile_cmd = [
+            'tinygo',
+            'build',
+            '-x',
+            '-gc=leaking',
+            '-o',
+            wasm_file+'.normal',
+            '-target=eosio',
+            '-wasm-abi=generic',
+            '-scheduler=none',
+            '-opt=z',
+            self.go_file
+        ]
+        wasm2wast_cmd = [
+            'eosio-wasm2wast',
+            '-o',
+            wasm_file[:-3]+'.wast',
+            wasm_file+'.normal'
+        ]
+        wast2wasm_cmd = [
+            'eosio-wast2wasm',
+            '-o',
+            wasm_file,
+            wasm_file[:-3]+'.wast'
+        ]
+        try:
+            ret = subprocess.check_output(compile_cmd, stderr=subprocess.STDOUT)
+            # logger.info(ret.decode('utf8'))
+            ret = subprocess.check_output(wasm2wast_cmd, stderr=subprocess.STDOUT)
+            # logger.info(ret.decode('utf8'))
+            ret = subprocess.check_output(wast2wasm_cmd, stderr=subprocess.STDOUT)
+            # logger.info(ret.decode('utf8'))
+        except subprocess.CalledProcessError as e:
+            logger.error("error (code {}):".format(e.returncode))
+            logger.error(e.output.decode('utf8'))
+            return None
+
+        with open(wasm_file, 'rb') as f:
+            return f.read()
+
+def compile_go_file(src_path, includes=[], entry='apply', opt='O3'):
+    compiler = go_compiler(src_path, includes, entry)
+    return compiler.compile_go_file(opt)
+
+def compile_go_src(account_name, code, includes = [], entry='apply', opt='O3', force=False):
+    temp_dir = tempfile.mkdtemp()
+    src_file = os.path.join(temp_dir, f'{account_name}.go')
+
+    with open(src_file, 'w') as f:
+        f.write(code)
+    wasm_code = compile_go_file(src_file, includes, entry, opt=opt)
+    shutil.rmtree(temp_dir)
+    return wasm_code

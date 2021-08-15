@@ -57,3 +57,12 @@ public:
         code, abi = wasmcompiler.compile_with_eosio_cpp('hello', cpp_src)
         assert code
         assert abi
+
+    def test_go_compiler(self):
+        code = '''
+package main
+func main() {
+}
+'''
+        code = wasmcompiler.compile_go_src('hello', code)
+        assert code
