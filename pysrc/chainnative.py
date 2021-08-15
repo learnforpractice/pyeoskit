@@ -24,8 +24,12 @@ class ChainNative(object):
         }
         r = httpx.post(f'{self.node_url}/v1/chain/get_abi', json=args)
         r = r.json()
-        abi = r['abi']
-        return json.dumps(abi)
+
+        try:
+            abi = r['abi']
+            return json.dumps(abi)
+        except KeyError:
+            return ''
 
     @staticmethod
     def n2s(n):
