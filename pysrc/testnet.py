@@ -28,6 +28,7 @@ class Testnet(object):
         self.log_config = log_config
         self.extra = extra
         self.tmp_dir='.uuos-testnet'
+        self.nodes = []
 
         self.test_accounts = (
             'hello',
@@ -56,8 +57,9 @@ class Testnet(object):
             os.mkdir(self.tmp_dir)
 
         wallet.set_dir(self.tmp_dir)
-        if os.path.exists('test.wallet'):
-            os.remove('test.wallet')
+        test_wallet = os.path.join(self.tmp_dir, 'test.wallet')
+        if os.path.exists(test_wallet):
+            os.remove(test_wallet)
         psw = wallet.create('test')
         print(psw)
         priv_keys = [
