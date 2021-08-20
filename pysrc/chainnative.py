@@ -16,6 +16,10 @@ def check_result(r, json=False):
         return json_.loads(r)
     return r
 
+SRC_TYPE_CPP = 0
+SRC_TYPE_PY = 1
+SRC_TYPE_GO = 2
+
 class ChainNative(object):
 
     def get_abi_sync(self, account):
@@ -23,7 +27,10 @@ class ChainNative(object):
             'account_name': account
         }
         r = httpx.post(f'{self.node_url}/v1/chain/get_abi', json=args)
-        r = r.json()
+        try:
+            r = r.json()
+        except json.decoder.JSONDecodeError:
+            return ''
 
         try:
             abi = r['abi']
@@ -235,15 +242,23 @@ class ChainNative(object):
         frozen_code = header + region_sizes + name_region + code_size_region + code_region
         return frozen_code
 
-    def compile(self, contract_name, code, vm_type):
-        if vm_type == 0:
+    def compile(self, contract_name, code, src_type):
+        '''
+        :param contract_name: contract name
+        :param code: source code
+        :param src_type: 0: py, 1: cpp 2: go
+        :return: compiled bytecode
+        '''
+        if src_type == SRC_TYPE_CPP:
             return wasmcompiler.compile_cpp_src(contract_name, code)
-        elif vm_type == 1:
+        elif src_type == SRC_TYPE_PY:
             code = self.mp_compile(contract_name, code)
             assert code
             return self.mp_make_frozen(code)
+        elif src_type == SRC_TYPE_GO:
+            return wasmcompiler.compile_go_src(contract_name, code)
         else:
-            assert 0, f'unsupported vm type: {vm_type}'
+            assert 0, f'unsupported file type: {src_type}'
 
     @staticmethod
     def get_last_error():
