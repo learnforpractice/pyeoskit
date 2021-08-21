@@ -242,19 +242,20 @@ class ChainNative(object):
         frozen_code = header + region_sizes + name_region + code_size_region + code_region
         return frozen_code
 
-    def compile(self, contract_name, code, src_type):
+    def compile(self, contract_name, code, src_type=SRC_TYPE_CPP):
         '''
         :param contract_name: contract name
         :param code: source code
         :param src_type: 0: py, 1: cpp 2: go
-        :return: compiled bytecode
+        :return: bytecode and abi
         '''
         if src_type == SRC_TYPE_CPP:
-            return wasmcompiler.compile_cpp_src(contract_name, code)
+            code = wasmcompiler.compile_cpp_src(contract_name, code)
+            return code, None
         elif src_type == SRC_TYPE_PY:
             code = self.mp_compile(contract_name, code)
             assert code
-            return self.mp_make_frozen(code)
+            return self.mp_make_frozen(code), None
         elif src_type == SRC_TYPE_GO:
             return wasmcompiler.compile_go_src(contract_name, code)
         else:

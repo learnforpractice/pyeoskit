@@ -189,7 +189,7 @@ class go_compiler(object):
             '-wasm-abi=generic',
             '-scheduler=none',
             '-opt=z',
-            self.go_file
+            '.'
         ]
         wasm2wast_cmd = [
             'eosio-wasm2wast',
@@ -203,7 +203,25 @@ class go_compiler(object):
             wasm_file,
             wasm_file[:-3]+'.wast'
         ]
+
+        mod_init_cmd = [
+            'go',
+            'mod',
+            'init',
+            'test'
+        ]
+
+        tidy_cmd = [
+            'go',
+            'mod',
+            'tidy'
+        ]
+
+        src_path = os.path.dirname(self.go_file)
+        os.chdir(src_path)
         try:
+            ret = subprocess.check_output(mod_init_cmd, stderr=subprocess.STDOUT)
+            ret = subprocess.check_output(tidy_cmd, stderr=subprocess.STDOUT)
             ret = subprocess.check_output(compile_cmd, stderr=subprocess.STDOUT)
             # logger.info(ret.decode('utf8'))
             ret = subprocess.check_output(wasm2wast_cmd, stderr=subprocess.STDOUT)
@@ -225,9 +243,22 @@ def compile_go_file(src_path, includes=[], entry='apply', opt='O3'):
 def compile_go_src(account_name, code, includes = [], entry='apply', opt='O3', force=False):
     temp_dir = tempfile.mkdtemp()
     src_file = os.path.join(temp_dir, f'{account_name}.go')
+    abi_file = os.path.join(temp_dir, f'{account_name}.abi')
 
     with open(src_file, 'w') as f:
         f.write(code)
+
     wasm_code = compile_go_file(src_file, includes, entry, opt=opt)
+
+    abi = None
+    for root, dirs, files in os.walk(temp_dir):
+        for file in files:
+            if file.endswith('.abi'):
+                with open(os.path.join(root, file), 'r') as f:
+                    abi = f.read()
+                    break
+        if abi:
+            break
+
     shutil.rmtree(temp_dir)
-    return wasm_code
+    return wasm_code, abi
