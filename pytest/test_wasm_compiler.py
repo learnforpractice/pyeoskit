@@ -64,5 +64,5 @@ package main
 func main() {
 }
 '''
-        code = wasmcompiler.compile_go_src('hello', code)
+        code, abi = wasmcompiler.compile_go_src('hello', code)
         assert code
