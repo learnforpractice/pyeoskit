@@ -137,7 +137,11 @@ class ChainNative(object):
         for a in actions:
             args = a[2]
             if isinstance(args, dict):
-                a[2] = self.pack_args(a[0], a[1], args)
+                #handle emtpy dict
+                if args: 
+                    a[2] = self.pack_args(a[0], a[1], args)
+                else:
+                    a[2] = b''
         r = _uuosapi.gen_transaction(actions, expiration, reference_block_id)
         return check_result(r, json)
 
