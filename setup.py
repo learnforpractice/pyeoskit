@@ -18,7 +18,8 @@ setup(
         'toolz',
         'funcy',
         'prettytable',
-        'requests_unixsocket'
+        'requests_unixsocket',
+        'httpx'
     ],
     include_package_data=True
 )
