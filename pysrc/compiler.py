@@ -10,15 +10,6 @@ from uuoskit import config
 config.main_token = 'UUOS'
 default_vm_type=1
 
-if os.path.exists('test.wallet'):
-    os.remove('test.wallet')
-psw = wallet.create('test')
-
-wallet.import_key('test', '5KH8vwQkP4QoTwgBtCV5ZYhKmv8mx56WeNrw9AZuhNRXTrPzgYc')
-wallet.import_key('test', '5JMXaLz5xnVvwrnvAGaZKQZFCDdeU6wjmuJY1rDnXiUZz7Gyi1o')
-
-#uuosapi.set_nodes(['https://nodes.uuos.network:8443'])
-uuosapi.set_nodes(['http://127.0.0.1:8888'])
 
 def run_test_code(code, abi='', account_name='helloworld11'):
     publish_contract(account_name, code, abi)
