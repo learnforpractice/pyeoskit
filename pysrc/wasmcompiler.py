@@ -191,18 +191,6 @@ class go_compiler(object):
             '-opt=z',
             '.'
         ]
-        wasm2wast_cmd = [
-            'eosio-wasm2wast',
-            '-o',
-            wasm_file[:-3]+'.wast',
-            wasm_file+'.normal'
-        ]
-        wast2wasm_cmd = [
-            'eosio-wast2wasm',
-            '-o',
-            wasm_file,
-            wasm_file[:-3]+'.wast'
-        ]
 
         mod_init_cmd = [
             'go',
@@ -223,11 +211,6 @@ class go_compiler(object):
             ret = subprocess.check_output(mod_init_cmd, stderr=subprocess.STDOUT)
             ret = subprocess.check_output(tidy_cmd, stderr=subprocess.STDOUT)
             ret = subprocess.check_output(compile_cmd, stderr=subprocess.STDOUT)
-            # logger.info(ret.decode('utf8'))
-            ret = subprocess.check_output(wasm2wast_cmd, stderr=subprocess.STDOUT)
-            # logger.info(ret.decode('utf8'))
-            ret = subprocess.check_output(wast2wasm_cmd, stderr=subprocess.STDOUT)
-            # logger.info(ret.decode('utf8'))
         except subprocess.CalledProcessError as e:
             logger.error("error (code {}):".format(e.returncode))
             logger.error(e.output.decode('utf8'))
