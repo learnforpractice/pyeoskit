@@ -1,6 +1,7 @@
 import os
 import sys
 import shlex
+import random
 import shutil
 import subprocess
 import tempfile
@@ -173,21 +174,28 @@ class go_compiler(object):
         if not go_file.endswith('.go'):
             raise Exception('Not a go file')
 
-    def compile_go_file(self, opt='O3'):
+    def compile_go_file(self, opt='O3', replace=""):
         tinygo = shutil.which('tinygo')
         if not tinygo:
             raise Exception('tinygo not found')
         wasm_file = self.go_file[:-3] + '.wasm'
+
+        gencode_cmd = [
+            'tinygo',
+            'gencode'
+        ]
+
         compile_cmd = [
             'tinygo',
             'build',
             '-x',
             '-gc=leaking',
             '-o',
-            wasm_file+'.normal',
+            wasm_file,
             '-target=eosio',
             '-wasm-abi=generic',
             '-scheduler=none',
+            '-tags=math_big_pure_go',
             '-opt=z',
             '.'
         ]
@@ -208,7 +216,15 @@ class go_compiler(object):
         src_path = os.path.dirname(self.go_file)
         os.chdir(src_path)
         try:
+            ret = subprocess.check_output(gencode_cmd, stderr=subprocess.STDOUT)
             ret = subprocess.check_output(mod_init_cmd, stderr=subprocess.STDOUT)
+            ret = subprocess.check_output(tidy_cmd, stderr=subprocess.STDOUT)
+            if replace:
+                mod_replace_cmd = [
+                    'go', 'mod', 'edit', '-replace',
+                    f'github.com/uuosio/chain={replace}'
+                ]
+                ret = subprocess.check_output(mod_replace_cmd, stderr=subprocess.STDOUT)
             ret = subprocess.check_output(tidy_cmd, stderr=subprocess.STDOUT)
             ret = subprocess.check_output(compile_cmd, stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as e:
@@ -219,19 +235,18 @@ class go_compiler(object):
         with open(wasm_file, 'rb') as f:
             return f.read()
 
-def compile_go_file(src_path, includes=[], entry='apply', opt='O3'):
+def compile_go_file(src_path, includes=[], entry='apply', opt='O3', replace=""):
     compiler = go_compiler(src_path, includes, entry)
-    return compiler.compile_go_file(opt)
+    return compiler.compile_go_file(opt, replace=replace)
 
-def compile_go_src(account_name, code, includes = [], entry='apply', opt='O3', force=False):
+def compile_go_src(account_name, code, includes = [], entry='apply', opt='O3', force=False, replace=""):
     temp_dir = tempfile.mkdtemp()
     src_file = os.path.join(temp_dir, f'{account_name}.go')
     abi_file = os.path.join(temp_dir, f'{account_name}.abi')
 
     with open(src_file, 'w') as f:
         f.write(code)
-
-    wasm_code = compile_go_file(src_file, includes, entry, opt=opt)
+    wasm_code = compile_go_file(src_file, includes, entry, opt=opt, replace=replace)
 
     abi = None
     for root, dirs, files in os.walk(temp_dir):
