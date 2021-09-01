@@ -8,6 +8,7 @@ from . import defaultabi
 from . import wasmcompiler
 from . import log
 
+from .transaction import Transaction
 from .chaincache import ChainCache
 from .rpc_interface import RPCInterface
 from .chainnative import ChainNative
@@ -92,8 +93,7 @@ class ChainApi(RPCInterface, ChainNative):
             fake_actions.append([a[0], a[1], '', a[3]])
         keys = self.get_sign_keys(fake_actions)
 
-        from uuoskit import _uuoskit
-        idx = _uuoskit.transaction_new(int(time.time()) + 60, ref_block, chain_id)
+        tx = Transaction(int(time.time()) + 60, ref_block, chain_id)
         for a in actions:
             contract, action_name, args, permissions = a
             if isinstance(args, bytes):
@@ -103,17 +103,15 @@ class ChainApi(RPCInterface, ChainNative):
             elif isinstance(args, str):
                 pass
             else:
-                _uuoskit.transaction_free(idx)
+                tx.free()
                 raise Exception('Invalid args type')
             permissions = json.dumps(permissions)
-            _uuoskit.transaction_add_action(idx, contract, action_name, args, permissions)
+            tx.add_action(contract, action_name, args, permissions)
         for key in keys:
-            _uuoskit.transaction_sign(idx, key)
-        tx = _uuoskit.transaction_pack(idx)
-        tx = json.loads(tx)
-        tx = tx['data']
-        _uuoskit.transaction_free(idx)
-        return super().push_transaction(tx)
+            tx.sign(key)
+        r = tx.json()
+        tx.free()
+        return super().push_transaction(r)
 
     def push_transactions(self, aaa, expiration=60):
         chain_info = self.get_info()
