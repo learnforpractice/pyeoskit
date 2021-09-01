@@ -33,7 +33,9 @@ def list_keys(name, psw) -> Dict[str, str]:
     pass
 
 def get_public_keys():
-    pass
+    ret = _uuoskit.wallet_get_public_keys()
+    ret = json.loads(ret)
+    return ret['data']
 
 def lock_all():
     pass

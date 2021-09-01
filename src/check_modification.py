@@ -20,4 +20,4 @@ def check_modification():
 r = check_modification()
 if r:
     print('mixin lib need to rebuild.')
-    os.system(f'touch {root_path}/main.go')
+    os.system(f'touch {root_path}/lib.go')
