@@ -1,5 +1,7 @@
 import json
 import copy
+import time
+
 from . import config
 from . import wallet
 from . import defaultabi
@@ -77,29 +79,34 @@ class ChainApi(RPCInterface, ChainNative):
     def push_action(self, contract, action, args, permissions=None, compress=0):
         if not permissions:
             permissions = {contract:'active'}
+        a = [contract, action, args, permissions]
+        return self.push_actions([a], compress)
+
+    def push_actions(self, actions, compress=0):
         chain_info = self.get_info()
         ref_block = chain_info['head_block_id']
         chain_id = chain_info['chain_id']
 
-        import time
+        fake_actions = []
+        for a in actions:
+            fake_actions.append([a[0], a[1], '', a[3]])
+        keys = self.get_sign_keys(fake_actions)
+
         from uuoskit import _uuoskit
-        _uuoskit.init()
-
-        fake_action = [contract, action, '', permissions]
-        keys = self.get_sign_keys([fake_action])
-
         idx = _uuoskit.transaction_new(int(time.time()) + 60, ref_block, chain_id)
-        if isinstance(args, bytes):
-            args = args.hex()
-        elif isinstance(args, dict):
-            args = json.dumps(args)
-        elif isinstance(args, str):
-            pass
-        else:
-            raise Exception('Invalid args type')
-        pub_keys = wallet.get_public_keys()
-        permissions = json.dumps(permissions)
-        _uuoskit.transaction_add_action(idx, contract, action, args, permissions)
+        for a in actions:
+            contract, action_name, args, permissions = a
+            if isinstance(args, bytes):
+                args = args.hex()
+            elif isinstance(args, dict):
+                args = json.dumps(args)
+            elif isinstance(args, str):
+                pass
+            else:
+                _uuoskit.transaction_free(idx)
+                raise Exception('Invalid args type')
+            permissions = json.dumps(permissions)
+            _uuoskit.transaction_add_action(idx, contract, action_name, args, permissions)
         for key in keys:
             _uuoskit.transaction_sign(idx, key)
         tx = _uuoskit.transaction_pack(idx)
@@ -107,22 +114,6 @@ class ChainApi(RPCInterface, ChainNative):
         tx = tx['data']
         _uuoskit.transaction_free(idx)
         return super().push_transaction(tx)
-
-    def push_actions(self, actions, compress=0):
-        chain_info = self.get_info()
-        reference_block_id = chain_info['last_irreversible_block_id']
-        chain_id = chain_info['chain_id']
-        trx = self.generate_transaction(actions, 60, reference_block_id)
-
-        dummy_actions = copy.deepcopy(actions)
-        for a in dummy_actions:
-            a[2] = b''
-        dummy_trx = self.generate_transaction(dummy_actions, 60, reference_block_id)
-        required_keys = self.get_required_keys(dummy_trx, wallet.get_public_keys())
-        trx = wallet.sign_transaction(trx, required_keys, chain_id)
-        trx = self.pack_transaction(trx, compress)
-
-        return super().push_transaction(trx)
 
     def push_transactions(self, aaa, expiration=60):
         chain_info = self.get_info()
