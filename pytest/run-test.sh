@@ -1,2 +1,4 @@
-python3 -m pytest pytest/test_wallet.py -k test_sign_transaction
+#!/bin/bash
+python3 -m pytest $1 -k $2
+
 

@@ -2,68 +2,53 @@ import json
 import json as json_
 from typing import List, Dict, Union
 
-from . import _wallet
-from . import _uuosapi
+from . import _uuoskit
 from .exceptions import WalletException
 
-def raise_last_error():
-    raise WalletException(_uuosapi.get_last_error())
-
 def check_result(result, json=False):
-    if not result:
-        raise_last_error()
-    if json:
-        return json_.loads(result)
-    return result
+    ret = json_.loads(result)
+    if 'error' in ret:
+        raise WalletException(ret['error'])
+    return ret['data']
 
 def create(name):
-    psw = _wallet.create(name)
-    return check_result(psw)
+    pass
 
 def save(name):
-    return _wallet.save(name)
+    pass
 
 def open(name):
-    return _wallet.open(name)
+    pass
 
 def set_dir(path_name):
-    return _wallet.set_dir(path_name)
+    pass
 
 def set_timeout(secs):
-    return _wallet.set_timeout(secs)
+    pass
 
 def list_wallets() -> List[bytes]:
-    ret = _wallet.list_wallets()
-    if not ret:
-        raise_last_error()
-    return json.loads(ret)
+    pass
 
 def list_keys(name, psw) -> Dict[str, str]:
-    ret = _wallet.list_keys(name, psw)
-    if not ret:
-        raise_last_error()
-    return json.loads(ret)
+    pass
 
 def get_public_keys():
-    ret = _wallet.get_public_keys()
-    if ret:
-        return json.loads(ret)
-    return []
+    pass
 
 def lock_all():
-    return _wallet.lock_all()
+    pass
 
 def lock(name):
-    return _wallet.lock(name)
+    pass
 
 def unlock(name, password):
-    return _wallet.unlock(name, password)
+    pass
 
 def import_key(name, wif_key, save=True):
-    return _wallet.import_key(name, wif_key, save)
+    _uuoskit.wallet_import(name, wif_key)
 
 def remove_key(name, password, pub_key):
-    return _wallet.remove_key(name, password, pub_key)
+    pass
 
 def sign_transaction(trx: Union[str, dict], public_keys: List[str], chain_id: str, json=False):
     if isinstance(trx, dict):

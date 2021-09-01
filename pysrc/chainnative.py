@@ -2,7 +2,7 @@ import json
 import json as json_
 import httpx
 
-from . import _uuosapi
+from . import _uuoskit
 from . import wasmcompiler
 from .exceptions import ChainException
 

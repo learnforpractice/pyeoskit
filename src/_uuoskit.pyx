@@ -21,6 +21,12 @@ cdef extern from "<Python.h>":
 cdef extern from "libuuoskit.h" nogil:
     void init_();
     void say_hello_(char* name)
+    char* wallet_import_(char* name, char* priv)
+    int64_t transaction_new_(int64_t expiration, char* refBlock, char* chainId);
+    void transaction_free_(int64_t _index);
+    char* transaction_add_action_(int64_t idx, char* account, char* name, char* data, char* permissions);
+    char* transaction_sign_(int64_t idx, char* pub);
+    char* transaction_pack_(int64_t idx);
 
 cdef object convert(char *_ret):
     ret = <object>_ret
@@ -33,3 +39,29 @@ def init():
 def say_hello(char* name):
     say_hello_(name)
 
+def wallet_import(char* name, char* priv):
+    cdef char *ret
+    ret = wallet_import_(name, priv)
+    return convert(ret)
+
+def transaction_new(int64_t expiration, char* refBlock, char* chainId):
+    return transaction_new_(expiration, refBlock, chainId)
+
+def transaction_free(int64_t _index):
+    transaction_free_(_index)
+
+def transaction_add_action(int64_t idx, char* account, char* name, char* data, char* permissions):
+    cdef char *ret
+    ret = transaction_add_action_(idx, account, name, data, permissions)
+    return convert(ret)
+
+def transaction_sign(int64_t idx, char* pub):
+    cdef char *ret
+    ret = transaction_sign_(idx, pub)
+    return convert(ret)
+
+# char* transaction_pack_(int64_t idx);
+def transaction_pack(int64_t idx):
+    cdef char *ret
+    ret = transaction_pack_(idx)
+    return convert(ret)

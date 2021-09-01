@@ -58,6 +58,7 @@ class ChainApi(RPCInterface, ChainNative):
 
         trx = wallet.sign_transaction(trx, required_keys, chain_id)
         trx = self.pack_transaction(trx, compress)
+
         return super().push_transaction(trx)
 
     def push_actions(self, actions, compress=0):
