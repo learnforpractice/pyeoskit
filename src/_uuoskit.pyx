@@ -1,4 +1,4 @@
-# cython: c_string_type=str, c_string_encoding=utf8
+# cython: c_string_type=str, c_string_encoding=ascii
 
 from cython.operator cimport dereference as deref, preincrement as inc
 from cpython.bytes cimport PyBytes_AS_STRING
@@ -29,6 +29,9 @@ cdef extern from "libuuoskit.h" nogil:
     char* transaction_add_action_(int64_t idx, char* account, char* name, char* data, char* permissions);
     char* transaction_sign_(int64_t idx, char* pub);
     char* transaction_pack_(int64_t idx);
+    char* abiserializer_add_contract_abi_(char* account, char* abi, int length);
+    char* abiserializer_pack_action_args_(char* contractName, char* actionName, char* args, int args_len);
+    char* abiserializer_unpack_action_args_(char* contractName, char* actionName, char* args);
 
 cdef object convert(char *_ret):
     ret = <object>_ret
@@ -74,3 +77,21 @@ def wallet_get_public_keys():
     ret = wallet_get_public_keys_()
     return convert(ret)
 
+#     char* abiserializer_add_contract_abi_(char* account, char* abi, int length);
+def abiserializer_add_contract_abi(char* account, abi):
+    cdef char *ret
+    ret = abiserializer_add_contract_abi_(account, abi, len(abi))
+    return convert(ret)
+
+#    char* abiserializer_pack_action_args_(char* contractName, char* actionName, char* args, int args_len);
+def abiserializer_pack_action_args(char* contractName, char* actionName, args):
+    cdef char *ret
+    print("++++++++abiserializer_pack_action_args:", contractName, actionName)
+    ret = abiserializer_pack_action_args_(contractName, actionName, args, len(args))
+    return convert(ret)
+
+#    char* abiserializer_unpack_action_args_(char* contractName, char* actionName, char* args);
+def abiserializer_unpack_action_args(char* contractName, char* actionName, char* args):
+    cdef char *ret
+    ret = abiserializer_unpack_action_args_(contractName, actionName, args)
+    return convert(ret)

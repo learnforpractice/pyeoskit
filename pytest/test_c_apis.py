@@ -4,6 +4,7 @@ import time
 import json
 import pytest
 import logging
+from uuoskit import ABI
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(lineno)d %(module)s %(message)s')
 logger=logging.getLogger(__name__)
@@ -28,7 +29,7 @@ class Test(object):
     def teardown_method(self, method):
         pass
 
-    def test_basic(self):
+    def test_transaction(self):
         logger.info('hello,world')
         api = ChainApi('https://testnode.uuos.network:8443', 'UUOS')
         info = api.get_info()
@@ -64,5 +65,28 @@ class Test(object):
         r = json.loads(r)
         logger.info(r)
         r = json.loads(r['data'])
+        logger.info(r)
+
+    def test_abi(self):
+        from uuoskit import _uuoskit
+        _uuoskit.init()
+
+        with open('data/eosio.token.abi', 'rb') as f:
+            abi = f.read()
+        r = ABI.add_contract_abi("hello", abi)
+        logger.info(r)
+        transfer = {
+            'from': 'helloworld11',
+            'to': 'eosio',
+            'quantity': '1.0000 EOS',
+            'memo': 'transfer 1.0000 EOS from helloworld11 to eosio',
+        }
+        transfer = json.dumps(transfer)
+        logger.info(transfer)
+
+        r = ABI.pack_action_args('hello', 'transfer', transfer)
+        logger.info(r)
+
+        r = ABI.unpack_action_args('hello', 'transfer', r)
         logger.info(r)
 

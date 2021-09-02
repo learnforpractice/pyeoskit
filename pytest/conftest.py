@@ -6,7 +6,3 @@ def pytest_addoption(parser):
 
 def pytest_generate_tests(metafunc):
     pass
-
-@pytest.fixture()
-def master(request):
-    return request.config.getoption("--master")

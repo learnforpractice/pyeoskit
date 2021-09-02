@@ -1,4 +1,4 @@
 #!/bin/bash
-python3 -m pytest $1 -k $2
+python3 -m pytest -x -s $1 -k $2
 
 
