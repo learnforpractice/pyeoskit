@@ -214,6 +214,7 @@ class go_compiler(object):
         ]
 
         src_path = os.path.dirname(self.go_file)
+        cwd = os.getcwd()
         os.chdir(src_path)
         try:
             ret = subprocess.check_output(gencode_cmd, stderr=subprocess.STDOUT)
@@ -231,6 +232,8 @@ class go_compiler(object):
             logger.error("error (code {}):".format(e.returncode))
             logger.error(e.output.decode('utf8'))
             return None
+        finally:
+            os.chdir(cwd)
 
         with open(wasm_file, 'rb') as f:
             return f.read()
