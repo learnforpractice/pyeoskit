@@ -11,6 +11,7 @@ from libc.stdlib cimport malloc, free
 
 cdef extern from * :
     ctypedef long long int64_t
+    ctypedef unsigned long long uint64_t
 
 cdef extern from "<Python.h>":
     ctypedef long long PyLongObject
@@ -32,6 +33,10 @@ cdef extern from "libuuoskit.h" nogil:
     char* abiserializer_add_contract_abi_(char* account, char* abi, int length);
     char* abiserializer_pack_action_args_(char* contractName, char* actionName, char* args, int args_len);
     char* abiserializer_unpack_action_args_(char* contractName, char* actionName, char* args);
+    uint64_t s2n_(char* s);
+    char* n2s_(uint64_t n);
+
+    uint64_t sym2n_(char* symbol, uint64_t precision)
 
 cdef object convert(char *_ret):
     ret = <object>_ret
@@ -95,3 +100,21 @@ def abiserializer_unpack_action_args(char* contractName, char* actionName, char*
     cdef char *ret
     ret = abiserializer_unpack_action_args_(contractName, actionName, args)
     return convert(ret)
+
+#uint64_t s2n(char* s);
+def s2n(char* s):
+    return s2n_(s)
+
+#    char* n2s(uint64_t n);
+def n2s(uint64_t n):
+    cdef char *ret
+    ret = n2s_(n)
+    return convert(ret)
+
+#symbol to uint64_t
+def sym2n(char* symbol, uint64_t precision):
+    return sym2n_(symbol, precision)
+
+def n2sym(n):
+    sym = int.to_bytes(n, 8, 'little')
+    return f'{sym[0]},'+ sym[1:].rstrip(b'\x00').decode()
