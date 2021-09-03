@@ -73,7 +73,7 @@ class Test(object):
 
         with open('data/eosio.token.abi', 'rb') as f:
             abi = f.read()
-        r = ABI.add_contract_abi("hello", abi)
+        r = ABI.set_contract_abi("hello", abi)
         logger.info(r)
         transfer = {
             'from': 'helloworld11',
@@ -90,3 +90,9 @@ class Test(object):
         r = ABI.unpack_action_args('hello', 'transfer', r)
         logger.info(r)
 
+
+        r = ABI.pack_abi_type('hello', 'transfer', transfer)
+        logger.info(r)
+
+        r = ABI.unpack_abi_type('hello', 'transfer', r)
+        logger.info(r)

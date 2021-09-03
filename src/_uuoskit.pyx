@@ -30,9 +30,13 @@ cdef extern from "libuuoskit.h" nogil:
     char* transaction_add_action_(int64_t idx, char* account, char* name, char* data, char* permissions);
     char* transaction_sign_(int64_t idx, char* pub);
     char* transaction_pack_(int64_t idx);
-    char* abiserializer_add_contract_abi_(char* account, char* abi, int length);
+    char* abiserializer_set_contract_abi_(char* account, char* abi, int length);
     char* abiserializer_pack_action_args_(char* contractName, char* actionName, char* args, int args_len);
     char* abiserializer_unpack_action_args_(char* contractName, char* actionName, char* args);
+
+    char* abiserializer_pack_abi_type_(char* contractName, char* actionName, char* args, int args_len);
+    char* abiserializer_unpack_abi_type_(char* contractName, char* actionName, char* args);
+
     uint64_t s2n_(char* s);
     char* n2s_(uint64_t n);
 
@@ -82,10 +86,10 @@ def wallet_get_public_keys():
     ret = wallet_get_public_keys_()
     return convert(ret)
 
-#     char* abiserializer_add_contract_abi_(char* account, char* abi, int length);
-def abiserializer_add_contract_abi(char* account, abi):
+#     char* abiserializer_set_contract_abi_(char* account, char* abi, int length);
+def abiserializer_set_contract_abi(char* account, abi):
     cdef char *ret
-    ret = abiserializer_add_contract_abi_(account, abi, len(abi))
+    ret = abiserializer_set_contract_abi_(account, abi, len(abi))
     return convert(ret)
 
 #    char* abiserializer_pack_action_args_(char* contractName, char* actionName, char* args, int args_len);
@@ -99,6 +103,18 @@ def abiserializer_pack_action_args(char* contractName, char* actionName, args):
 def abiserializer_unpack_action_args(char* contractName, char* actionName, char* args):
     cdef char *ret
     ret = abiserializer_unpack_action_args_(contractName, actionName, args)
+    return convert(ret)
+
+#char* abiserializer_pack_abi_type_(char* contractName, char* actionName, char* args, int args_len);
+def abiserializer_pack_abi_type(char* contractName, char* actionName, args):
+    cdef char *ret
+    ret = abiserializer_pack_abi_type_(contractName, actionName, args, len(args))
+    return convert(ret)
+
+#char* abiserializer_unpack_abi_type_(char* contractName, char* actionName, char* args);
+def abiserializer_unpack_abi_type(char* contractName, char* actionName, char* args):
+    cdef char *ret
+    ret = abiserializer_unpack_abi_type_(contractName, actionName, args)
     return convert(ret)
 
 #uint64_t s2n(char* s);

@@ -5,6 +5,7 @@ import httpx
 from . import _uuoskit
 from . import wasmcompiler
 from .exceptions import ChainException
+from . import ABI
 
 def raise_last_error():
     raise ChainException(_uuosapi.get_last_error())
@@ -90,7 +91,7 @@ class ChainNative(object):
 
         self.check_abi(account)
 
-        success, binargs = _uuosapi.pack_args(account, action, args)
+        success, binargs = _uuoskit.pack_action_args(account, action, args)
         if not success:
             raise_last_error()
         return binargs
@@ -103,7 +104,7 @@ class ChainNative(object):
 
         self.check_abi(account)
 
-        success, args = _uuosapi.unpack_args(account, action, binargs)
+        success, args = _uuoskit.unpack_action_args(account, action, binargs)
         if not success:
             raise_last_error()
         return check_result(args, json)
@@ -126,7 +127,9 @@ class ChainNative(object):
 
     @staticmethod
     def set_abi(account, abi):
-        ret = _uuosapi.set_abi(account, abi)
+        if isinstance(abi, str):
+            abi = abi.encode('utf8')
+        ret = ABI.set_contract_abi(account, abi)
         return check_result(ret)
 
     @staticmethod
@@ -137,7 +140,7 @@ class ChainNative(object):
 
     @staticmethod
     def unpack_abi(packed_abi):
-        return _uuosapi.unpack_abi(packed_abi)
+        return _uuoskit.unpack_abi(packed_abi)
 
     def gen_transaction(self, actions, expiration, reference_block_id, json=False):
         for a in actions:
