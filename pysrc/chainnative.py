@@ -11,11 +11,10 @@ def raise_last_error():
     raise ChainException(_uuosapi.get_last_error())
 
 def check_result(r, json=False):
-    if not r:
-        raise ChainException(_uuosapi.get_last_error())
-    if json:
-        return json_.loads(r)
-    return r
+    r = json_.loads(r)
+    if 'error' in r:
+        raise Exception(r['error'])
+    return r['data']
 
 SRC_TYPE_CPP = 0
 SRC_TYPE_PY = 1
@@ -95,17 +94,12 @@ class ChainNative(object):
         return binargs
 
     def unpack_args(self, account, action, binargs, json=False):
-        if isinstance(binargs, str):
-            binargs = bytes.fromhex(binargs)
-        else:
-            assert isinstance(binargs, bytes)
+        if isinstance(binargs, bytes):
+            binargs = binargs.hex()
 
         self.check_abi(account)
 
-        success, args = _uuoskit.unpack_action_args(account, action, binargs)
-        if not success:
-            raise_last_error()
-        return check_result(args, json)
+        return ABI.unpack_action_args(account, action, binargs)
 
     def pack_abi_type(self, account, struct_name, args):
         if isinstance(args, dict):
@@ -127,8 +121,7 @@ class ChainNative(object):
     def set_abi(account, abi):
         if isinstance(abi, str):
             abi = abi.encode('utf8')
-        ret = ABI.set_contract_abi(account, abi)
-        return check_result(ret)
+        return ABI.set_contract_abi(account, abi)
 
     @staticmethod
     def pack_abi(abi):
