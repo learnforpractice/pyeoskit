@@ -41,3 +41,22 @@ def unpack_abi_type(contractName, actionName, args):
 
 def is_abi_cached(contractName):
     return _uuoskit.abiserializer_is_abi_cached(contractName)
+
+def pack_abi(abi):
+    ret = _uuoskit.abiserializer_pack_abi(abi)
+    ret = json.loads(ret)
+    if 'error' in ret:
+        raise Exception(ret['error'])
+    return bytes.fromhex(ret['data'])
+
+def unpack_abi(abi):
+    if isinstance(abi, str):
+        abi = bytes.fromhex(abi)
+    assert isinstance(abi, bytes)
+
+    ret = _uuoskit.abiserializer_unpack_abi(abi)
+    ret = json.loads(ret)
+    if 'error' in ret:
+        raise Exception(ret['error'])
+    return ret['data']
+

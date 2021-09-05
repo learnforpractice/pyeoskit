@@ -43,6 +43,9 @@ cdef extern from "libuuoskit.h" nogil:
 
     uint64_t sym2n_(char* symbol, uint64_t precision)
 
+    char* abiserializer_pack_abi_(char* str_abi);
+    char* abiserializer_unpack_abi_(char* abi, int length);
+
 cdef object convert(char *_ret):
     ret = <object>_ret
     free(_ret)
@@ -138,3 +141,15 @@ def sym2n(char* symbol, uint64_t precision):
 def n2sym(n):
     sym = int.to_bytes(n, 8, 'little')
     return f'{sym[0]},'+ sym[1:].rstrip(b'\x00').decode()
+
+# char* abiserializer_pack_abi_(char* str_abi);
+def abiserializer_pack_abi(str_abi):
+    cdef char *ret
+    ret = abiserializer_pack_abi_(str_abi)
+    return convert(ret)
+
+# char* abiserializer_unpack_abi_(char* abi, int length);
+def abiserializer_unpack_abi(abi):
+    cdef char *ret
+    ret = abiserializer_unpack_abi_(abi, len(abi))
+    return convert(ret)

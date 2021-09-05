@@ -135,3 +135,9 @@ class Test(object):
 
         r = ABI.unpack_abi_type('test', 'sayhello', r)
         logger.info(r)
+
+        packed_abi = ABI.pack_abi(abi)
+        logger.info(packed_abi)
+
+        unpacked_abi = ABI.unpack_abi(packed_abi)
+        logger.info(unpacked_abi)
