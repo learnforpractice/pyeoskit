@@ -79,9 +79,9 @@ class ChainNative(object):
             return 0
 
     def check_abi(self, account):
-        if not _uuosapi.is_abi_cached(account):
+        if not ABI.is_abi_cached(account):
             abi = self.get_abi_sync(account)
-            _uuosapi.set_abi(account, abi)
+            self.set_abi(account, abi.encode('utf8'))
 
     def pack_args(self, account, action, args):
         if isinstance(args, dict):
@@ -91,9 +91,7 @@ class ChainNative(object):
 
         self.check_abi(account)
 
-        success, binargs = _uuoskit.pack_action_args(account, action, args)
-        if not success:
-            raise_last_error()
+        binargs = ABI.pack_action_args(account, action, args)
         return binargs
 
     def unpack_args(self, account, action, binargs, json=False):

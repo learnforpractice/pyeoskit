@@ -36,6 +36,7 @@ cdef extern from "libuuoskit.h" nogil:
 
     char* abiserializer_pack_abi_type_(char* contractName, char* actionName, char* args, int args_len);
     char* abiserializer_unpack_abi_type_(char* contractName, char* actionName, char* args);
+    int abiserializer_is_abi_cached_(char* contractName);
 
     uint64_t s2n_(char* s);
     char* n2s_(uint64_t n);
@@ -95,7 +96,6 @@ def abiserializer_set_contract_abi(char* account, abi):
 #    char* abiserializer_pack_action_args_(char* contractName, char* actionName, char* args, int args_len);
 def abiserializer_pack_action_args(char* contractName, char* actionName, args):
     cdef char *ret
-    print("++++++++abiserializer_pack_action_args:", contractName, actionName)
     ret = abiserializer_pack_action_args_(contractName, actionName, args, len(args))
     return convert(ret)
 
@@ -116,6 +116,10 @@ def abiserializer_unpack_abi_type(char* contractName, char* actionName, char* ar
     cdef char *ret
     ret = abiserializer_unpack_abi_type_(contractName, actionName, args)
     return convert(ret)
+
+#    int abiserializer_is_abi_cached_(char* contractName);
+def abiserializer_is_abi_cached(char* contractName):
+    return abiserializer_is_abi_cached_(contractName)
 
 #uint64_t s2n(char* s);
 def s2n(char* s):

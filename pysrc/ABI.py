@@ -38,3 +38,6 @@ def unpack_abi_type(contractName, actionName, args):
     if 'error' in ret:
         raise Exception(ret['error'])
     return ret['data']
+
+def is_abi_cached(contractName):
+    return _uuoskit.abiserializer_is_abi_cached(contractName)

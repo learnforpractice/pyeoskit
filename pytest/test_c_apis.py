@@ -71,6 +71,9 @@ class Test(object):
         from uuoskit import _uuoskit
         _uuoskit.init()
 
+        abi = '{\n    "version": "eosio::abi/1.1",\n    "structs": [],\n    "types": [],\n    "actions": [],\n    "tables": [],\n    "ricardian_clauses": [],\n    "variants": [],\n    "abi_extensions": [],\n    "error_messages": []\n}'
+        r = ABI.set_contract_abi("test", abi)
+
         with open('data/eosio.token.abi', 'rb') as f:
             abi = f.read()
         r = ABI.set_contract_abi("hello", abi)
@@ -95,4 +98,40 @@ class Test(object):
         logger.info(r)
 
         r = ABI.unpack_abi_type('hello', 'transfer', r)
+        logger.info(r)
+
+        abi = '''
+{
+    "version": "eosio::abi/1.0",
+    "types": [
+    ],
+    "structs": [
+            {
+            "name": "sayhello",
+            "base": "",
+            "fields": [
+                {
+                    "name": "name",
+                    "type": "int32[]"
+                }
+            ]
+        }
+    ],
+    "actions": [{
+        "name": "sayhello",
+        "type": "sayhello",
+        "ricardian_contract": ""
+    }],
+    "tables": [],
+    "ricardian_clauses": [],
+    "error_messages": [],
+    "abi_extensions": []
+}
+'''
+        r = ABI.set_contract_abi("test", abi)
+        args = {'name': [123, 456]}
+        r = ABI.pack_abi_type('test', 'sayhello', json.dumps(args))
+        logger.info(r)
+
+        r = ABI.unpack_abi_type('test', 'sayhello', r)
         logger.info(r)
