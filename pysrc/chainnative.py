@@ -107,15 +107,15 @@ class ChainNative(object):
 
         self.check_abi(account)
 
-        return _uuosapi.pack_abi_type(account, struct_name, args)
+        return ABI.pack_abi_type(account, struct_name, args)
 
     def unpack_abi_type(self, account, struct_name, binargs):
         self.check_abi(account)
-        return _uuosapi.unpack_abi_type(account, struct_name, binargs)
+        return ABI.unpack_abi_type(account, struct_name, binargs)
 
     @staticmethod
     def clear_abi_cache(account):
-        return _uuosapi.clear_abi_cache(account)
+        return ABI.set_abi(account, "")
 
     @staticmethod
     def set_abi(account, abi):
@@ -127,11 +127,11 @@ class ChainNative(object):
     def pack_abi(abi):
         if isinstance(abi, dict):
             abi = json.dumps(abi)
-        return _uuosapi.pack_abi(abi)
+        return ABI.pack_abi(abi)
 
     @staticmethod
     def unpack_abi(packed_abi):
-        return _uuoskit.unpack_abi(packed_abi)
+        return ABI.unpack_abi(packed_abi)
 
     def gen_transaction(self, actions, expiration, reference_block_id, json=False):
         for a in actions:
