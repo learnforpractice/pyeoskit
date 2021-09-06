@@ -190,7 +190,7 @@ class ChainNative(object):
 
     @staticmethod
     def recover_key(digest, sign):
-        ret = _uuosapi.recover_key(digest, sign)
+        ret = _uuoskit.crypto_recover_key(digest, sign)
         return check_result(ret)
 
     @staticmethod

@@ -155,3 +155,6 @@ class Test(object):
 
         sign2 = uuosapi.sign_digest(h, priv)
         assert sign == sign2
+
+        pub2 = uuosapi.recover_key(h, sign)
+        assert sign == sign2
