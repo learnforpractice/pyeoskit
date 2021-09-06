@@ -177,7 +177,8 @@ class ChainNative(object):
 
     @staticmethod
     def get_public_key(priv):
-        return _uuosapi.get_public_key(priv)
+        ret = _uuoskit.crypto_get_public_key(priv)
+        return check_result(ret)
 
     @staticmethod
     def from_base58(pub_key):
@@ -201,17 +202,11 @@ class ChainNative(object):
         return _uuosapi.unpack_cpp_object(obj_type, raw_data)
 
     @staticmethod
-    def sign_digest(priv_key, digest):
-        if isinstance(digest, str):
-            if not len(digest) == 64:
-                raise Exception('digest should be a hex str with 64 charactors or a bytes with a size of 32 long')
-            digest = bytes.fromhex(digest)
-        elif isinstance(digest, bytes):
-            if not len(digest) == 32:
-                raise Exception('digest should be a hex str with 64 charactors or a bytes with a size of 32 long')
-        else:
-            raise TypeError('digest should be a hex str with 64 charactors or a bytes with a size of 32 long')
-        return _uuosapi.sign_digest(priv_key, digest)
+    def sign_digest(digest, priv_key):
+        if isinstance(digest, bytes):
+            digest = digest.hex()
+        ret = _uuoskit.crypto_sign_digest(digest, priv_key)
+        return check_result(ret)
 
     @staticmethod
     def set_public_key_prefix(prefix):

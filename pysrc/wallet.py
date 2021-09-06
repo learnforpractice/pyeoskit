@@ -72,5 +72,7 @@ def sign_raw_transaction(trx: bytes, public_keys: List[str], chain_id: str, json
     ret = _wallet.sign_raw_transaction(trx, public_keys, chain_id)
     return check_result(ret, json)
 
-def sign_digest(digest, public_key: str):
-    return _wallet.sign_digest(digest, public_key)
+def sign_digest(digest: str, public_key: str):
+    ret = _uuoskit.wallet_sign_digest(digest, public_key)
+    return check_result(ret)
+

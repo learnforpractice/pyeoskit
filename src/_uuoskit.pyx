@@ -46,6 +46,10 @@ cdef extern from "libuuoskit.h" nogil:
     char* abiserializer_pack_abi_(char* str_abi);
     char* abiserializer_unpack_abi_(char* abi, int length);
 
+    char* wallet_sign_digest_(char* digest, char* pubKey);
+    char* crypto_sign_digest_(char* digest, char* privateKey);
+    char* crypto_get_public_key_(char* privateKey)
+
 cdef object convert(char *_ret):
     ret = <object>_ret
     free(_ret)
@@ -152,4 +156,22 @@ def abiserializer_pack_abi(str_abi):
 def abiserializer_unpack_abi(abi):
     cdef char *ret
     ret = abiserializer_unpack_abi_(abi, len(abi))
+    return convert(ret)
+
+#    char* wallet_sign_digest_(char* pubKey, char* digest);
+def wallet_sign_digest(digest, pubKey):
+    cdef char *ret
+    ret = wallet_sign_digest_(digest, pubKey)
+    return convert(ret)
+
+#char* crypto_sign_digest_(char* privateKey, char* digest);
+def crypto_sign_digest(digest, privateKey):
+    cdef char *ret
+    ret = crypto_sign_digest_(digest, privateKey)
+    return convert(ret)
+
+#char* crypto_get_public_key_(char* privateKey)
+def crypto_get_public_key(privateKey):
+    cdef char *ret
+    ret = crypto_get_public_key_(privateKey)
     return convert(ret)

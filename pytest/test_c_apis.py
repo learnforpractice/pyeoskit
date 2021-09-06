@@ -4,6 +4,8 @@ import time
 import json
 import pytest
 import logging
+import hashlib
+
 from uuoskit import ABI
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(lineno)d %(module)s %(message)s')
@@ -141,3 +143,15 @@ class Test(object):
 
         unpacked_abi = ABI.unpack_abi(packed_abi)
         logger.info(unpacked_abi)
+
+    def test_wallet(self):
+        from uuoskit import wallet, uuosapi
+        h = hashlib.sha256(b'123').hexdigest()
+
+        priv = '5JRYimgLBrRLCBAcjHUWCYRv3asNedTYYzVgmiU4q2ZVxMBiJXL'
+        wallet.import_key('test', priv)
+        pub = uuosapi.get_public_key(priv)
+        sign = wallet.sign_digest(h, pub)
+
+        sign2 = uuosapi.sign_digest(h, priv)
+        assert sign == sign2
