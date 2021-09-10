@@ -17,8 +17,15 @@ class Transaction(object):
             raise Exception(r['error'])
         return r['data']
 
-    def json(self):
-        r = _uuoskit.transaction_pack(self.idx)
+    def pack(self, compress=False):
+        r = _uuoskit.transaction_pack(self.idx, compress)
+        r = json.loads(r)
+        if 'error' in r:
+            raise Exception(r['error'])
+        return r['data']
+
+    def marshal(self):
+        r = _uuoskit.transaction_marshal(self.idx)
         r = json.loads(r)
         if 'error' in r:
             raise Exception(r['error'])

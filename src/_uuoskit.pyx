@@ -29,7 +29,9 @@ cdef extern from "libuuoskit.h" nogil:
     void transaction_free_(int64_t _index);
     char* transaction_add_action_(int64_t idx, char* account, char* name, char* data, char* permissions);
     char* transaction_sign_(int64_t idx, char* pub);
-    char* transaction_pack_(int64_t idx);
+    char* transaction_pack_(int64_t idx, int compress);
+    char* transaction_marshal_(int64_t idx);
+
     char* abiserializer_set_contract_abi_(char* account, char* abi, int length);
     char* abiserializer_pack_action_args_(char* contractName, char* actionName, char* args, int args_len);
     char* abiserializer_unpack_action_args_(char* contractName, char* actionName, char* args);
@@ -84,9 +86,14 @@ def transaction_sign(int64_t idx, char* pub):
     return convert(ret)
 
 # char* transaction_pack_(int64_t idx);
-def transaction_pack(int64_t idx):
+def transaction_pack(int64_t idx, int compress):
     cdef char *ret
-    ret = transaction_pack_(idx)
+    ret = transaction_pack_(idx, compress)
+    return convert(ret)
+
+def transaction_marshal(int64_t idx):
+    cdef char *ret
+    ret = transaction_marshal_(idx)
     return convert(ret)
 
 # char* wallet_get_public_keys_()

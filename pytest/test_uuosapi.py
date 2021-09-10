@@ -330,3 +330,5 @@ def apply(a, b, c):
         except Exception as e:
             assert e.args[0] == '[error] in main.transaction_add_action_[/Users/newworld/dev/uuoskit/src/uuoskit/lib.go:150] abi struct not found for token::transfer'
 
+        #test for comporessed transaction
+        uuosapi.push_action('eosio.token', 'transfer', args, {'helloworld12': 'active'}, compress=True)
