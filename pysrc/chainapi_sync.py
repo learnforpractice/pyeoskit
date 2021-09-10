@@ -111,9 +111,11 @@ class ChainApi(RPCInterface, ChainNative):
 
         for key in keys:
             tx.sign(key)
-        r = tx.json()
-        tx.free()
-        return super().push_transaction(r)
+        try:
+            r = tx.pack(compress)
+            return super().push_transaction(r)
+        finally:
+            tx.free()
 
     def push_transactions(self, aaa, expiration=60):
         chain_info = self.get_info()
