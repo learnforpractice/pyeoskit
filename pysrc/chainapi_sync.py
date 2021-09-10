@@ -68,10 +68,11 @@ class ChainApi(RPCInterface, ChainNative):
                 ],
                 "data": ""
             }
-            for key in a[3]:
+            permissions = a[3]
+            for key in permissions:
                 action['authorization'].append({
                     "actor": key,
-                    "permission": a[3][key]
+                    "permission": permissions[key]
                 })
             fake_tx['actions'].append(action)
         pub_keys = wallet.get_public_keys()
@@ -87,7 +88,6 @@ class ChainApi(RPCInterface, ChainNative):
         chain_info = self.get_info()
         ref_block = chain_info['head_block_id']
         chain_id = chain_info['chain_id']
-
         fake_actions = []
         for a in actions:
             fake_actions.append([a[0], a[1], '', a[3]])
@@ -106,7 +106,9 @@ class ChainApi(RPCInterface, ChainNative):
                 tx.free()
                 raise Exception('Invalid args type')
             permissions = json.dumps(permissions)
+            self.check_abi(contract)
             tx.add_action(contract, action_name, args, permissions)
+
         for key in keys:
             tx.sign(key)
         r = tx.json()
