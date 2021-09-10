@@ -1,12 +1,14 @@
 import json
-from uuoskit import _uuoskit
+from . import _uuoskit
+from .common import check_result
 
 class Transaction(object):
     def __init__(self, expiration, ref_block, chain_id):
         self.idx = _uuoskit.transaction_new(expiration, ref_block, chain_id)
 
     def add_action(self, contract, action, args, permissions):
-        _uuoskit.transaction_add_action(self.idx, contract, action, args, permissions)
+        ret = _uuoskit.transaction_add_action(self.idx, contract, action, args, permissions)
+        check_result(ret)
 
     def sign(self, pub_key):
         r = _uuoskit.transaction_sign(self.idx, pub_key)
