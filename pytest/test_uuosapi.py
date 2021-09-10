@@ -36,7 +36,7 @@ class TestUUOSApi(object):
         cls.testnet = Testnet(single_node=True, show_log=False)
         cls.testnet.run()
         cls.info = uuosapi.get_info()
-        logger.info(cls.info)
+        # logger.info(cls.info)
 
         # wallet.import_key('mywallet', '5K463ynhZoCDDa4RDcr63cUwWLTnKqmdcoTKTHBjqoKfv4u5V7p')
         # wallet.import_key('mywallet', '5Jbb4wuwz8MAzTB9FJNmrVYGXo4ABb7wqPVoWGcZ6x8V2FwNeDo')
@@ -248,20 +248,26 @@ def apply(a, b, c):
 
     @pytest.mark.asyncio
     async def test_pack_unpack_args(self):
+        from uuoskit import ABI
         args = {
             'from': 'test1',
             'to': 'test2',
             'quantity': '0.0100 EOS',
             'memo': 'hello'
         }
+        r = ABI.pack_action_args('eosio.token', 'transfer', json.dumps(args))
+        logger.info(r)
+
         r = uuosapi.pack_args('eosio.token', 'transfer', args)
         assert r
+        logger.info(r)
 
         r = uuosapi.pack_args('eosio.token', 'transfer', json.dumps(args))
         assert r
 
         r = uuosapi.unpack_args('eosio.token', 'transfer', r)
         logger.info(r)
+        return
 
         with pytest.raises(Exception):
             r = uuosapi.unpack_args('eosio.token', 'transfer', {'a':1})
@@ -297,3 +303,30 @@ def apply(a, b, c):
     def test_push_action(self):
         r = uuosapi.push_action('hello', 'sayhello', b'hello')
         print(r)
+
+    def test_push_actions(self):
+        args = {
+            'from': 'helloworld11',
+            'to': 'helloworld12',
+            'quantity': '0.0100 EOS',
+            'memo': 'hello'
+        }
+        a1 = ['eosio.token', 'transfer', args, {'helloworld11': 'active'}]
+
+        args = {
+            'from': 'helloworld12',
+            'to': 'helloworld11',
+            'quantity': '0.0100 EOS',
+            'memo': 'hello'
+        }
+        a2 = ['eosio.token', 'transfer', args, {'helloworld12': 'active'}]
+        balance1 = uuosapi.get_balance('helloworld11')
+        r = uuosapi.push_actions([a1, a2])
+        balance2 = uuosapi.get_balance('helloworld11')
+        logger.info('+++++%s, %s\n', balance1, balance2)
+
+        try:
+            uuosapi.push_action('token', 'transfer', args, {'helloworld11': 'active'})
+        except Exception as e:
+            assert e.args[0] == '[error] in main.transaction_add_action_[/Users/newworld/dev/uuoskit/src/uuoskit/lib.go:150] abi struct not found for token::transfer'
+

@@ -6,15 +6,11 @@ from . import _uuoskit
 from . import wasmcompiler
 from .exceptions import ChainException
 from . import ABI
+from .common import check_result
 
 def raise_last_error():
     raise ChainException(_uuosapi.get_last_error())
 
-def check_result(r, json=False):
-    r = json_.loads(r)
-    if 'error' in r:
-        raise Exception(r['error'])
-    return r['data']
 
 SRC_TYPE_CPP = 0
 SRC_TYPE_PY = 1
