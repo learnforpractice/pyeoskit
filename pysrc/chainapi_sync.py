@@ -1,6 +1,7 @@
 import json
 import copy
 import time
+import base64
 
 from . import config
 from . import wallet
@@ -191,10 +192,15 @@ class ChainApi(RPCInterface, ChainNative):
         return self.push_actions(actions)
 
     def get_balance(self, account, token_account=None, token_name=None):
+        if not token_name:
+            token_name = config.main_token
+
         if not token_account:
             token_account = config.main_token_contract
+
         if not token_name:
-            token_name = config.main_token            
+            token_name = config.main_token
+
         try:
             ret = super().get_currency_balance(token_account, account, token_name)
             if ret:
@@ -259,20 +265,6 @@ class ChainApi(RPCInterface, ChainNative):
             abi = ''
             self.db.set_abi(account, abi)
         return abi
-
-    def get_packed_abi(self, account):
-        abi = self.db.get_abi(account)
-        if isinstance(abi, bytes):
-            return abi
-
-        abi = super().get_abi(account)
-        if abi and 'abi' in abi:
-            abi = json.dumps(abi['abi'])
-            self.db.set_abi(account, abi)
-        else:
-            abi = ''
-            self.db.set_abi(account, abi)
-        return eosapi.pack_abi(abi)
 
     def deploy_contract(self, account, code, abi, vm_type=0, vm_version=0, sign=True, compress=0):
         if vm_type == 0:

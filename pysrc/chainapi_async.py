@@ -1,32 +1,34 @@
 import json
 import copy
+import time
+import base64
+
 from . import config
 from . import wallet
 from . import defaultabi
 from . import wasmcompiler
 from . import log
 
+from .transaction import Transaction
 from .chaincache import ChainCache
 from .rpc_interface import RPCInterface
 from .chainnative import ChainNative
 from .exceptions import ChainException
 from . import wallet
 
+from typing import Union, Any, Dict, List
+
 logger = log.get_logger(__name__)
 
-from .chainapi_sync import ChainApi
 
 class ChainApiAsync(RPCInterface, ChainNative):
     def __init__(self, node_url = 'http://127.0.0.1:8888', network='EOS'):
-        self.sync_api = ChainApi(node_url, network)
-
         super().__init__(_async=True)
 
         self.db = ChainCache(self, network)
         self.set_node(node_url)
 
     def set_node(self, node_url):
-        self.sync_api.set_node(node_url)
         super().set_node(node_url)
 
     def enable_decode(self, json_format):
@@ -39,7 +41,7 @@ class ChainApiAsync(RPCInterface, ChainNative):
     def get_chain_id(self):
         return self.get_info()['chain_id']
 
-    def push_transaction(self, trx, compress=0):
+    def push_transaction(self, trx: Union[str, dict], compress=0):
         trx = self.pack_transaction(trx, compress)
         return super().push_transaction(trx)
 
@@ -47,40 +49,77 @@ class ChainApiAsync(RPCInterface, ChainNative):
         r = await super().get_required_keys(trx, public_keys)
         return r['required_keys']
 
+    async def get_sign_keys(self, actions):
+        fake_tx = {
+            "expiration": "2021-09-01T16:15:16",
+            "ref_block_num": 20676,
+            "ref_block_prefix": 4052960473,
+            "max_net_usage_words": 0,
+            "max_cpu_usage_ms": 0,
+            "delay_sec": 0,
+            "context_free_actions": [],
+            "actions": [
+            ],
+            "transaction_extensions": [],
+            "signatures": [],
+            "context_free_data": []
+        }
+        for a in actions:
+            action = {
+                "account": a[0],
+                "name": a[1],
+                "authorization": [
+                ],
+                "data": ""
+            }
+            permissions = a[3]
+            for key in permissions:
+                action['authorization'].append({
+                    "actor": key,
+                    "permission": permissions[key]
+                })
+            fake_tx['actions'].append(action)
+        pub_keys = wallet.get_public_keys()
+        return await self.get_required_keys(json.dumps(fake_tx), pub_keys)
+
     async def push_action(self, contract, action, args, permissions=None, compress=0):
         if not permissions:
             permissions = {contract:'active'}
-        act = [contract, action, args, permissions]
-        chain_info = await self.get_info()
-        reference_block_id = chain_info['last_irreversible_block_id']
-        chain_id = chain_info['chain_id']
-        trx = self.generate_transaction([act], 60, reference_block_id)
-
-        dummy_act = [contract, action, b'', permissions]
-        dummy_trx = self.generate_transaction([dummy_act], 60, reference_block_id)
-        required_keys = await self.get_required_keys(dummy_trx, wallet.get_public_keys())
-
-        trx = wallet.sign_transaction(trx, required_keys, chain_id)
-        trx = self.pack_transaction(trx, compress)
-        return await super().push_transaction(trx)
+        a = [contract, action, args, permissions]
+        return await self.push_actions([a], compress)
 
     async def push_actions(self, actions, compress=0):
         chain_info = await self.get_info()
-        reference_block_id = chain_info['last_irreversible_block_id']
+        ref_block = chain_info['head_block_id']
         chain_id = chain_info['chain_id']
-        trx = self.generate_transaction(actions, 60, reference_block_id)
+        fake_actions = []
+        for a in actions:
+            fake_actions.append([a[0], a[1], '', a[3]])
+        keys = await self.get_sign_keys(fake_actions)
 
-        dummy_actions = copy.deepcopy(actions)
-        for a in dummy_actions:
-            a[2] = b''
-        dummy_trx = self.generate_transaction(dummy_actions, 60, reference_block_id)
-        required_keys = await self.get_required_keys(dummy_trx, wallet.get_public_keys())
+        tx = Transaction(int(time.time()) + 60, ref_block, chain_id)
+        for a in actions:
+            contract, action_name, args, permissions = a
+            if isinstance(args, bytes):
+                args = args.hex()
+            elif isinstance(args, dict):
+                args = json.dumps(args)
+            elif isinstance(args, str):
+                pass
+            else:
+                tx.free()
+                raise Exception('Invalid args type')
+            permissions = json.dumps(permissions)
+            self.check_abi(contract)
+            tx.add_action(contract, action_name, args, permissions)
 
-        trx = wallet.sign_transaction(trx, required_keys, chain_id)
-        trx = self.pack_transaction(trx, compress)
-
-        return await super().push_transaction(trx)
-
+        for key in keys:
+            tx.sign(key)
+        try:
+            r = tx.pack(compress)
+            return await super().push_transaction(r)
+        finally:
+            tx.free()
 
     async def push_transactions(self, aaa, expiration=60):
         chain_info = await self.get_info()
@@ -153,13 +192,18 @@ class ChainApiAsync(RPCInterface, ChainNative):
             args = self.pack_args(config.system_contract, 'delegatebw', args)
             act = [config.system_contract, 'delegatebw', args, {creator:'active'}]
             actions.append(act)
-        return await self.push_actions(actions)
+        return self.push_actions(actions)
 
     async def get_balance(self, account, token_account=None, token_name=None):
         if not token_name:
             token_name = config.main_token
+
         if not token_account:
             token_account = config.main_token_contract
+
+        if not token_name:
+            token_name = config.main_token
+
         try:
             ret = await super().get_currency_balance(token_account, account, token_name)
             if ret:
@@ -190,6 +234,13 @@ class ChainApiAsync(RPCInterface, ChainNative):
         except Exception as e:
             return None
 
+    async def get_raw_code(self, account):
+        try:
+            code = await super().get_code(account)
+            return code
+        except Exception as e:
+            return None
+
     def set_code(self, account, code):
         self.db.set_code(account, code)
 
@@ -201,27 +252,30 @@ class ChainApiAsync(RPCInterface, ChainNative):
         if account == config.main_token_contract:
             return defaultabi.eosio_token_abi
         elif account == config.system_contract:
-            return defaultabi.eosio_system_abi
+            if config.main_token in defaultabi.eosio_system_abi:
+                return defaultabi.eosio_system_abi[config.main_token]
+            else:
+                return defaultabi.eosio_system_abi['EOS']
 
         abi = self.db.get_abi(account)
-        if not abi:
-            abi = await super().get_abi(account)
-            if abi and 'abi' in abi:
-                abi = json.dumps(abi['abi'])
-                self.db.set_abi(account, abi)
-            else:
-                abi = ''
-                self.db.set_abi(account, abi)
+        if abi:
+            return abi
+
+        abi = await super().get_abi(account)
+        if abi and 'abi' in abi:
+            abi = json.dumps(abi['abi'])
+            self.db.set_abi(account, abi)
+        else:
+            abi = ''
+            self.db.set_abi(account, abi)
         return abi
 
-    async def compile(self, contract_name, src, vm_type):
-        return super().compile(contract_name, src, vm_type)
 
     async def deploy_contract(self, account, code, abi, vm_type=0, vm_version=0, sign=True, compress=0):
         if vm_type == 0:
             return await self.deploy_wasm_contract(account, code, abi, vm_type, vm_version, sign, compress)
         elif vm_type == 1:
-            return await self.deploy_python_contract(account, code, abi, deploy_type)
+            return await self.deploy_python_contract(account, code, abi)
         else:
             raise Exception(f'Unknown vm type {vm_type}')
 
@@ -359,52 +413,6 @@ class ChainApiAsync(RPCInterface, ChainNative):
         else:
             return await self.push_action(account, 'exec', args, permissions)
 
-    async def python_contract_get_table_rows(self,
-                    code,
-                    scope,
-                    table,
-                    lower_bound,
-                    upper_bound,
-                    limit=10):
-        args = {
-            'code': code,
-            'scope': scope,
-            'table': table,
-            'lowerbound': lower_bound,
-            'upperbound': upper_bound,
-            'limit': limit
-        }
-        try:
-            r = self.push_action(config.python_contract, 'gettablerows', args, {config.python_contract:'active'})
-        except Exception as e:
-            msg = e.json['error']['details'][0]['message']
-            # print(msg)
-            if msg.startswith('assertion failure with message: '):
-                start = msg.rfind(': ')
-                msg = msg[start + 2:]
-                return msg
-
-    async def deploy_code(self, account, code, vm_type=0, vm_version=0):
-        setcode = {"account":account,
-                "vmtype":vm_type,
-                "vmversion":vm_version,
-                "code":code.hex()
-                }
-        setcode = self.pack_args(config.system_contract, 'setcode', setcode)
-        ret = await self.push_action(config.system_contract, 'setcode', setcode, {account:'active'})
-        self.db.remove_code(account)
-        return ret
-
-    async def deploy_abi(self, account, abi):
-        origin_abi = abi
-        abi = self.pack_abi(abi)
-        assert abi
-        setabi = self.pack_args(config.system_contract, 'setabi', {'account':account, 'abi':abi.hex()})    
-        ret = await self.push_action(config.system_contract, 'setabi', setabi, {account:'active'})
-
-        self.set_abi(account, origin_abi)
-        return ret
-
     async def get_public_keys(self, account_name, perm_name):
         keys = []
         for public_key in self.get_keys(account_name, perm_name):
@@ -422,7 +430,8 @@ class ChainApiAsync(RPCInterface, ChainNative):
             return threshold
         info = await self.get_account(account_name)
         if not info:
-            return 0
+            return None
+            #raise Exception(f'account {account_name} does not exists!')
         for per in info['permissions']:
             if perm_name != per['perm_name']:
                 continue

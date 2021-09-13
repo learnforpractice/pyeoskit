@@ -28,14 +28,12 @@ test_dir = os.path.dirname(__file__)
 
 # config.setup_uuos_network()
 
-uuosapi = None
 
 class TestUUOSApi(object):
 
     @classmethod
     def setup_class(cls):
-        global uuosapi
-        uuosapi = ChainApiAsync('http://127.0.0.1:9000')
+        cls.uuosapi = ChainApiAsync('http://127.0.0.1:9000')
 
         cls.testnet = Testnet(single_node=True, show_log=True)
         cls.testnet.run()
@@ -57,33 +55,33 @@ class TestUUOSApi(object):
 
     @pytest.mark.asyncio
     async def test_pack_unpack_args(self):
-        uuosapi.clear_abi_cache('eosio.token')
+        self.uuosapi.clear_abi_cache('eosio.token')
         args = {
             'from': 'test1',
             'to': 'test2',
             'quantity': '0.0100 EOS',
             'memo': 'hello'
         }
-        r = uuosapi.pack_args('eosio.token', 'transfer', args)
+        r = self.uuosapi.pack_args('eosio.token', 'transfer', args)
         assert r
 
-        r = uuosapi.pack_args('eosio.token', 'transfer', json.dumps(args))
+        r = self.uuosapi.pack_args('eosio.token', 'transfer', json.dumps(args))
         assert r
 
-        r = uuosapi.unpack_args('eosio.token', 'transfer', r)
+        r = self.uuosapi.unpack_args('eosio.token', 'transfer', r)
         logger.info(r)
 
         with pytest.raises(Exception):
-            r = uuosapi.unpack_args('eosio.token', 'transfer', {'a':1})
+            r = self.uuosapi.unpack_args('eosio.token', 'transfer', {'a':1})
 
         with pytest.raises(Exception):
-            r = uuosapi.unpack_args('eosio.token', 'transfer', json.dumps({'a':1}))
+            r = self.uuosapi.unpack_args('eosio.token', 'transfer', json.dumps({'a':1}))
 
         with pytest.raises(Exception):
-            r = uuosapi.unpack_args('eosio.token', 'transfer', b'hello')
+            r = self.uuosapi.unpack_args('eosio.token', 'transfer', b'hello')
 
         with pytest.raises(Exception):
-            r = uuosapi.unpack_args('eosio.token', 'transfer', 'aabb')
+            r = self.uuosapi.unpack_args('eosio.token', 'transfer', 'aabb')
 
 
     @pytest.mark.asyncio
@@ -95,10 +93,10 @@ class TestUUOSApi(object):
             'memo': 'hello'
         }
         act = ['eosio.token', 'transfer', args, {'helloworld11': 'active'}]
-        chain_info = await uuosapi.get_info()
+        chain_info = await self.uuosapi.get_info()
         reference_block_id = chain_info['head_block_id']
-        trx = uuosapi.generate_transaction([act], 60, reference_block_id)
-        keys = await uuosapi.get_required_keys(trx, wallet.get_public_keys())
+        trx = self.uuosapi.generate_transaction([act], 60, reference_block_id)
+        keys = await self.uuosapi.get_required_keys(trx, wallet.get_public_keys())
         assert keys
 
         chain_id = chain_info['chain_id']
@@ -108,4 +106,4 @@ class TestUUOSApi(object):
 
     @pytest.mark.asyncio
     async def test_push_action(self):
-        r = await uuosapi.push_action('hello', 'sayhello', b'hello')
+        r = await self.uuosapi.push_action('helloworld11', 'sayhello', b'hello')
