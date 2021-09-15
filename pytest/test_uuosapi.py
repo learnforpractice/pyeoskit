@@ -332,3 +332,7 @@ def apply(a, b, c):
 
         #test for comporessed transaction
         uuosapi.push_action('eosio.token', 'transfer', args, {'helloworld12': 'active'}, compress=True)
+
+    def test_crypto(self):
+        key_pair = uuosapi.create_key()
+        logger.info(key_pair)

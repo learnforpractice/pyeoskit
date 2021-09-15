@@ -7,6 +7,7 @@ from . import wasmcompiler
 from .exceptions import ChainException
 from . import ABI
 from .common import check_result
+from . import crypto
 
 def raise_last_error():
     raise ChainException(_uuosapi.get_last_error())
@@ -169,7 +170,7 @@ class ChainNative(object):
 
     @staticmethod
     def create_key():
-        return _uuosapi.create_key()
+        return crypto.create_key()
 
     @staticmethod
     def get_public_key(priv):

@@ -53,6 +53,8 @@ cdef extern from "libuuoskit.h" nogil:
     char* crypto_get_public_key_(char* privateKey)
     char* crypto_recover_key_(char* digest, char* signature);
 
+    char* crypto_create_key_()
+
 cdef object convert(char *_ret):
     ret = <object>_ret
     free(_ret)
@@ -188,4 +190,10 @@ def crypto_get_public_key(privateKey):
 def crypto_recover_key(digest, signature):
     cdef char *ret
     ret = crypto_recover_key_(digest, signature)
+    return convert(ret)
+
+#crypto_create_key_
+def crypto_create_key():
+    cdef char *ret
+    ret = crypto_create_key_()
     return convert(ret)
