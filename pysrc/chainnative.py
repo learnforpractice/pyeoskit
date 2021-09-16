@@ -8,10 +8,7 @@ from .exceptions import ChainException
 from . import ABI
 from .common import check_result
 from . import crypto
-
-def raise_last_error():
-    raise ChainException(_uuosapi.get_last_error())
-
+from .transaction import Transaction
 
 SRC_TYPE_CPP = 0
 SRC_TYPE_PY = 1
@@ -130,20 +127,30 @@ class ChainNative(object):
     def unpack_abi(packed_abi):
         return ABI.unpack_abi(packed_abi)
 
-    def gen_transaction(self, actions, expiration, reference_block_id, json=False):
+    def gen_transaction(self, actions, expiration, reference_block_id, chain_id):
+        tx = Transaction(expiration, reference_block_id, chain_id)
         for a in actions:
-            args = a[2]
-            if isinstance(args, dict):
-                #handle emtpy dict
-                if args: 
-                    a[2] = self.pack_args(a[0], a[1], args)
-                else:
-                    a[2] = b''
-        r = _uuosapi.gen_transaction(actions, expiration, reference_block_id)
-        return check_result(r, json)
+            contract, action_name, args, permissions = a
+            if isinstance(args, bytes):
+                args = args.hex()
+            elif isinstance(args, dict):
+                args = json.dumps(args)
+            elif isinstance(args, str):
+                pass
+            else:
+                tx.free()
+                raise Exception('Invalid args type')
+            permissions = json.dumps(permissions)
+            self.check_abi(contract)
+            tx.add_action(contract, action_name, args, permissions)
 
-    def generate_transaction(self, actions, expiration, reference_block_id, json=False):
-        return self.gen_transaction(actions, expiration, reference_block_id, json)
+        try:
+            return tx.marshal()
+        finally:
+            tx.free()
+
+    def generate_transaction(self, actions, expiration, reference_block_id, chain_id):
+        return self.gen_transaction(actions, expiration, reference_block_id, chain_id)
 
     @staticmethod
     def sign_transaction(trx, private_key, chain_id, json=False):
