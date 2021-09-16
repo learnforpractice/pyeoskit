@@ -26,13 +26,17 @@ cdef extern from "libuuoskit.h" nogil:
     char* wallet_get_public_keys_()
 
     int64_t transaction_new_(int64_t expiration, char* refBlock, char* chainId);
-    char* transaction_from_json_(char* tx)
+    char* transaction_from_json_(char* tx, char* chainId)
+    char* transaction_set_chain_id_(int64_t _index, char* chainId)
 
     void transaction_free_(int64_t _index);
     char* transaction_add_action_(int64_t idx, char* account, char* name, char* data, char* permissions);
     char* transaction_sign_(int64_t idx, char* pub);
-    char* transaction_pack_(int64_t idx, int compress);
-    char* transaction_marshal_(int64_t idx);
+    char* transaction_sign_by_private_key_(int64_t idx, char* priv)
+
+    char* transaction_pack_(int64_t idx, int compress)
+    char* transaction_marshal_(int64_t idx)
+    char* transaction_unpack_(char* data)
 
     char* abiserializer_set_contract_abi_(char* account, char* abi, int length);
     char* abiserializer_pack_action_args_(char* contractName, char* actionName, char* args, int args_len);
@@ -76,13 +80,19 @@ def wallet_import(char* name, char* priv):
 def transaction_new(int64_t expiration, char* refBlock, char* chainId):
     return transaction_new_(expiration, refBlock, chainId)
 
-def transaction_from_json(char* tx):
+def transaction_from_json(char* tx, char* chainId):
     cdef char *ret
-    ret = transaction_from_json_(tx)
+    ret = transaction_from_json_(tx, chainId)
     return convert(ret)
 
 def transaction_free(int64_t _index):
     transaction_free_(_index)
+
+#    char* transaction_set_chain_id_(int64_t _index, char* chainId)
+def transaction_set_chain_id(int64_t idx, char* chainId):
+    cdef char *ret
+    ret = transaction_set_chain_id_(idx, chainId)
+    return convert(ret)
 
 def transaction_add_action(int64_t idx, char* account, char* name, char* data, char* permissions):
     cdef char *ret
@@ -94,6 +104,12 @@ def transaction_sign(int64_t idx, char* pub):
     ret = transaction_sign_(idx, pub)
     return convert(ret)
 
+#    char* transaction_sign_by_private_key_(int64_t idx, char* priv)
+def transaction_sign_by_private_key(int64_t idx, char* priv):
+    cdef char *ret
+    ret = transaction_sign_by_private_key_(idx, priv)
+    return convert(ret)
+
 # char* transaction_pack_(int64_t idx);
 def transaction_pack(int64_t idx, int compress):
     cdef char *ret
@@ -103,6 +119,12 @@ def transaction_pack(int64_t idx, int compress):
 def transaction_marshal(int64_t idx):
     cdef char *ret
     ret = transaction_marshal_(idx)
+    return convert(ret)
+
+#    char* transaction_unpack_(char* data)
+def transaction_unpack(char* data):
+    cdef char *ret
+    ret = transaction_unpack_(data)
     return convert(ret)
 
 # char* wallet_get_public_keys_()

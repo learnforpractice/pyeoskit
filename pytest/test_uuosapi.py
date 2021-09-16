@@ -364,3 +364,17 @@ def apply(a, b, c):
         pub_key = 'EOS6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5GDW5CV'
         sign = t.sign(pub_key)
         logger.info(sign)
+        logger.info(t.pack())
+
+    def test_unpack_tx(self):
+        from uuoskit.transaction import Transaction
+        tx = self.gen_tx()
+        logger.info(tx)
+        t = Transaction.from_json(tx)
+        pub_key = 'EOS6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5GDW5CV'
+        sign = t.sign(pub_key)
+        logger.info(sign)
+        tx = t.pack()
+        logger.info(tx)
+        tx = Transaction.unpack(tx['packed_trx'])
+        logger.info(tx)

@@ -153,27 +153,19 @@ class ChainNative(object):
         return self.gen_transaction(actions, expiration, reference_block_id, chain_id)
 
     @staticmethod
-    def sign_transaction(trx, private_key, chain_id, json=False):
-        if isinstance(trx, dict):
-            trx = json_.dumps(trx)
-        ret = _uuosapi.sign_transaction(trx, private_key, chain_id)
-        return check_result(ret, json)
+    def sign_transaction(tx, private_key, chain_id, json=False):
+        t = Transaction.from_json(tx, chain_id)
+        return t.sign_by_private_key(private_key)
 
     @staticmethod
-    def pack_transaction(trx, compress=0, json=False):
-        if isinstance(trx, dict):
-            trx = json_.dumps(trx)
-        assert isinstance(trx, (dict, str, bytes))
-        ret = _uuosapi.pack_transaction(trx, compress)
-        return check_result(ret, json)
+    def pack_transaction(tx, compress=0, json=False):
+        t = Transaction.from_json(tx, '00'*32)
+        r = t.pack(compress)
+        return r['packed_trx']
 
     @staticmethod
     def unpack_transaction(trx, json=False):
-        if isinstance(trx, str):
-            trx = bytes.fromhex(trx)
-        assert isinstance(trx, bytes)
-        ret = _uuosapi.unpack_transaction(trx)
-        return check_result(ret)
+        return Transaction.unpack(trx)
 
     @staticmethod
     def create_key():
