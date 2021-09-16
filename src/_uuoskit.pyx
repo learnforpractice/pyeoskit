@@ -26,6 +26,8 @@ cdef extern from "libuuoskit.h" nogil:
     char* wallet_get_public_keys_()
 
     int64_t transaction_new_(int64_t expiration, char* refBlock, char* chainId);
+    char* transaction_from_json_(char* tx)
+
     void transaction_free_(int64_t _index);
     char* transaction_add_action_(int64_t idx, char* account, char* name, char* data, char* permissions);
     char* transaction_sign_(int64_t idx, char* pub);
@@ -73,6 +75,11 @@ def wallet_import(char* name, char* priv):
 
 def transaction_new(int64_t expiration, char* refBlock, char* chainId):
     return transaction_new_(expiration, refBlock, chainId)
+
+def transaction_from_json(char* tx):
+    cdef char *ret
+    ret = transaction_from_json_(tx)
+    return convert(ret)
 
 def transaction_free(int64_t _index):
     transaction_free_(_index)

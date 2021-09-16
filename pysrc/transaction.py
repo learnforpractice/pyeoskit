@@ -3,8 +3,21 @@ from . import _uuoskit
 from .common import check_result
 
 class Transaction(object):
-    def __init__(self, expiration, ref_block, chain_id):
+    def __init__(self, expiration=0, ref_block=None, chain_id=None):
+        if ref_block is None:
+            self.idx = -1
+            return
         self.idx = _uuoskit.transaction_new(expiration, ref_block, chain_id)
+
+    @staticmethod
+    def from_json(json_str):
+        t = Transaction()
+        r = _uuoskit.transaction_from_json(json_str)
+        idx = check_result(r)
+        if idx == -1:
+            raise Exception('Invalid transaction idx')
+        t.idx = idx
+        return t
 
     def add_action(self, contract, action, args, permissions):
         ret = _uuoskit.transaction_add_action(self.idx, contract, action, args, permissions)
@@ -30,6 +43,9 @@ class Transaction(object):
         if 'error' in r:
             raise Exception(r['error'])
         return r['data']
+
+    def json(self):
+        return self.marshal()
 
     def free(self):
         if not self.idx == -1:

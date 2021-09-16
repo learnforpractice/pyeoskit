@@ -336,3 +336,31 @@ def apply(a, b, c):
     def test_crypto(self):
         key_pair = uuosapi.create_key()
         logger.info(key_pair)
+
+    def gen_tx(self):
+        args = {
+            'from': 'helloworld11',
+            'to': 'eosio',
+            'quantity': '0.0100 EOS',
+            'memo': 'hello'
+        }
+        action = ['eosio.token', 'transfer', args, {'helloworld11': 'active'}]
+        chain_info = uuosapi.get_info()
+        chain_id = chain_info['chain_id']
+        reference_block_id = chain_info['head_block_id']
+        tx = uuosapi.generate_transaction([action], 60, reference_block_id, chain_id)
+        return tx
+
+    def test_gen_tx(self):
+        tx = self.gen_tx()
+        logger.info(tx)
+        assert tx
+
+    def test_sign_tx(self):
+        from uuoskit.transaction import Transaction
+        tx = self.gen_tx()
+        logger.info(tx)
+        t = Transaction.from_json(tx)
+        pub_key = 'EOS6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5GDW5CV'
+        sign = t.sign(pub_key)
+        logger.info(sign)
