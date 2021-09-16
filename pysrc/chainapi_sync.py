@@ -79,13 +79,13 @@ class ChainApi(RPCInterface, ChainNative):
         pub_keys = wallet.get_public_keys()
         return self.get_required_keys(json.dumps(fake_tx), pub_keys)
 
-    def push_action(self, contract, action, args, permissions=None, compress=0):
+    def push_action(self, contract, action, args, permissions=None, expiration=0, compress=0):
         if not permissions:
             permissions = {contract:'active'}
         a = [contract, action, args, permissions]
-        return self.push_actions([a], compress)
+        return self.push_actions([a], expiration, compress)
 
-    def push_actions(self, actions, compress=0):
+    def push_actions(self, actions, expiration=0, compress=0):
         chain_info = self.get_info()
         ref_block = chain_info['head_block_id']
         chain_id = chain_info['chain_id']
@@ -94,7 +94,10 @@ class ChainApi(RPCInterface, ChainNative):
             fake_actions.append([a[0], a[1], '', a[3]])
         keys = self.get_sign_keys(fake_actions)
 
-        tx = Transaction(int(time.time()) + 60, ref_block, chain_id)
+        if not expiration:
+            expiration = int(time.time()) + 60
+
+        tx = Transaction(expiration, ref_block, chain_id)
         for a in actions:
             contract, action_name, args, permissions = a
             if isinstance(args, bytes):

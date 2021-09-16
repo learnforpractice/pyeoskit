@@ -82,13 +82,13 @@ class ChainApiAsync(RPCInterface, ChainNative):
         pub_keys = wallet.get_public_keys()
         return await self.get_required_keys(json.dumps(fake_tx), pub_keys)
 
-    async def push_action(self, contract, action, args, permissions=None, compress=0):
+    async def push_action(self, contract, action, args, permissions=None, expiration=0, compress=0):
         if not permissions:
             permissions = {contract:'active'}
         a = [contract, action, args, permissions]
-        return await self.push_actions([a], compress)
+        return await self.push_actions([a], expiration=expiration, compress=compress)
 
-    async def push_actions(self, actions, compress=0):
+    async def push_actions(self, actions, expiration=0, compress=0):
         chain_info = await self.get_info()
         ref_block = chain_info['head_block_id']
         chain_id = chain_info['chain_id']
@@ -97,7 +97,10 @@ class ChainApiAsync(RPCInterface, ChainNative):
             fake_actions.append([a[0], a[1], '', a[3]])
         keys = await self.get_sign_keys(fake_actions)
 
-        tx = Transaction(int(time.time()) + 60, ref_block, chain_id)
+        if not expiration:
+            expiration = int(time.time()) + 60
+
+        tx = Transaction(expiration, ref_block, chain_id)
         for a in actions:
             contract, action_name, args, permissions = a
             if isinstance(args, bytes):
@@ -302,7 +305,7 @@ class ChainApiAsync(RPCInterface, ChainNative):
         setabi = [config.system_contract, 'setabi', setabi, {account:'active'}]
         actions.append(setabi)
 
-        ret = self.push_actions(actions, compress)
+        ret = self.push_actions(actions, compress=compress)
         if 'error' in ret:
             raise Exception(ret['error'])
 
