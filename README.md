@@ -20,11 +20,28 @@ Python Toolkit for EOSIO
 
 # Building from Source Code
 
-### Installing Prerequirements(macOS X and linux)
+### Installing Prerequisites
 
 ```
 python3 -m pip install scikit-build
-python3 -m pip install cython==0.28.5
+python3 -m pip install cython
+```
+
+For Windows platform
+
+```
+python -m pip install scikit-build
+python -m pip install cython
+```
+
+1. Download and Install gcc compiler from [tdm-gcc](https://jmeubank.github.io/tdm-gcc)
+2. Install Go compiler from [download](https://golang.org/doc/install#download)
+3. Install cmake from [download](https://cmake.org/download)
+4. Install python3 from [downloads](https://www.python.org/downloads/windows/)
+
+Press Win+R to open Run Dialog, input the following command
+```
+cmd -k /path/to/gcc/mingwvars.bat
 ```
 
 ### Downloading Source Code
@@ -35,26 +52,26 @@ cd uuoskit
 git submodule update --init --recursive
 ```
 
-### Building on macOS
+### Build
 ```
-./build-mac.sh
-```
-
-### Building on Ubuntu
-```
-./build-linux.sh
+./build.sh
 ```
 
-### Building on Centos
+For Windows platform
+In the cmd dialog, enter the following command:
 ```
-CC=gcc CXX=g++ python3 setup.py sdist bdist_wheel  -- -DCMAKE_TOOLCHAIN_FILE=$(pwd)/cmake/polly/gcc-pic.cmake -- -j7
+python setup.py sdist bdist_wheel
 ```
 
 ### Installation
 
 ```
-ls dist
-python3 -m pip install dist/uuoskit-[SUFFIX].whl
+./install.sh
+```
+
+For Windows platform
+```
+python -m pip uninstall uuoskit -y;python -m pip install .\dist\uuoskit-[SUFFIX].whl
 ```
 
 ### Example1
