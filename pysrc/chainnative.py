@@ -172,17 +172,9 @@ class ChainNative(object):
         return crypto.create_key()
 
     @staticmethod
-    def get_public_key(priv):
-        ret = _uuoskit.crypto_get_public_key(priv)
+    def get_public_key(priv, eos_pub = True):
+        ret = _uuoskit.crypto_get_public_key(priv, eos_pub)
         return check_result(ret)
-
-    @staticmethod
-    def from_base58(pub_key):
-        return _uuosapi.from_base58(pub_key)
-
-    @staticmethod
-    def to_base58(raw_pub_key):
-        return _uuosapi.to_base58(raw_pub_key)
 
     @staticmethod
     def recover_key(digest, sign):
@@ -190,27 +182,11 @@ class ChainNative(object):
         return check_result(ret)
 
     @staticmethod
-    def pack_cpp_object(obj_type, json_str):
-        return _uuosapi.pack_cpp_object(obj_type, json_str)
-
-    @staticmethod
-    def unpack_cpp_object(obj_type, raw_data):
-        return _uuosapi.unpack_cpp_object(obj_type, raw_data)
-
-    @staticmethod
     def sign_digest(digest, priv_key):
         if isinstance(digest, bytes):
             digest = digest.hex()
         ret = _uuoskit.crypto_sign_digest(digest, priv_key)
         return check_result(ret)
-
-    @staticmethod
-    def set_public_key_prefix(prefix):
-        _uuosapi.set_public_key_prefix(prefix)
-
-    @staticmethod
-    def get_public_key_prefix():
-        return _uuosapi.get_public_key_prefix()
 
     @staticmethod
     def mp_compile(contract, src):
@@ -255,7 +231,3 @@ class ChainNative(object):
             return wasmcompiler.compile_go_src(contract_name, code)
         else:
             assert 0, f'unsupported file type: {src_type}'
-
-    @staticmethod
-    def get_last_error():
-        return _uuosapi.get_last_error()

@@ -4,6 +4,7 @@ from typing import List, Dict, Union
 
 from . import _uuoskit
 from .exceptions import WalletException
+from .transaction import Transaction
 
 def check_result(result, json=False):
     ret = json_.loads(result)
@@ -55,22 +56,10 @@ def remove_key(name, password, pub_key):
 def sign_transaction(trx: Union[str, dict], public_keys: List[str], chain_id: str, json=False):
     if isinstance(trx, dict):
         trx = json_.dumps(trx)
-    trx = _wallet.sign_transaction(trx, public_keys, chain_id)
-    return check_result(trx, json)
-
-def sign_transaction_ex(trx: str, public_keys: List[str], chain_id: str, json=False):
-    if isinstance(trx, dict):
-        trx = json_.dumps(trx)
-    tx_id, signatures = _wallet.sign_transaction_ex(trx, public_keys, chain_id)
-
-    if tx_id and signatures:
-        return tx_id, json_.loads(signatures)
-    raise_last_error()
-
-def sign_raw_transaction(trx: bytes, public_keys: List[str], chain_id: str, json=False):
-    assert isinstance(trx, bytes)
-    ret = _wallet.sign_raw_transaction(trx, public_keys, chain_id)
-    return check_result(ret, json)
+    t = Transaction.from_json(trx, chain_id)
+    for pub in public_keys:
+        t.sign(pub)
+    return t.pack()
 
 def sign_digest(digest: str, public_key: str):
     ret = _uuoskit.wallet_sign_digest(digest, public_key)

@@ -56,7 +56,7 @@ cdef extern from "libuuoskit.h" nogil:
 
     char* wallet_sign_digest_(char* digest, char* pubKey);
     char* crypto_sign_digest_(char* digest, char* privateKey);
-    char* crypto_get_public_key_(char* privateKey)
+    char* crypto_get_public_key_(char* privateKey, int eosPub)
     char* crypto_recover_key_(char* digest, char* signature);
 
     char* crypto_create_key_()
@@ -210,9 +210,9 @@ def crypto_sign_digest(digest, privateKey):
     return convert(ret)
 
 #char* crypto_get_public_key_(char* privateKey)
-def crypto_get_public_key(privateKey):
+def crypto_get_public_key(privateKey, eosPub):
     cdef char *ret
-    ret = crypto_get_public_key_(privateKey)
+    ret = crypto_get_public_key_(privateKey, eosPub)
     return convert(ret)
 
 #    char* crypto_recover_key_(char* digest, char* signature);

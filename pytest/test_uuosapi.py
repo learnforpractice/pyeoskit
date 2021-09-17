@@ -37,7 +37,7 @@ class TestUUOSApi(object):
         cls.testnet.run()
         cls.info = uuosapi.get_info()
         # logger.info(cls.info)
-
+        cls.chain_id = cls.info['chain_id']
         # wallet.import_key('mywallet', '5K463ynhZoCDDa4RDcr63cUwWLTnKqmdcoTKTHBjqoKfv4u5V7p')
         # wallet.import_key('mywallet', '5Jbb4wuwz8MAzTB9FJNmrVYGXo4ABb7wqPVoWGcZ6x8V2FwNeDo')
 
@@ -378,3 +378,18 @@ def apply(a, b, c):
         logger.info(tx)
         tx = Transaction.unpack(tx['packed_trx'])
         logger.info(tx)
+
+    def test_wallet_sign(self):
+        from uuoskit.transaction import Transaction
+        from uuoskit import wallet
+        tx = self.gen_tx()
+        pubs = ['EOS6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5GDW5CV']
+        tx = wallet.sign_transaction(tx, pubs, self.chain_id)
+        logger.info(tx)
+
+    def test_get_public_key(self):
+        priv = '5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3'
+        pub_eos = uuosapi.get_public_key(priv)
+        pub_common = uuosapi.get_public_key(priv, False)
+        assert pub_eos == 'EOS6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5GDW5CV'
+        assert pub_common == 'PUB_K1_6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5BoDq63'
