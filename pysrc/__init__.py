@@ -5,7 +5,7 @@ from .rpc_interface import RPCInterface, WalletClient
 from .chainapi_sync import ChainApi
 from uuoskit import _uuoskit
 
-__version__='0.8.5'
+__version__='1.0.0'
 
 _uuoskit.init()
 

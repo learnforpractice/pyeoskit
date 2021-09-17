@@ -14,7 +14,7 @@ Python Toolkit for EOSIO
 
 # Latest Release
 
-[uuoskit v0.8.3](https://github.com/uuosio/uuoskit/releases)
+[uuoskit v1.0.0](https://github.com/uuosio/uuoskit/releases)
 
 # [Docs](https://uuosio.github.io/UUOSKit)
 
