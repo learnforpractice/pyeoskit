@@ -49,7 +49,9 @@ class ChainNative(object):
 
     @staticmethod
     def s2n(s):
-        return _uuoskit.s2n(s)
+        n = _uuoskit.s2n(s)
+        if not _uuoskit.n2s(n) == s:
+            return 0
 
     @staticmethod
     def s2b(s):
