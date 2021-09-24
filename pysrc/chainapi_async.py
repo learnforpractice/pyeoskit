@@ -82,13 +82,13 @@ class ChainApiAsync(RPCInterface, ChainNative):
         pub_keys = wallet.get_public_keys()
         return await self.get_required_keys(json.dumps(fake_tx), pub_keys)
 
-    async def push_action(self, contract, action, args, permissions=None, expiration=0, compress=0):
+    async def push_action(self, contract, action, args, permissions=None, compress=0, expiration=0):
         if not permissions:
             permissions = {contract:'active'}
         a = [contract, action, args, permissions]
         return await self.push_actions([a], expiration=expiration, compress=compress)
 
-    async def push_actions(self, actions, expiration=0, compress=0):
+    async def push_actions(self, actions, compress=0, expiration=0):
         chain_info = await self.get_info()
         ref_block = chain_info['head_block_id']
         chain_id = chain_info['chain_id']
@@ -267,10 +267,10 @@ class ChainApiAsync(RPCInterface, ChainNative):
         abi = await super().get_abi(account)
         if abi and 'abi' in abi:
             abi = json.dumps(abi['abi'])
-            self.db.set_abi(account, abi)
+            self.set_abi(account, abi)
         else:
             abi = ''
-            self.db.set_abi(account, abi)
+            self.set_abi(account, abi)
         return abi
 
 

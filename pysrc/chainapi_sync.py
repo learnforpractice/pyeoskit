@@ -79,13 +79,13 @@ class ChainApi(RPCInterface, ChainNative):
         pub_keys = wallet.get_public_keys()
         return self.get_required_keys(json.dumps(fake_tx), pub_keys)
 
-    def push_action(self, contract, action, args, permissions=None, expiration=0, compress=0):
+    def push_action(self, contract, action, args, permissions=None, compress=False, expiration=0):
         if not permissions:
             permissions = {contract:'active'}
         a = [contract, action, args, permissions]
         return self.push_actions([a], expiration, compress)
 
-    def push_actions(self, actions, expiration=0, compress=0):
+    def push_actions(self, actions, compress=0, expiration=0):
         chain_info = self.get_info()
         ref_block = chain_info['head_block_id']
         chain_id = chain_info['chain_id']
@@ -145,6 +145,7 @@ class ChainApi(RPCInterface, ChainNative):
 
     def get_account(self, account):
         if not self.s2n(account):
+            return None
             raise ChainException('Invalid account name')
         try:
             return super().get_account(account)
@@ -263,13 +264,13 @@ class ChainApi(RPCInterface, ChainNative):
         abi = super().get_abi(account)
         if abi and 'abi' in abi:
             abi = json.dumps(abi['abi'])
-            self.db.set_abi(account, abi)
+            self.set_abi(account, abi)
         else:
             abi = ''
-            self.db.set_abi(account, abi)
+            self.set_abi(account, abi)
         return abi
 
-    def deploy_contract(self, account, code, abi, vm_type=0, vm_version=0, sign=True, compress=0):
+    def deploy_contract(self, account, code, abi, vm_type=0, vm_version=0, sign=True, compress=False):
         if vm_type == 0:
             return self.deploy_wasm_contract(account, code, abi, vm_type, vm_version, sign, compress)
         elif vm_type == 1:
