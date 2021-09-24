@@ -68,9 +68,11 @@ class Transaction(object):
         return self.marshal()
 
     def free(self):
-        if not self.idx == -1:
-            _uuoskit.transaction_free(self.idx)
-            self.idx = -1
+        if self.idx == -1:
+            return
+        ret = _uuoskit.transaction_free(self.idx)
+        ret = check_result(ret)
+        self.idx = -1
 
     def __delete__(self):
         self.free()

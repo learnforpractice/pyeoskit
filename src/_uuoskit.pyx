@@ -29,7 +29,7 @@ cdef extern from "libuuoskit.h" nogil:
     char* transaction_from_json_(char* tx, char* chainId)
     char* transaction_set_chain_id_(int64_t _index, char* chainId)
 
-    void transaction_free_(int64_t _index);
+    char* transaction_free_(int64_t _index);
     char* transaction_add_action_(int64_t idx, char* account, char* name, char* data, char* permissions);
     char* transaction_sign_(int64_t idx, char* pub);
     char* transaction_sign_by_private_key_(int64_t idx, char* priv)
@@ -86,7 +86,9 @@ def transaction_from_json(char* tx, char* chainId):
     return convert(ret)
 
 def transaction_free(int64_t _index):
-    transaction_free_(_index)
+    cdef char *ret
+    ret = transaction_free_(_index)
+    return convert(ret)
 
 #    char* transaction_set_chain_id_(int64_t _index, char* chainId)
 def transaction_set_chain_id(int64_t idx, char* chainId):
