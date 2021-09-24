@@ -12,11 +12,9 @@ import subprocess
 
 from uuoskit import config
 from uuoskit import wallet
-from uuoskit import util
+from uuoskit import utils
 from uuoskit import uuosapi
 from uuoskit import log
-
-from uuosio import uuos
 
 logger = log.get_logger(__name__)
 
@@ -48,10 +46,7 @@ class Testnet(object):
             'genesisbp115'
         )
 
-        cur_dir = os.path.dirname(__file__)
-
-        cur_dir = os.path.dirname(uuos.__file__)
-        self.cur_dir = os.path.join(cur_dir, 'tests')
+        self.cur_dir = os.path.dirname(__file__)
 
         if not os.path.exists(self.tmp_dir):
             os.mkdir(self.tmp_dir)
@@ -102,7 +97,7 @@ class Testnet(object):
             configs = f'--data-dir ./{self.tmp_dir}/dd --config-dir ./{self.tmp_dir}/cd -l {self.log_config} {self.extra}'
         else:
             configs = f'--data-dir ./{self.tmp_dir}/dd --config-dir ./{self.tmp_dir}/cd {self.extra}'
-        args = f'{uuos} -m uuosio.main --verbose-http-errors  --http-max-response-time-ms 100 --p2p-listen-endpoint {self.host}:9100 {configs} -p eosio --plugin eosio::producer_plugin --plugin eosio::chain_api_plugin --plugin eosio::producer_api_plugin --plugin eosio::history_api_plugin -e --resource-monitor-space-threshold 99 --http-server-address {self.host}:9000 --block-interval-ms 1000 --contracts-console --access-control-allow-origin="*"' # --backing-store rocksdb'
+        args = f'nodeos --verbose-http-errors  --http-max-response-time-ms 100 --p2p-listen-endpoint {self.host}:9100 {configs} -p eosio --plugin eosio::producer_plugin --plugin eosio::chain_api_plugin --plugin eosio::producer_api_plugin --plugin eosio::history_api_plugin -e --resource-monitor-space-threshold 99 --http-server-address {self.host}:9000 --contracts-console --access-control-allow-origin="*"' # --backing-store rocksdb'
         logger.info(args)
         args = shlex.split(args)
         # if self.show_log:
@@ -176,9 +171,9 @@ class Testnet(object):
 
             dirs = f'--data-dir {self.tmp_dir}/dd-{bp} --config-dir {self.tmp_dir}/cd-{bp} -p {bp}'
             if http_port == 9001:
-                args = f'{uuos} -m uuosio.main -e {dirs} {signature_provider} {http_server_address} {p2p_listen_endpoint} {p2p_peer_address} --verbose-http-errors  --http-max-response-time-ms 100 --plugin eosio::producer_plugin --plugin eosio::chain_api_plugin --plugin eosio::producer_api_plugin --plugin eosio::history_api_plugin --resource-monitor-space-threshold 99 --block-interval-ms 1000 --contracts-console --access-control-allow-origin="*"' # --backing-store rocksdb'
+                args = f'nodeos -e {dirs} {signature_provider} {http_server_address} {p2p_listen_endpoint} {p2p_peer_address} --verbose-http-errors  --http-max-response-time-ms 100 --plugin eosio::producer_plugin --plugin eosio::chain_api_plugin --plugin eosio::producer_api_plugin --plugin eosio::history_api_plugin --resource-monitor-space-threshold 99 --contracts-console --access-control-allow-origin="*"' # --backing-store rocksdb'
             else:
-                args = f'{uuos} -m uuosio.main {dirs} {signature_provider} {http_server_address} {p2p_listen_endpoint} {p2p_peer_address} --verbose-http-errors  --http-max-response-time-ms 100 --plugin eosio::producer_plugin --plugin eosio::chain_api_plugin --plugin eosio::producer_api_plugin --plugin eosio::history_api_plugin --resource-monitor-space-threshold 99 --block-interval-ms 1000 --contracts-console --access-control-allow-origin="*"' # --backing-store rocksdb'
+                args = f'nodeos {dirs} {signature_provider} {http_server_address} {p2p_listen_endpoint} {p2p_peer_address} --verbose-http-errors  --http-max-response-time-ms 100 --plugin eosio::producer_plugin --plugin eosio::chain_api_plugin --plugin eosio::producer_api_plugin --plugin eosio::history_api_plugin --resource-monitor-space-threshold 99 --contracts-console --access-control-allow-origin="*"' # --backing-store rocksdb'
 
             logger.info(args)
             args = shlex.split(args)
@@ -228,10 +223,6 @@ class Testnet(object):
         logger.info('++++deploy_contract %s %s', account_name, contract_name)
         if not contracts_path:
             contracts_path = os.path.dirname(__file__)
-
-            contracts_path = os.path.dirname(uuos.__file__)
-            contracts_path = os.path.join(contracts_path, 'tests')
-
             # contracts_path = '../../../build/externals/eosio.contracts'
             # contracts_path = '.'
             contracts_path = os.path.join(contracts_path, f'contracts/{contract_name}')
@@ -267,11 +258,12 @@ class Testnet(object):
         abi = open(abi_path, 'rb').read()
 
         try:
-            r = uuosapi.deploy_contract('hello', code, abi, vm_type=0, compress=True)
-            r = uuosapi.deploy_contract('eosio.mpy', code, abi, vm_type=0, compress=True)
+            pass
+            #r = uuosapi.deploy_contract('hello', code, abi, vm_type=0, compress=True)
+            #r = uuosapi.deploy_contract('eosio.mpy', code, abi, vm_type=0, compress=True)
         except Exception as e:
             logger.exception(e)
-
+        return
         code = '''
 def apply(a, b, c):
     pass
@@ -322,10 +314,7 @@ def apply(a, b, c):
         newaccount['name'] = account
         act = ['eosio', 'newaccount', newaccount, {'eosio':'active'}]
         actions.append(act)
-        try:
-            r = uuosapi.push_actions(actions)
-        except Exception as e:
-            logger.info(e)
+        r = uuosapi.push_actions(actions)
 
     def init_testnet(self):
         self.init_accounts()
@@ -412,15 +401,8 @@ def apply(a, b, c):
         contracts_path = os.path.join(contracts_path, 'contracts')
 
         if not uuosapi.get_raw_code_and_abi('eosio')['wasm']:
-            for i in range(3):
-                try:
-                    self.deploy_contract('eosio', 'eosio.bios')
-                    break
-                except Exception as e:
-                    logger.info(e)
-        else:
-            raise Exception('deploy eosio.bios failed!')
-
+            self.deploy_contract('eosio', 'eosio.bios')
+        time.sleep(3.0)
         feature_digests = [
             '1a99a59d87e06e09ec5b028a9cbb7749b4a5ad8819004365d02dc4379a8b7241', #'ONLY_LINK_TO_EXISTING_PERMISSION' 
             '2652f5f96006294109b3dd0bbde63693f55324af452b799ee137a81a905eed25', #'FORWARD_SETCODE' 
@@ -468,26 +450,27 @@ def apply(a, b, c):
         except Exception as e:
             logger.exception(e)
 
+        #wait for protocol activation
+        time.sleep(3.0)
         for i in range(3):
             try:
                 if self.deploy_contract('eosio', 'eosio.system'):
                     logger.info('deploy eosio.system done!')
                     break
             except Exception as e:
-                pass
-                # logger.info(e)
+                logger.info(e)
         else:
             assert False, 'deploy eosio.system failed!'
 
         if True:
             args = dict(version = 0,
-                        core = f'4,{config.main_token}',
-                        min_bp_staking_amount = 0,
-                        vote_producer_limit = 100,
-                        mini_voting_requirement = 21
+                        core = '4,EOS',
+                        # min_bp_staking_amount = 0,
+                        # vote_producer_limit = 100,
+                        # mini_voting_requirement = 21
             )
 
-            args['min_bp_staking_amount'] = 10000000000
+            # args['min_bp_staking_amount'] = 10000000000
             try:
                 uuosapi.push_action('eosio', 'init', args, {'eosio':'active'})
             except Exception as e:
@@ -512,10 +495,10 @@ def apply(a, b, c):
 
         for account in  self.test_accounts:
             uuosapi.transfer('eosio', account, 10000.0)
-            util.buyrambytes('eosio', account, 5*1024*1024)
-            util.dbw(account, account, 1.0, 1000)
+            utils.buyrambytes('eosio', account, 5*1024*1024)
+            utils.dbw(account, account, 1.0, 1000)
 
-        util.dbw('hello', 'hello', 1.0, 5*1e8)
+        utils.dbw('hello', 'hello', 1.0, 5*1e8)
 
         if 0:
             try:
@@ -549,9 +532,9 @@ def apply(a, b, c):
 
         for account in self.test_accounts:
             # print('buy ram', account)
-            util.buyrambytes('hello', account, 10*1024*1024)
+            utils.buyrambytes('hello', account, 10*1024*1024)
             # print('buy cpu', account)
-            util.dbw('hello', account, 1.0, 1.0)
+            utils.dbw('hello', account, 1.0, 1.0)
 
         if 0:
             args = {
