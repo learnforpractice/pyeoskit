@@ -115,7 +115,7 @@ class Testnet(object):
 
         uuosapi.set_node(f'http://{self.host}:9000')
         while True:
-            time.sleep(1.0)
+            time.sleep(0.5)
             try:
                 info = uuosapi.get_info()
                 # logger.info(info)
@@ -402,7 +402,7 @@ def apply(a, b, c):
 
         if not uuosapi.get_raw_code_and_abi('eosio')['wasm']:
             self.deploy_contract('eosio', 'eosio.bios')
-        time.sleep(3.0)
+        time.sleep(1.0)
         feature_digests = [
             '1a99a59d87e06e09ec5b028a9cbb7749b4a5ad8819004365d02dc4379a8b7241', #'ONLY_LINK_TO_EXISTING_PERMISSION' 
             '2652f5f96006294109b3dd0bbde63693f55324af452b799ee137a81a905eed25', #'FORWARD_SETCODE' 
@@ -451,7 +451,7 @@ def apply(a, b, c):
             logger.exception(e)
 
         #wait for protocol activation
-        time.sleep(3.0)
+        time.sleep(1.0)
         for i in range(3):
             try:
                 if self.deploy_contract('eosio', 'eosio.system'):
