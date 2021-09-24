@@ -11,7 +11,18 @@ setup(
     packages=['uuoskit'],
     # The extra '/' was *only* added to check that scikit-build can handle it.
     package_dir={'uuoskit': 'pysrc'},
-    package_data={'uuoskit': ['data/*']},
+    package_data={'uuoskit': [
+        'data/*',
+        'contracts/eosio.bios/*',
+        'contracts/eosio.msig/*',
+        'contracts/eosio.system/*',
+        'contracts/eosio.token/*',
+        'contracts/eosio.wrap/*',
+        'contracts/micropython/*',
+        'test_template.py',
+        ]
+    },
+
     install_requires=[
         'urllib3>=1.21.1',
         'certifi',
