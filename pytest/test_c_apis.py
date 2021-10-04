@@ -158,3 +158,70 @@ class Test(object):
 
         pub2 = uuosapi.recover_key(h, sign)
         assert sign == sign2
+
+    def test_optional(self):
+        abi = '''
+    {
+        "version": "eosio::abi/1.1",
+        "structs": [
+            {
+                "name": "testext",
+                "base": "",
+                "fields": [
+                    {
+                        "name": "a",
+                        "type": "string"
+                    },
+                    {
+                        "name": "b",
+                        "type": "checksum256?"
+                    },
+                    {
+                        "name": "c",
+                        "type": "checksum256$"
+                    }
+                ]
+            }
+        ],
+        "types": [],
+        "actions": [
+            {
+                "name": "testext",
+                "type": "testext",
+                "ricardian_contract": ""
+            }
+        ],
+        "tables": [],
+        "ricardian_clauses": [],
+        "variants": [],
+        "abi_extensions": [],
+        "error_messages": []
+    }        
+'''
+        r = ABI.set_contract_abi("test", abi)
+        args = {
+            "a": "hello", 
+            "b": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "c": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+        r = ABI.pack_abi_type('test', 'testext', json.dumps(args))
+        assert r == '0568656c6c6f01aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+        r = ABI.unpack_abi_type('test', 'testext', r)
+        logger.info(r)
+        assert r == '{"a":"hello","b":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","c":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}'
+
+        args = {"a": "hello", "b": None, "c": 'aa'*32}
+        r = ABI.pack_abi_type('test', 'testext', json.dumps(args))
+        logger.info(r)
+        assert r == '0568656c6c6f00aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+        r = ABI.unpack_abi_type('test', 'testext', r)
+        logger.info(r)
+        assert r == '{"a":"hello","b":null,"c":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}'
+
+        args = {"a": "hello", "b": None}
+        r = ABI.pack_abi_type('test', 'testext', json.dumps(args))
+        logger.info(r)
+        assert r == '0568656c6c6f00'
+        r = ABI.unpack_abi_type('test', 'testext', r)
+        logger.info(r)
+        assert r == '{"a":"hello","b":null}'
