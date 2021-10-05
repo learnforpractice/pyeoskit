@@ -16,15 +16,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        python-version: [3.6, 3.7, 3.8, 3.9]
-        # os: ['windows-latest', 'ubuntu-latest', 'macos-10.15', 'macos-latest']
-        os: ['ubuntu-latest', 'macos-10.15', 'macos-latest']
-        exclude:
-          # Python 3.6 is not available on macOS 11
-          - os: macos-11
-            python-version: 3.6
-          - os: macos-latest
-            python-version: 3.6
+        python-version: [3.7, 3.8, 3.9]
+        os: ['windows-latest', 'ubuntu-latest', 'macos-10.15', 'macos-latest']
+        # os: ['ubuntu-latest', 'macos-10.15', 'macos-latest']
       fail-fast: false
 
     steps:
@@ -32,6 +26,10 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: '1.17'
+      - name: Setup cmake
+        uses: jwlawson/actions-setup-cmake@v1.9
+        with:
+          cmake-version: '3.16.x'
       - name: Checkout
         uses: actions/checkout@v2
         with:
@@ -43,8 +41,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install flake8 pytest scikit-build cython
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          python -m pip install flake8 pytest scikit-build cython
       # - name: Lint with flake8
       #   run: |
       #     # stop the build if there are Python syntax errors or undefined names
@@ -52,11 +49,16 @@ jobs:
       #     # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
       #     flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
       - name: Build uuoskit
+        if: ${{ matrix.os != 'windows-latest' }}
         run: |
           python setup.py sdist bdist_wheel
+      - name: get whl file
+        id: whlfile
+        run: |
+          echo "::set-output name=value::$(python scripts/get_whl_file.py)"
       - name: Install uuoskit
         run: |
-          python -m pip uninstall uuoskit -y;python -m pip install ./dist/uuoskit-*.whl
+          python -m pip uninstall uuoskit -y;python -m pip install ./dist/${{ steps.whlfile.outputs.value }}
       - name: Test
         working-directory: ./pytest
         run: |
@@ -66,4 +68,4 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
-            ./dist/*
+            ./dist/${{ steps.whlfile.outputs.value }}
