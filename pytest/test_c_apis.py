@@ -62,7 +62,7 @@ class Test(object):
         _uuoskit.transaction_add_action(idx, 'eosio.token', 'transfer', transfer, perms)
         r = _uuoskit.transaction_sign(idx, pub)
         logger.info(r)
-        r = _uuoskit.transaction_pack(idx)
+        r = _uuoskit.transaction_pack(idx, 0)
         logger.info(r)
         r = json.loads(r)
         logger.info(r)
