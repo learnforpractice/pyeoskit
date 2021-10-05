@@ -15,6 +15,10 @@ target_include_directories(_uuoskit PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/uuoskit
 )
 
+if (WIN32)
+    add_compile_definitions(MS_WIN64)
+endif()
+
 add_custom_command(OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/uuoskit/libuuoskit.a
     COMMAND go build -o libuuoskit.a -buildmode=c-archive
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/uuoskit/lib.go
