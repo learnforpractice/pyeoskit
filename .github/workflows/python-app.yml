@@ -17,8 +17,9 @@ jobs:
     strategy:
       matrix:
         python-version: [3.7, 3.8, 3.9]
-        os: ['windows-latest', 'ubuntu-latest', 'macos-latest']
+        # os: ['windows-latest', 'ubuntu-latest', 'macos-latest']
         # os: ['ubuntu-latest', 'macos-10.15', 'macos-latest']
+        os: ['ubuntu-latest']
       fail-fast: false
 
     steps:
@@ -41,7 +42,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install flake8 pytest scikit-build cython
+          python -m pip install flake8 pytest scikit-build cython auditwheel
       # - name: Lint with flake8
       #   run: |
       #     # stop the build if there are Python syntax errors or undefined names
@@ -54,7 +55,7 @@ jobs:
       - name: get whl file
         id: whlfile
         run: |
-          echo "::set-output name=value::$(python scripts/get_whl_file.py)"
+          echo "::set-output name=value::$(python scripts/get_whl_file.py dist linux_x86_64)"
       - name: Install uuoskit
         run: |
           python -m pip uninstall uuoskit -y;python -m pip install ./dist/${{ steps.whlfile.outputs.value }}
@@ -62,9 +63,23 @@ jobs:
         working-directory: ./pytest
         run: |
           pytest test_c_apis.py
+      - name: auditwheel repair
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        id: manylinuxwhlfile
+        working-directory: ./dist
+        run: |
+          python -m auditwheel repair --plat manylinux1_x86_64 ${{ steps.whlfile.outputs.value }}
+          echo "::set-output name=value::$(python ../scripts/get_whl_file.py ./wheelhouse manylinux)"
+          echo "+++manylinuxwhlfile: ${{ steps.manylinuxwhlfile.outputs.value }}"
       - name: Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
             ./dist/${{ steps.whlfile.outputs.value }}
+      - name: Release manylinux wheel
+        if: ${{ matrix.os == 'ubuntu-latest' }} && startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            ./dist/wheelhouse/${{ steps.manylinuxwhlfile.outputs.value }}
