@@ -4,7 +4,7 @@ import glob
 
 setup(
     name="uuoskit",
-    version="1.0.0",
+    version="1.0.1",
     description="Python Toolkit for EOSIO",
     author='The UUOSIO Team',
     license="MIT",
