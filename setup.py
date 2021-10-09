@@ -25,12 +25,12 @@ setup(
 
     install_requires=[
         'urllib3>=1.21.1',
-        'certifi',
-        'toolz',
-        'funcy',
-        'prettytable',
-        'requests_unixsocket',
-        'httpx'
+        'certifi>=2021.10.8',
+        'toolz>=0.11.1',
+        'funcy>=1.16',
+        'prettytable>=2.2.1',
+        'requests_unixsocket>=0.2.0',
+        'httpx>=0.19.0'
     ],
     include_package_data=True
 )

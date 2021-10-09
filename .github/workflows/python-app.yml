@@ -68,7 +68,7 @@ jobs:
         id: manylinuxwhlfile
         working-directory: ./dist
         run: |
-          python -m auditwheel repair --plat manylinux1_x86_64 ${{ steps.whlfile.outputs.value }}
+          python -m auditwheel repair --plat manylinux_2_17_x86_64 ${{ steps.whlfile.outputs.value }}
           echo "::set-output name=value::$(python ../scripts/get_whl_file.py ./wheelhouse manylinux)"
           echo "+++manylinuxwhlfile: ${{ steps.manylinuxwhlfile.outputs.value }}"
       - name: Release
