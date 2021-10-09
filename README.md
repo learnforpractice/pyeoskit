@@ -16,6 +16,12 @@ Python Toolkit for EOSIO
 
 [uuoskit v1.0.0](https://github.com/uuosio/uuoskit/releases)
 
+# Installation
+
+```bash
+pip install uuoskit
+```
+
 # [Docs](https://uuosio.github.io/UUOSKit)
 
 # Building from Source Code
