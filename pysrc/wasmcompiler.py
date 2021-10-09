@@ -175,31 +175,11 @@ class go_compiler(object):
             raise Exception('Not a go file')
 
     def compile_go_file(self, opt='O3', replace=""):
-        tinygo = shutil.which('tinygo')
+        tinygo = shutil.which('eosio-go')
         if not tinygo:
-            raise Exception('tinygo not found')
+            raise Exception('eosio-go not found')
         wasm_file = self.go_file[:-3] + '.wasm'
-
-        gencode_cmd = [
-            'tinygo',
-            'gencode'
-        ]
-
-        compile_cmd = [
-            'tinygo',
-            'build',
-            '-x',
-            '-gc=leaking',
-            '-o',
-            wasm_file,
-            '-target=eosio',
-            '-wasm-abi=generic',
-            '-scheduler=none',
-            '-tags=math_big_pure_go',
-            '-opt=z',
-            '.'
-        ]
-
+        compile_cmd = ['eosio-go','build','-o',wasm_file,'.']
         mod_init_cmd = [
             'go',
             'mod',
@@ -217,7 +197,6 @@ class go_compiler(object):
         cwd = os.getcwd()
         os.chdir(src_path)
         try:
-            ret = subprocess.check_output(gencode_cmd, stderr=subprocess.STDOUT)
             ret = subprocess.check_output(mod_init_cmd, stderr=subprocess.STDOUT)
             ret = subprocess.check_output(tidy_cmd, stderr=subprocess.STDOUT)
             if replace:
