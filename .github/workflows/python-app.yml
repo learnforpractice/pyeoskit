@@ -19,7 +19,7 @@ jobs:
         python-version: [3.7, 3.8, 3.9]
         # os: ['windows-latest', 'ubuntu-latest', 'macos-latest']
         # os: ['ubuntu-latest', 'macos-10.15', 'macos-latest']
-        os: ['ubuntu-latest', 'macos-10.15', 'macos-latest']
+        os: ['ubuntu-latest', 'macos-10.15', 'windows-latest']
       fail-fast: false
 
     steps:
@@ -55,7 +55,7 @@ jobs:
       - name: get whl file
         id: whlfile
         run: |
-          echo "::set-output name=value::$(python scripts/get_whl_file.py dist linux_x86_64)"
+          echo "::set-output name=value::$(python scripts/get_whl_file.py dist)"
       - name: Install uuoskit
         run: |
           python -m pip uninstall uuoskit -y;python -m pip install ./dist/${{ steps.whlfile.outputs.value }}
