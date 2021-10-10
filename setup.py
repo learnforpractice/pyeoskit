@@ -8,6 +8,7 @@ setup(
     description="Python Toolkit for EOSIO",
     author='The UUOSIO Team',
     license="MIT",
+    url="https://github.com/uuosio/uuoskit",
     packages=['uuoskit'],
     # The extra '/' was *only* added to check that scikit-build can handle it.
     package_dir={'uuoskit': 'pysrc'},
