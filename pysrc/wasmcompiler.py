@@ -37,7 +37,10 @@ class cpp_compiler(object):
         else:
             dl_sufix = 'so'
         eosio_cdt_path = find_eosio_cdt_path()
-        clang_7_args = [f'{eosio_cdt_path}/bin/clang-7',
+        clang = f'{eosio_cdt_path}/bin/clang-7'
+        if not os.path.exists(clang):
+            clang = f'{eosio_cdt_path}/bin/clang-9'
+        clang_args = [clang,
         '-o',
         f'{tmp_path}.obj',
         f'{tmp_path}.cpp',
@@ -55,8 +58,13 @@ class cpp_compiler(object):
         '-load',
         '-Xclang',
         f'{eosio_cdt_path}/bin/LLVMEosioApply.{dl_sufix}',
-        f'-fplugin={eosio_cdt_path}/bin/eosio_plugin.{dl_sufix}',
-        '-mllvm',
+        ]
+        eosio_plugin = f'{eosio_cdt_path}/bin/eosio_plugin.{dl_sufix}'
+        if os.path.exists(eosio_plugin):
+            clang_args.append(eosio_plugin)
+        # f'-fplugin={eosio_cdt_path}/bin/eosio_plugin.{dl_sufix}',
+
+        clang_args.extend(['-mllvm',
         '-use-cfl-aa-in-codegen=both',
         f'-I{eosio_cdt_path}/bin/../include/libcxx',
         f'-I{eosio_cdt_path}/bin/../include/libc',
@@ -69,9 +77,9 @@ class cpp_compiler(object):
         f'-I{eosio_cdt_path}/include/eosiolib/core',
         f'-{opt}',
         '--std=c++17',
-        ]
+        ])
         for include in self.includes:
-            clang_7_args.append(f"-I{include}")
+            clang_args.append(f"-I{include}")
 
         wasm_ld_args = [f'{eosio_cdt_path}/bin/wasm-ld',
         '--gc-sections',
@@ -102,10 +110,13 @@ class cpp_compiler(object):
         ]
 
         try:
-            ret = subprocess.check_output(clang_7_args, stderr=subprocess.STDOUT)
+            print(' '.join(clang_args))
+            ret = subprocess.check_output(clang_args, stderr=subprocess.STDOUT)
             # logger.info(ret.decode('utf8'))
+            print(' '.join(wasm_ld_args))
             ret = subprocess.check_output(wasm_ld_args, stderr=subprocess.STDOUT)
             # logger.info(ret.decode('utf8'))
+            print(' '.join(eosio_pp))
             ret = subprocess.check_output(eosio_pp, stderr=subprocess.STDOUT)
             # logger.info(ret.decode('utf8'))
         except subprocess.CalledProcessError as e:
