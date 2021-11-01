@@ -112,7 +112,7 @@ class ChainNative(object):
 
     @staticmethod
     def clear_abi_cache(account):
-        return ABI.set_abi(account, "")
+        return ABI.set_contract_abi(account, "")
 
     @staticmethod
     def set_abi(account, abi):
