@@ -21,6 +21,9 @@ cdef extern from "<Python.h>":
 
 cdef extern from "libuuoskit.h" nogil:
     void init_();
+    void set_debug_flag_(bool debug)
+    bool get_debug_flag_()
+
     void say_hello_(char* name)
     char* wallet_import_(char* name, char* priv)
     char* wallet_get_public_keys_()
@@ -228,3 +231,12 @@ def crypto_create_key():
     cdef char *ret
     ret = crypto_create_key_()
     return convert(ret)
+
+#void set_debug_flag_(bool debug)
+def set_debug_flag(bool debug):
+    set_debug_flag_(debug)
+
+#bool get_debug_flag_()
+def get_debug_flag():
+    return get_debug_flag_()
+

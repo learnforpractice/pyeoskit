@@ -69,7 +69,14 @@ class Test(object):
         r = json.loads(r['data'])
         logger.info(r)
 
+    def test_debug(self):
+        from uuoskit import _uuoskit
+        _uuoskit.set_debug_flag(False)
+        assert _uuoskit.get_debug_flag() == False
+
     def test_bad_abi(self):
+        from uuoskit import _uuoskit
+        #_uuoskit.set_debug_flag(False)
         abi = '{\n    "version": "eosio::abi/1.1",\n '
         r = ABI.set_contract_abi("test", abi)
         logger.info(r)

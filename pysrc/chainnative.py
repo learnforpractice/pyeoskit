@@ -234,3 +234,11 @@ class ChainNative(object):
             return wasmcompiler.compile_go_src(contract_name, code)
         else:
             assert 0, f'unsupported file type: {src_type}'
+
+    @staticmethod
+    def set_debug_flag(debug):
+        _uuoskit.set_debug_flag_(debug)
+
+    @staticmethod
+    def get_debug_flag() -> bool:
+        return _uuoskit.get_debug_flag_()
