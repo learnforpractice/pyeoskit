@@ -77,9 +77,10 @@ class Test(object):
     def test_bad_abi(self):
         from uuoskit import _uuoskit
         #_uuoskit.set_debug_flag(False)
-        abi = '{\n    "version": "eosio::abi/1.1",\n '
-        r = ABI.set_contract_abi("test", abi)
-        logger.info(r)
+        with pytest.raises(Exception) as e_info:
+            abi = '{\n    "version": "eosio::abi/1.1",\n '
+            r = ABI.set_contract_abi("test", abi)
+            logger.info(r)
 
     def test_abi(self):
         from uuoskit import _uuoskit
