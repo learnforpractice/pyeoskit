@@ -190,6 +190,7 @@ class go_compiler(object):
         if not tinygo:
             raise Exception('eosio-go not found')
         wasm_file = self.go_file[:-3] + '.wasm'
+        gencode_cmd = ['eosio-go','gencode']
         compile_cmd = ['eosio-go','build','-o',wasm_file,'.']
         mod_init_cmd = [
             'go',
@@ -208,6 +209,7 @@ class go_compiler(object):
         cwd = os.getcwd()
         os.chdir(src_path)
         try:
+            ret = subprocess.check_output(gencode_cmd, stderr=subprocess.STDOUT)
             ret = subprocess.check_output(mod_init_cmd, stderr=subprocess.STDOUT)
             ret = subprocess.check_output(tidy_cmd, stderr=subprocess.STDOUT)
             if replace:
