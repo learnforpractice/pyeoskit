@@ -82,16 +82,7 @@ class ChainApiAsync(RPCInterface, ChainNative):
         pub_keys = wallet.get_public_keys()
         return await self.get_required_keys(json.dumps(fake_tx), pub_keys)
 
-    async def push_action(self, contract, action, args, permissions=None, compress=0, expiration=0):
-        if not permissions:
-            permissions = {contract:'active'}
-        a = [contract, action, args, permissions]
-        return await self.push_actions([a], expiration=expiration, compress=compress)
-
-    async def push_actions(self, actions, compress=0, expiration=0):
-        chain_info = await self.get_info()
-        ref_block = chain_info['head_block_id']
-        chain_id = chain_info['chain_id']
+    async def generate_packed_transaction(self, actions, expiration, ref_block, chain_id, compress=0):
         fake_actions = []
         for a in actions:
             fake_actions.append([a[0], a[1], '', a[3]])
@@ -119,24 +110,34 @@ class ChainApiAsync(RPCInterface, ChainNative):
         for key in keys:
             tx.sign(key)
         try:
-            r = tx.pack(compress)
-            return await super().push_transaction(r)
+            return tx.pack(compress)
         finally:
             tx.free()
 
-    async def push_transactions(self, aaa, expiration=60):
+    async def push_action(self, contract, action, args, permissions=None, compress=0, expiration=0):
+        if not permissions:
+            permissions = {contract:'active'}
+        a = [contract, action, args, permissions]
+        return await self.push_actions([a], expiration=expiration, compress=compress)
+
+    async def push_actions(self, actions, expiration=0, compress=0):
         chain_info = await self.get_info()
-        reference_block_id = chain_info['last_irreversible_block_id']
+        ref_block = chain_info['head_block_id']
         chain_id = chain_info['chain_id']
 
-        trxs = []
+        tx = self.generate_packed_transaction(actions, expiration, ref_block, chain_id, compress)
+        return super().push_transaction(tx)
+
+    async def push_transactions(self, aaa, expiration=60, compress=0):
+        chain_info = await self.get_info()
+        ref_block = chain_info['last_irreversible_block_id']
+        chain_id = chain_info['chain_id']
+
+        txs = []
         for aa in aaa:
-            trx = self.generate_transaction(aa, expiration, reference_block_id)
-            required_keys = await self.get_required_keys(trx, wallet.get_public_keys())
-            trx = wallet.sign_transaction(trx, required_keys, chain_id)
-            trx = self.pack_transaction(trx, 0)
-            trxs.append(trx)
-        return await super().push_transactions(trxs)
+            tx = await self.generate_packed_transaction(aa, expiration, ref_block, chain_id, compress)
+            txs.append(tx)
+        return await super().push_transactions(txs)
 
     def strip_prefix(self, pub_key):
         if pub_key.startswith('EOS'):

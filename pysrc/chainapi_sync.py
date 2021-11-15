@@ -117,7 +117,7 @@ class ChainApi(RPCInterface, ChainNative):
         a = [contract, action, args, permissions]
         return self.push_actions([a], expiration, compress)
 
-    def push_actions(self, actions, compress=0, expiration=0):
+    def push_actions(self, actions, expiration=0, compress=0):
         chain_info = self.get_info()
         ref_block = chain_info['head_block_id']
         chain_id = chain_info['chain_id']
@@ -132,7 +132,6 @@ class ChainApi(RPCInterface, ChainNative):
         for aa in aaa:
             tx = self.generate_packed_transaction(aa, expiration, ref_block, chain_id, compress)
             txs.append(tx)
-        logger.info(txs)
         return super().push_transactions(txs)
 
     def strip_prefix(self, pub_key):

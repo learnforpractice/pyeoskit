@@ -105,5 +105,12 @@ class TestUUOSApi(object):
         logger.info(trx)
 
     @pytest.mark.asyncio
-    async def test_push_action(self):
-        r = await self.uuosapi.push_action('helloworld11', 'sayhello', b'hello')
+    async def test_tx(self):
+        test_account = 'helloworld11'
+        action = [test_account, 'sayhello', b'hello', {test_account: 'active'}]
+        r = await self.uuosapi.push_action(*action)
+        time.sleep(0.5)
+        r = await self.uuosapi.push_actions([action])
+        time.sleep(0.5)
+        r = await self.uuosapi.push_transactions([[action]])
+        time.sleep(0.5)
