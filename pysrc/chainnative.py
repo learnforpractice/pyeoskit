@@ -88,7 +88,7 @@ class ChainNative(object):
         self.check_abi(account)
 
         binargs = ABI.pack_action_args(account, action, args)
-        return binargs
+        return bytes.fromhex(binargs)
 
     def unpack_args(self, account, action, binargs, json=False):
         if isinstance(binargs, bytes):
