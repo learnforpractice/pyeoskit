@@ -333,6 +333,36 @@ def apply(a, b, c):
         #test for comporessed transaction
         uuosapi.push_action('eosio.token', 'transfer', args, {'helloworld12': 'active'}, compress=True)
 
+    def test_push_transactions(self):
+        test_account1 = 'helloworld11'
+        aa = []
+        args = {'from':test_account1, 'to':'eosio', 'quantity':f'0.1000 {config.main_token}', 'memo':'hello,world'}
+        a = ['eosio.token', 'transfer', args, {test_account1:'active'}]
+        aa.append(a)
+
+        args = {'from':test_account1, 'to':'eosio', 'quantity':f'0.2000 {config.main_token}', 'memo':'hello,world'}
+        a = ['eosio.token', 'transfer', args, {test_account1:'active'}]
+        aa.append(a)
+
+
+        bb = []
+        args = {'from':test_account1, 'to':'eosio', 'quantity':f'0.1000 {config.main_token}', 'memo':'hello,world'}
+        a = ['eosio.token', 'transfer', args, {test_account1:'active'}]
+        bb.append(a)
+
+        args = {'from':test_account1, 'to':'eosio', 'quantity':f'0.2000 {config.main_token}', 'memo':'hello,world'}
+        a = ['eosio.token', 'transfer', args, {test_account1:'active'}]
+        bb.append(a)
+
+        uuosapi.push_transactions([aa, bb])
+
+    def test_pack_tx(self):
+        tx = {"expiration":"1980-01-01T00:01:00","ref_block_num":8,"ref_block_prefix":584400311,"max_net_usage_words":0,"max_cpu_usage_ms":0,"delay_sec":0,"context_free_actions":[],"actions":[{"account":"eosio.token","name":"transfer","authorization":[{"actor":"helloworld11","permission":"active"}],"data":"10428a97721aa36a0000000000ea3055e80300000000000004454f53000000000b68656c6c6f2c776f726c64"},{"account":"eosio.token","name":"transfer","authorization":[{"actor":"helloworld11","permission":"active"}],"data":"10428a97721aa36a0000000000ea3055d00700000000000004454f53000000000b68656c6c6f2c776f726c64"}],"transaction_extensions":[]}
+        tx = json.dumps(tx)
+        from uuoskit import transaction
+        t = transaction.Transaction()
+        t.from_json(tx)
+
     def test_crypto(self):
         key_pair = uuosapi.create_key()
         logger.info(key_pair)
