@@ -38,8 +38,7 @@ class ChainApi(RPCInterface, ChainNative):
     def get_chain_id(self):
         return self.get_info()['chain_id']
 
-    def push_transaction(self, trx: Union[str, dict], compress=0):
-        trx = self.pack_transaction(trx, compress)
+    def push_transaction(self, trx: Union[str, dict]):
         return super().push_transaction(trx)
 
     def get_required_keys(self, trx, public_keys):

@@ -42,7 +42,6 @@ class ChainApiAsync(RPCInterface, ChainNative):
         return self.get_info()['chain_id']
 
     def push_transaction(self, trx: Union[str, dict], compress=0):
-        trx = self.pack_transaction(trx, compress)
         return super().push_transaction(trx)
 
     async def get_required_keys(self, trx, public_keys):

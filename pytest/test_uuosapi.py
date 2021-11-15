@@ -381,6 +381,17 @@ def apply(a, b, c):
         tx = uuosapi.generate_transaction([action], 60, reference_block_id, chain_id)
         return tx
 
+    def test_push_tx(self):
+        tx = self.gen_tx()
+        public_keys = ['EOS7sPDxfw5yx5SZgQcVb57zS1XeSWLNpQKhaGjjy2qe61BrAQ49o',]
+        info = uuosapi.get_info()
+        # account_info = uuosapi.get_account('helloworld11')
+        # logger.info(account_info)
+        signed_tx = wallet.sign_transaction(tx, public_keys, info['chain_id'])
+        logger.info(signed_tx)
+        r = uuosapi.push_transaction(signed_tx)
+        logger.info('+++++++++elapsed:%s', r['processed']['elapsed'])
+
     def test_gen_tx(self):
         tx = self.gen_tx()
         logger.info(tx)

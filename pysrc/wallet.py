@@ -61,7 +61,9 @@ def sign_transaction(trx: Union[str, dict], public_keys: List[str], chain_id: st
         t.sign(pub)
     return t.pack()
 
-def sign_digest(digest: str, public_key: str):
+def sign_digest(digest: Union[bytes, str], public_key: str):
+    if isinstance(digest, bytes):
+        digest = digest.hex()
     ret = _uuoskit.wallet_sign_digest(digest, public_key)
     return check_result(ret)
 

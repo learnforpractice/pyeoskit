@@ -111,8 +111,13 @@ class Test(object):
     def test_sign_digest(self):
         pub = uuosapi.get_public_key('5K463ynhZoCDDa4RDcr63cUwWLTnKqmdcoTKTHBjqoKfv4u5V7p')
         digest = hashlib.sha256(b'hello,world').digest()
-        signature = wallet.sign_digest(digest, pub)
-        logger.info(signature)
+        signature1 = wallet.sign_digest(digest, pub)
+        logger.info(signature1)
+
+        digest = hashlib.sha256(b'hello,world').hexdigest()
+        signature2 = wallet.sign_digest(digest, pub)
+        logger.info(signature2)
+        assert signature1 == signature2
 
     def test_import_key(self):
         wallet.unlock('mywallet', psw)
