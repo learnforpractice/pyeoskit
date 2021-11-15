@@ -87,6 +87,8 @@ class ChainApi(RPCInterface, ChainNative):
 
         if not expiration:
             expiration = int(time.time()) + 60
+        else:
+            expiration = int(time.time()) + expiration
 
         tx = Transaction(expiration, ref_block, chain_id)
         for a in actions:

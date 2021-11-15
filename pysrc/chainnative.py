@@ -1,5 +1,5 @@
+import time
 import json
-import json as json_
 import httpx
 
 from . import _uuoskit
@@ -131,6 +131,11 @@ class ChainNative(object):
         return ABI.unpack_abi(packed_abi)
 
     def gen_transaction(self, actions, expiration, reference_block_id, chain_id):
+        if not expiration:
+            expiration = int(time.time()) + 60
+        else:
+            expiration = int(time.time()) + expiration
+
         tx = Transaction(expiration, reference_block_id, chain_id)
         for a in actions:
             contract, action_name, args, permissions = a
