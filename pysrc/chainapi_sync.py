@@ -128,7 +128,7 @@ class ChainApi(RPCInterface, ChainNative):
 
         trxs = []
         for aa in aaa:
-            trx = self.generate_transaction(aa, expiration, reference_block_id)
+            trx = self.generate_transaction(aa, expiration, reference_block_id, chain_id)
             required_keys = self.get_required_keys(trx, wallet.get_public_keys())
             trx = wallet.sign_transaction(trx, required_keys, chain_id)
             trx = self.pack_transaction(trx, 0)
