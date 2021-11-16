@@ -7,7 +7,15 @@ Python Toolkit for EOS
 # Installation
 
 ```bash
-pip install pyeoskit
+python3 -m pip install --upgrade pip
+python3 -m pip install pyeoskit
+```
+
+On Windows platform:
+
+```bash
+python -m pip install --upgrade pip
+python -m pip install pyeoskit
 ```
 
 # [Docs](https://learnforpractice.github.io/pyeoskit)
