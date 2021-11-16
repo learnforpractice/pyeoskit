@@ -1,5 +1,5 @@
 # Chainapi
 
-> Auto-generated documentation for [pysrc.chainapi](https://github.com/uuosio/UUOSKit/blob/master/pysrc/chainapi.py) module.
+> Auto-generated documentation for [pysrc.chainapi](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi.py) module.
 
-- [Uuoskit](../README.md#uuoskit-index) / [Modules](../MODULES.md#uuoskit-modules) / [Pysrc](index.md#pysrc) / Chainapi
+- [Pyeoskit](../README.md#pyeoskit-index) / [Modules](../MODULES.md#pyeoskit-modules) / [Pysrc](index.md#pysrc) / Chainapi

@@ -1,5 +1,5 @@
 # Defaultabi
 
-> Auto-generated documentation for [pysrc.defaultabi](https://github.com/uuosio/UUOSKit/blob/master/pysrc/defaultabi.py) module.
+> Auto-generated documentation for [pysrc.defaultabi](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/defaultabi.py) module.
 
-- [Uuoskit](../README.md#uuoskit-index) / [Modules](../MODULES.md#uuoskit-modules) / [Pysrc](index.md#pysrc) / Defaultabi
+- [Pyeoskit](../README.md#pyeoskit-index) / [Modules](../MODULES.md#pyeoskit-modules) / [Pysrc](index.md#pysrc) / Defaultabi

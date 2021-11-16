@@ -1,46 +1,42 @@
 # ChainNative
 
-> Auto-generated documentation for [pysrc.chainnative](https://github.com/uuosio/UUOSKit/blob/master/pysrc/chainnative.py) module.
+> Auto-generated documentation for [pysrc.chainnative](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainnative.py) module.
 
-- [Uuoskit](../README.md#uuoskit-index) / [Modules](../MODULES.md#uuoskit-modules) / [Pysrc](index.md#pysrc) / ChainNative
+- [Pyeoskit](../README.md#pyeoskit-index) / [Modules](../MODULES.md#pyeoskit-modules) / [Pysrc](index.md#pysrc) / ChainNative
     - [ChainNative](#chainnative)
         - [ChainNative.b2s](#chainnativeb2s)
+        - [ChainNative().check_abi](#chainnativecheck_abi)
         - [ChainNative.clear_abi_cache](#chainnativeclear_abi_cache)
         - [ChainNative().compile](#chainnativecompile)
         - [ChainNative.create_key](#chainnativecreate_key)
-        - [ChainNative.from_base58](#chainnativefrom_base58)
-        - [ChainNative.gen_transaction](#chainnativegen_transaction)
-        - [ChainNative.get_last_error](#chainnativeget_last_error)
+        - [ChainNative().gen_transaction](#chainnativegen_transaction)
+        - [ChainNative().generate_transaction](#chainnativegenerate_transaction)
+        - [ChainNative().get_abi_sync](#chainnativeget_abi_sync)
+        - [ChainNative.get_debug_flag](#chainnativeget_debug_flag)
         - [ChainNative.get_public_key](#chainnativeget_public_key)
-        - [ChainNative.get_public_key_prefix](#chainnativeget_public_key_prefix)
         - [ChainNative.mp_compile](#chainnativemp_compile)
         - [ChainNative().mp_make_frozen](#chainnativemp_make_frozen)
         - [ChainNative.n2s](#chainnativen2s)
         - [ChainNative.pack_abi](#chainnativepack_abi)
-        - [ChainNative.pack_abi_type](#chainnativepack_abi_type)
-        - [ChainNative.pack_args](#chainnativepack_args)
-        - [ChainNative.pack_cpp_object](#chainnativepack_cpp_object)
+        - [ChainNative().pack_abi_type](#chainnativepack_abi_type)
+        - [ChainNative().pack_args](#chainnativepack_args)
         - [ChainNative.pack_transaction](#chainnativepack_transaction)
         - [ChainNative.recover_key](#chainnativerecover_key)
         - [ChainNative.s2b](#chainnatives2b)
         - [ChainNative.s2n](#chainnatives2n)
         - [ChainNative.set_abi](#chainnativeset_abi)
-        - [ChainNative.set_public_key_prefix](#chainnativeset_public_key_prefix)
+        - [ChainNative.set_debug_flag](#chainnativeset_debug_flag)
         - [ChainNative.sign_digest](#chainnativesign_digest)
         - [ChainNative.sign_transaction](#chainnativesign_transaction)
         - [ChainNative.string_to_symbol](#chainnativestring_to_symbol)
-        - [ChainNative.to_base58](#chainnativeto_base58)
         - [ChainNative.unpack_abi](#chainnativeunpack_abi)
-        - [ChainNative.unpack_abi_type](#chainnativeunpack_abi_type)
-        - [ChainNative.unpack_args](#chainnativeunpack_args)
-        - [ChainNative.unpack_cpp_object](#chainnativeunpack_cpp_object)
+        - [ChainNative().unpack_abi_type](#chainnativeunpack_abi_type)
+        - [ChainNative().unpack_args](#chainnativeunpack_args)
         - [ChainNative.unpack_transaction](#chainnativeunpack_transaction)
-    - [check_result](#check_result)
-    - [raise_last_error](#raise_last_error)
 
 ## ChainNative
 
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/chainnative.py#L14)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainnative.py#L17)
 
 ```python
 class ChainNative(object):
@@ -48,16 +44,24 @@ class ChainNative(object):
 
 ### ChainNative.b2s
 
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/chainnative.py#L40)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainnative.py#L62)
 
 ```python
 @staticmethod
 def b2s(b):
 ```
 
+### ChainNative().check_abi
+
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainnative.py#L77)
+
+```python
+def check_abi(account):
+```
+
 ### ChainNative.clear_abi_cache
 
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/chainnative.py#L71)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainnative.py#L113)
 
 ```python
 @staticmethod
@@ -66,69 +70,80 @@ def clear_abi_cache(account):
 
 ### ChainNative().compile
 
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/chainnative.py#L184)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainnative.py#L224)
 
 ```python
-def compile(contract_name, code, vm_type):
+def compile(contract_name, code, src_type=SRC_TYPE_CPP):
 ```
+
+#### Arguments
+
+- `contract_name` - contract name
+- `code` - source code
+- `src_type` - 0: py, 1: cpp 2: go
+
+#### Returns
+
+bytecode and abi
+
+#### See also
+
+- [SRC_TYPE_CPP](#src_type_cpp)
 
 ### ChainNative.create_key
 
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/chainnative.py#L110)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainnative.py#L178)
 
 ```python
 @staticmethod
 def create_key():
 ```
 
-### ChainNative.from_base58
+### ChainNative().gen_transaction
 
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/chainnative.py#L118)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainnative.py#L133)
 
 ```python
-@staticmethod
-def from_base58(pub_key):
+def gen_transaction(actions, expiration, reference_block_id, chain_id):
 ```
 
-### ChainNative.gen_transaction
+### ChainNative().generate_transaction
 
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/chainnative.py#L90)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainnative.py#L160)
 
 ```python
-@staticmethod
-def gen_transaction(actions, expiration, reference_block_id):
+def generate_transaction(actions, expiration, reference_block_id, chain_id):
 ```
 
-### ChainNative.get_last_error
+### ChainNative().get_abi_sync
 
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/chainnative.py#L194)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainnative.py#L19)
+
+```python
+def get_abi_sync(account):
+```
+
+### ChainNative.get_debug_flag
+
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainnative.py#L247)
 
 ```python
 @staticmethod
-def get_last_error():
+def get_debug_flag() -> bool:
 ```
 
 ### ChainNative.get_public_key
 
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/chainnative.py#L114)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainnative.py#L182)
 
 ```python
 @staticmethod
-def get_public_key(priv):
-```
-
-### ChainNative.get_public_key_prefix
-
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/chainnative.py#L155)
-
-```python
-@staticmethod
-def get_public_key_prefix():
+def get_public_key(priv, eos_pub=True):
 ```
 
 ### ChainNative.mp_compile
 
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/chainnative.py#L159)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainnative.py#L199)
 
 ```python
 @staticmethod
@@ -137,7 +152,7 @@ def mp_compile(contract, src):
 
 ### ChainNative().mp_make_frozen
 
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/chainnative.py#L163)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainnative.py#L203)
 
 ```python
 def mp_make_frozen(code):
@@ -145,7 +160,7 @@ def mp_make_frozen(code):
 
 ### ChainNative.n2s
 
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/chainnative.py#L16)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainnative.py#L35)
 
 ```python
 @staticmethod
@@ -157,63 +172,52 @@ convert integer to name string
 #### Examples
 
 ```python
-from uuoskit import uuosapi
-uuosapi.n2s(10927537166380695552)
+from pyeoskit import eosapi
+s = eosapi.n2s(10927537166380695552)
+print(s)
 ```
 
 ```
-Output:
 'myname'
 ```
 
 ### ChainNative.pack_abi
 
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/chainnative.py#L80)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainnative.py#L123)
 
 ```python
 @staticmethod
 def pack_abi(abi):
 ```
 
-### ChainNative.pack_abi_type
+### ChainNative().pack_abi_type
 
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/chainnative.py#L61)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainnative.py#L101)
 
 ```python
-@staticmethod
 def pack_abi_type(account, struct_name, args):
 ```
 
-### ChainNative.pack_args
+### ChainNative().pack_args
 
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/chainnative.py#L49)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainnative.py#L82)
 
 ```python
-@staticmethod
 def pack_args(account, action, args):
-```
-
-### ChainNative.pack_cpp_object
-
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/chainnative.py#L130)
-
-```python
-@staticmethod
-def pack_cpp_object(obj_type, json_str):
 ```
 
 ### ChainNative.pack_transaction
 
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/chainnative.py#L102)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainnative.py#L168)
 
 ```python
 @staticmethod
-def pack_transaction(trx, compress=0):
+def pack_transaction(tx, compress=0, json=False):
 ```
 
 ### ChainNative.recover_key
 
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/chainnative.py#L126)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainnative.py#L187)
 
 ```python
 @staticmethod
@@ -222,7 +226,7 @@ def recover_key(digest, sign):
 
 ### ChainNative.s2b
 
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/chainnative.py#L35)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainnative.py#L57)
 
 ```python
 @staticmethod
@@ -231,7 +235,7 @@ def s2b(s):
 
 ### ChainNative.s2n
 
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/chainnative.py#L31)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainnative.py#L50)
 
 ```python
 @staticmethod
@@ -240,115 +244,79 @@ def s2n(s):
 
 ### ChainNative.set_abi
 
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/chainnative.py#L75)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainnative.py#L117)
 
 ```python
 @staticmethod
 def set_abi(account, abi):
 ```
 
-### ChainNative.set_public_key_prefix
+### ChainNative.set_debug_flag
 
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/chainnative.py#L151)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainnative.py#L243)
 
 ```python
 @staticmethod
-def set_public_key_prefix(prefix):
+def set_debug_flag(debug):
 ```
 
 ### ChainNative.sign_digest
 
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/chainnative.py#L138)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainnative.py#L192)
 
 ```python
 @staticmethod
-def sign_digest(priv_key, digest):
+def sign_digest(digest, priv_key):
 ```
 
 ### ChainNative.sign_transaction
 
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/chainnative.py#L95)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainnative.py#L163)
 
 ```python
 @staticmethod
-def sign_transaction(trx, private_key, chain_id):
+def sign_transaction(tx, private_key, chain_id, json=False):
 ```
 
 ### ChainNative.string_to_symbol
 
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/chainnative.py#L45)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainnative.py#L67)
 
 ```python
 @staticmethod
-def string_to_symbol(precision, str_symbol):
-```
-
-### ChainNative.to_base58
-
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/chainnative.py#L122)
-
-```python
-@staticmethod
-def to_base58(raw_pub_key):
+def string_to_symbol(sym):
 ```
 
 ### ChainNative.unpack_abi
 
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/chainnative.py#L86)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainnative.py#L129)
 
 ```python
 @staticmethod
 def unpack_abi(packed_abi):
 ```
 
-### ChainNative.unpack_abi_type
+### ChainNative().unpack_abi_type
 
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/chainnative.py#L67)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainnative.py#L109)
 
 ```python
-@staticmethod
 def unpack_abi_type(account, struct_name, binargs):
 ```
 
-### ChainNative.unpack_args
+### ChainNative().unpack_args
 
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/chainnative.py#L54)
-
-```python
-@staticmethod
-def unpack_args(account, action, binargs):
-```
-
-### ChainNative.unpack_cpp_object
-
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/chainnative.py#L134)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainnative.py#L93)
 
 ```python
-@staticmethod
-def unpack_cpp_object(obj_type, raw_data):
+def unpack_args(account, action, binargs, json=False):
 ```
 
 ### ChainNative.unpack_transaction
 
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/chainnative.py#L106)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainnative.py#L174)
 
 ```python
 @staticmethod
-def unpack_transaction(trx):
-```
-
-## check_result
-
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/chainnative.py#L9)
-
-```python
-def check_result(r):
-```
-
-## raise_last_error
-
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/chainnative.py#L6)
-
-```python
-def raise_last_error():
+def unpack_transaction(trx, json=False):
 ```

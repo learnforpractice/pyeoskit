@@ -1,8 +1,8 @@
 # Compiler
 
-> Auto-generated documentation for [pysrc.compiler](https://github.com/uuosio/UUOSKit/blob/master/pysrc/compiler.py) module.
+> Auto-generated documentation for [pysrc.compiler](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/compiler.py) module.
 
-- [Uuoskit](../README.md#uuoskit-index) / [Modules](../MODULES.md#uuoskit-modules) / [Pysrc](index.md#pysrc) / Compiler
+- [Pyeoskit](../README.md#pyeoskit-index) / [Modules](../MODULES.md#pyeoskit-modules) / [Pysrc](index.md#pysrc) / Compiler
     - [cpp_compiler](#cpp_compiler)
         - [cpp_compiler().compile_cpp_file](#cpp_compilercompile_cpp_file)
     - [compile_cpp_file](#compile_cpp_file)
@@ -17,7 +17,7 @@
 
 ## cpp_compiler
 
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/compiler.py#L58)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/compiler.py#L49)
 
 ```python
 class cpp_compiler(object):
@@ -26,7 +26,7 @@ class cpp_compiler(object):
 
 ### cpp_compiler().compile_cpp_file
 
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/compiler.py#L67)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/compiler.py#L58)
 
 ```python
 def compile_cpp_file(opt='O3'):
@@ -34,7 +34,7 @@ def compile_cpp_file(opt='O3'):
 
 ## compile_cpp_file
 
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/compiler.py#L155)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/compiler.py#L146)
 
 ```python
 def compile_cpp_file(src_path, includes=[], entry='apply', opt='O3'):
@@ -42,7 +42,7 @@ def compile_cpp_file(src_path, includes=[], entry='apply', opt='O3'):
 
 ## compile_cpp_src
 
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/compiler.py#L159)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/compiler.py#L150)
 
 ```python
 def compile_cpp_src(account_name, code, includes=[], entry='apply', opt='O3'):
@@ -50,7 +50,7 @@ def compile_cpp_src(account_name, code, includes=[], entry='apply', opt='O3'):
 
 ## find_eosio_cdt_path
 
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/compiler.py#L50)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/compiler.py#L41)
 
 ```python
 def find_eosio_cdt_path():
@@ -58,7 +58,7 @@ def find_eosio_cdt_path():
 
 ## publish_contract
 
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/compiler.py#L212)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/compiler.py#L203)
 
 ```python
 def publish_contract(
@@ -73,7 +73,7 @@ def publish_contract(
 
 ## publish_cpp_contract
 
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/compiler.py#L190)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/compiler.py#L181)
 
 ```python
 def publish_cpp_contract(
@@ -89,7 +89,7 @@ def publish_cpp_contract(
 
 ## publish_cpp_contract_from_file
 
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/compiler.py#L175)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/compiler.py#L166)
 
 ```python
 def publish_cpp_contract_from_file(
@@ -102,7 +102,7 @@ def publish_cpp_contract_from_file(
 
 ## publish_py_contract
 
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/compiler.py#L201)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/compiler.py#L192)
 
 ```python
 def publish_py_contract(
@@ -117,7 +117,7 @@ def publish_py_contract(
 
 ## run_test_code
 
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/compiler.py#L23)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/compiler.py#L14)
 
 ```python
 def run_test_code(code, abi='', account_name='helloworld11'):
@@ -125,7 +125,7 @@ def run_test_code(code, abi='', account_name='helloworld11'):
 
 ## set_code
 
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/compiler.py#L31)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/compiler.py#L22)
 
 ```python
 def set_code(account_name, code):

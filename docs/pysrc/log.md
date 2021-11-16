@@ -1,8 +1,8 @@
 # Log
 
-> Auto-generated documentation for [pysrc.log](https://github.com/uuosio/UUOSKit/blob/master/pysrc/log.py) module.
+> Auto-generated documentation for [pysrc.log](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/log.py) module.
 
-- [Uuoskit](../README.md#uuoskit-index) / [Modules](../MODULES.md#uuoskit-modules) / [Pysrc](index.md#pysrc) / Log
+- [Pyeoskit](../README.md#pyeoskit-index) / [Modules](../MODULES.md#pyeoskit-modules) / [Pysrc](index.md#pysrc) / Log
     - [CustomFormatter](#customformatter)
         - [CustomFormatter().format](#customformatterformat)
     - [get_logger](#get_logger)
@@ -13,7 +13,7 @@
 
 ## CustomFormatter
 
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/log.py#L4)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/log.py#L4)
 
 ```python
 class CustomFormatter(logging.Formatter):
@@ -27,7 +27,7 @@ Logging Formatter to add colors and count warning / errors
 
 ### CustomFormatter().format
 
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/log.py#L22)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/log.py#L22)
 
 ```python
 def format(record):
@@ -35,7 +35,7 @@ def format(record):
 
 ## get_logger
 
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/log.py#L35)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/log.py#L35)
 
 ```python
 def get_logger(name):

@@ -1,5 +1,5 @@
 # Block Log
 
-> Auto-generated documentation for [pysrc.block_log](https://github.com/uuosio/UUOSKit/blob/master/pysrc/block_log.py) module.
+> Auto-generated documentation for [pysrc.block_log](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/block_log.py) module.
 
-- [Uuoskit](../README.md#uuoskit-index) / [Modules](../MODULES.md#uuoskit-modules) / [Pysrc](index.md#pysrc) / Block Log
+- [Pyeoskit](../README.md#pyeoskit-index) / [Modules](../MODULES.md#pyeoskit-modules) / [Pysrc](index.md#pysrc) / Block Log

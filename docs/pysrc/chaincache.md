@@ -1,8 +1,8 @@
 # ChainCache
 
-> Auto-generated documentation for [pysrc.chaincache](https://github.com/uuosio/UUOSKit/blob/master/pysrc/chaincache.py) module.
+> Auto-generated documentation for [pysrc.chaincache](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chaincache.py) module.
 
-- [Uuoskit](../README.md#uuoskit-index) / [Modules](../MODULES.md#uuoskit-modules) / [Pysrc](index.md#pysrc) / ChainCache
+- [Pyeoskit](../README.md#pyeoskit-index) / [Modules](../MODULES.md#pyeoskit-modules) / [Pysrc](index.md#pysrc) / ChainCache
     - [ChainCache](#chaincache)
         - [ChainCache().get_abi](#chaincacheget_abi)
         - [ChainCache().get_account](#chaincacheget_account)
@@ -22,7 +22,7 @@
 
 ## ChainCache
 
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/chaincache.py#L12)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chaincache.py#L12)
 
 ```python
 class ChainCache(object):
@@ -31,7 +31,7 @@ class ChainCache(object):
 
 ### ChainCache().get_abi
 
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/chaincache.py#L52)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chaincache.py#L52)
 
 ```python
 def get_abi(account):
@@ -39,7 +39,7 @@ def get_abi(account):
 
 ### ChainCache().get_account
 
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/chaincache.py#L69)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chaincache.py#L69)
 
 ```python
 def get_account(account):
@@ -47,7 +47,7 @@ def get_account(account):
 
 ### ChainCache().get_code
 
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/chaincache.py#L40)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chaincache.py#L40)
 
 ```python
 def get_code(account):
@@ -55,7 +55,7 @@ def get_code(account):
 
 ### ChainCache().get_info
 
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/chaincache.py#L37)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chaincache.py#L37)
 
 ```python
 def get_info(info):
@@ -63,7 +63,7 @@ def get_info(info):
 
 ### ChainCache().get_public_keys
 
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/chaincache.py#L81)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chaincache.py#L81)
 
 ```python
 def get_public_keys(account, key_type):
@@ -71,7 +71,7 @@ def get_public_keys(account, key_type):
 
 ### ChainCache().get_value
 
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/chaincache.py#L24)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chaincache.py#L24)
 
 ```python
 def get_value(key):
@@ -79,7 +79,7 @@ def get_value(key):
 
 ### ChainCache().remove_abi
 
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/chaincache.py#L60)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chaincache.py#L60)
 
 ```python
 def remove_abi(account):
@@ -87,7 +87,7 @@ def remove_abi(account):
 
 ### ChainCache().remove_code
 
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/chaincache.py#L48)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chaincache.py#L48)
 
 ```python
 def remove_code(account):
@@ -95,7 +95,7 @@ def remove_code(account):
 
 ### ChainCache().reset
 
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/chaincache.py#L18)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chaincache.py#L18)
 
 ```python
 def reset():
@@ -103,7 +103,7 @@ def reset():
 
 ### ChainCache().save
 
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/chaincache.py#L21)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chaincache.py#L21)
 
 ```python
 def save():
@@ -111,7 +111,7 @@ def save():
 
 ### ChainCache().set_abi
 
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/chaincache.py#L57)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chaincache.py#L57)
 
 ```python
 def set_abi(account, abi):
@@ -119,7 +119,7 @@ def set_abi(account, abi):
 
 ### ChainCache().set_account
 
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/chaincache.py#L64)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chaincache.py#L64)
 
 ```python
 def set_account(account, info):
@@ -127,7 +127,7 @@ def set_account(account, info):
 
 ### ChainCache().set_code
 
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/chaincache.py#L45)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chaincache.py#L45)
 
 ```python
 def set_code(account, code):
@@ -135,7 +135,7 @@ def set_code(account, code):
 
 ### ChainCache().set_info
 
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/chaincache.py#L34)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chaincache.py#L34)
 
 ```python
 def set_info(info):
@@ -143,7 +143,7 @@ def set_info(info):
 
 ### ChainCache().set_value
 
-[[find in source code]](https://github.com/uuosio/UUOSKit/blob/master/pysrc/chaincache.py#L30)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chaincache.py#L30)
 
 ```python
 def set_value(key, value):

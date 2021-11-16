@@ -10,7 +10,7 @@ Python Toolkit for EOS
 pip install pyeoskit
 ```
 
-# [Docs](https://uuosio.github.io/UUOSKit)
+# [Docs](https://learnforpractice.github.io/pyeoskit)
 
 # Building from Source Code
 
