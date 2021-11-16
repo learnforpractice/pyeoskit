@@ -6,9 +6,6 @@ test_account2 = 'ebvjmdibybgq'
 
 def config_network():
     from pyeoskit import config
-    config.main_token = 'UUOS'
-    config.system_contract = 'uuos'
-    config.main_token_contract = 'uuos.token'
 
 try:
     from browser import window, aio

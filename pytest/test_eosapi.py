@@ -16,17 +16,9 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(line
 logger=logging.getLogger(__name__)
 test_dir = os.path.dirname(__file__)
 
-# config.main_token = 'UUOS'
-# config.main_token_contract = 'uuos.token'
-# config.system_contract = 'uuos'
-
-# eosapi.set_node('http://127.0.0.1:8899')
-
-# config.setup_uuos_network()
-
 eosapi_async = None
 
-class TestUUOSApi(object):
+class TestApi(object):
 
     @classmethod
     def setup_class(cls):
@@ -57,7 +49,7 @@ class TestUUOSApi(object):
         args = {
             'from': 'alice',
             'to': 'bob',
-            'quantity': '1.0000 UUOS',
+            'quantity': '1.0000 EOS',
             'memo': 'hello,world'
         }
         a = ['eosio.token', 'transfer', args, {'alice': 'active'}]
@@ -73,7 +65,7 @@ class TestUUOSApi(object):
         args = {
             'from': 'alice',
             'to': 'bob',
-            'quantity': '1.0000 UUOS',
+            'quantity': '1.0000 EOS',
             'typo_memo': 'hello,world'
         }
         a = ['eosio.token', 'transfer', args, {'alice': 'active'}]

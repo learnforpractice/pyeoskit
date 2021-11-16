@@ -7,10 +7,6 @@ import subprocess
 from pyeoskit import eosapi, wallet
 from pyeoskit import config
 
-config.main_token = 'UUOS'
-default_vm_type=1
-
-
 def run_test_code(code, abi='', account_name='helloworld11'):
     publish_contract(account_name, code, abi)
     try:

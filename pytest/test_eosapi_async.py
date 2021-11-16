@@ -20,16 +20,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(line
 logger=logging.getLogger(__name__)
 test_dir = os.path.dirname(__file__)
 
-# config.main_token = 'UUOS'
-# config.main_token_contract = 'uuos.token'
-# config.system_contract = 'uuos'
-
-# eosapi.set_node('http://127.0.0.1:8899')
-
-# config.setup_uuos_network()
-
-
-class TestUUOSApi(object):
+class TestChainApiAsync(object):
 
     @classmethod
     def setup_class(cls):

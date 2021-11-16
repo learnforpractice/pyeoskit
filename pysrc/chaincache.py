@@ -5,7 +5,6 @@ import time
 import pickle
 
 default_db = {
-    'UUOS': {'chain_info': None, 'accounts':{}, 'abis':{}, 'codes':{}},
     'EOS':  {'chain_info': None, 'accounts':{}, 'abis':{}, 'codes':{}},
 }
 

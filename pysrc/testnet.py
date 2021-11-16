@@ -25,7 +25,7 @@ class Testnet(object):
         self.show_log = show_log
         self.log_config = log_config
         self.extra = extra
-        self.tmp_dir='.uuos-testnet'
+        self.tmp_dir='.eos-testnet'
         self.nodes = []
 
         self.test_accounts = (
@@ -539,7 +539,7 @@ def apply(a, b, c):
         if 0:
             args = {
                 'owner': 'helloworld11',
-                'amount': '1.0000 UUOS'
+                'amount': '1.0000 EOS'
             }
             eosapi.push_action('eosio', 'deposit', args, {'helloworld11': 'active'})
 

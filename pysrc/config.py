@@ -47,40 +47,6 @@ def config_network(_system_contract, _main_token_contract, _main_token):
     main_token_contract = _main_token_contract
     main_token = _main_token
 
-def setup_uuos_network():
-    global main_token
-    global system_contract
-    global main_token_contract
-    global code_permission_name
-    main_token = 'UUOS'
-    system_contract = 'eosio'
-    main_token_contract = 'eosio.token'
-    network_url = 'http://127.0.0.1:8888'
-    code_permission_name = 'eosio.code'
-    from pyeoskit import eosapi
-    eosapi.set_public_key_prefix(main_token)
-
-def setup_uuos_test_network(url = 'http://127.0.0.1:8888', deploy_type=1):
-    global main_token
-    global system_contract
-    global main_token_contract
-    global python_contract
-    global network_url
-    global code_permission_name
-    global contract_deploy_type
-
-    contract_deploy_type = deploy_type
-    network_url = url
-
-    main_token = 'UUOS'
-    system_contract = 'eosio'
-    main_token_contract = 'eosio.token'
-    code_permission_name = 'eosio.code'
-
-    python_contract = 'hello'
-    from pyeoskit import eosapi
-    eosapi.set_public_key_prefix(main_token)
-
 def setup_eos_network():
     global main_token
     global system_contract

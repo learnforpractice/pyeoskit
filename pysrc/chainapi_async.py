@@ -143,8 +143,6 @@ class ChainApiAsync(RPCInterface, ChainNative):
     def strip_prefix(self, pub_key):
         if pub_key.startswith('EOS'):
             return pub_key[3:]
-        elif pub_key.startswith('UUOS'):
-            return pub_key[4:]
         else:
             return pub_key
 

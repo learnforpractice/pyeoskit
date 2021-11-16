@@ -33,9 +33,7 @@ class Test(object):
 
     @classmethod
     def setup_class(cls):
-        config.main_token = 'UUOS'
-        config.main_token_contract = 'uuos.token'
-        config.system_contract = 'uuos'
+        pass
 
     @classmethod
     def teardown_class(cls):
@@ -48,13 +46,13 @@ class Test(object):
         pass
 
     def test_set_code_get_code(self):
-        api = ChainApi('http://127.0.0.1:8888', 'UUOS')
+        api = ChainApi('http://127.0.0.1:8888')
         api.set_code('hello', b'abc')
         assert api.get_code('hello') == b'abc'
 
     def test_set_code_get_code_async(self):
         async def set_code_get_code_async():
-            api = ChainApiAsync('http://127.0.0.1:8888', 'UUOS')
+            api = ChainApiAsync('http://127.0.0.1:8888')
             api.set_code('hello', b'abc')
             assert await api.get_code('hello') == b'abc'
 
@@ -62,9 +60,6 @@ class Test(object):
         loop.run_until_complete(set_code_get_code_async())
 
     def test_set_contract(self):
-        config.main_token = 'UUOS'
-        config.main_token_contract = 'uuos.token'
-        config.system_contract = 'uuos'
 
         if os.path.exists('test.wallet'):
             os.remove('test.wallet')
