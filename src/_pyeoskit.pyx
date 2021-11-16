@@ -19,7 +19,7 @@ cdef extern from "<Python.h>":
     object PyBytes_FromStringAndSize(const char* str, int size)
     int _PyLong_AsByteArray(PyLongObject* v, unsigned char* bytes, size_t n, int little_endian, int is_signed)
 
-cdef extern from "libuuoskit.h" nogil:
+cdef extern from "libpyeoskit.h" nogil:
     void init_();
     void set_debug_flag_(bool debug)
     bool get_debug_flag_()

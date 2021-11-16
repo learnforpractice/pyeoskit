@@ -1,4 +1,4 @@
-Python Toolkit for EOSIO
+Python Toolkit for EOS
 
 <h3>
   <a
@@ -14,12 +14,12 @@ Python Toolkit for EOSIO
 
 # Latest Release
 
-[uuoskit v1.0.2](https://github.com/uuosio/uuoskit/releases)
+[pyeoskit v1.0.4](https://github.com/learnforpractice/pyeoskit/releases)
 
 # Installation
 
 ```bash
-pip install uuoskit
+pip install pyeoskit
 ```
 
 # [Docs](https://uuosio.github.io/UUOSKit)
@@ -53,8 +53,8 @@ cmd -k /path/to/gcc/mingwvars.bat
 ### Downloading Source Code
 
 ```
-git clone https://www.github.com/uuosio/uuoskit
-cd uuoskit
+git clone https://www.github.com/uuosio/pyeoskit
+cd pyeoskit
 git submodule update --init --recursive
 ```
 
@@ -77,13 +77,13 @@ python setup.py sdist bdist_wheel
 
 For Windows platform
 ```
-python -m pip uninstall uuoskit -y;python -m pip install .\dist\uuoskit-[SUFFIX].whl
+python -m pip uninstall pyeoskit -y;python -m pip install .\dist\pyeoskit-[SUFFIX].whl
 ```
 
 ### Example1
 ```python
 import os
-from uuoskit import uuosapi, wallet
+from pyeoskit import uuosapi, wallet
 
 if os.path.exists('mywallet.wallet'):
     os.remove('mywallet.wallet')
@@ -107,8 +107,8 @@ uuosapi.push_action('eosio.token', 'transfer', args, {'test1':'active'})
 ```python
 import os
 import asyncio
-from uuoskit import wallet
-from uuoskit.chainapi import ChainApiAsync
+from pyeoskit import wallet
+from pyeoskit.chainapi import ChainApiAsync
 
 if os.path.exists('mywallet.wallet'):
     os.remove('mywallet.wallet')
