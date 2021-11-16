@@ -320,7 +320,7 @@ def apply(a, b, c):
         try:
             eosapi.push_action('token', 'transfer', args, {'helloworld11': 'active'})
         except Exception as e:
-            assert e.args[0] == '[error] in main.transaction_add_action_[/Users/newworld/dev/pyeoskit/src/pyeoskit/lib.go:150] abi struct not found for token::transfer'
+            assert e.args[0].find('abi struct not found for token::transfer') >= 0
 
         #test for comporessed transaction
         eosapi.push_action('eosio.token', 'transfer', args, {'helloworld12': 'active'}, compress=True)
