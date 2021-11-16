@@ -5,11 +5,11 @@ import json
 import pytest
 import logging
 import hashlib
-from uuoskit import config, wallet
-from uuoskit.chainapi import ChainApiAsync
-from uuoskit.exceptions import ChainException, WalletException
+from pyeoskit import config, wallet
+from pyeoskit.chainapi import ChainApiAsync
+from pyeoskit.exceptions import ChainException, WalletException
 
-from uuoskit.testnet import Testnet
+from pyeoskit.testnet import Testnet
 
 from uuosio import uuos
 

@@ -2,7 +2,7 @@ import time
 import json
 import httpx
 
-from . import _uuoskit
+from . import _pyeoskit
 from . import wasmcompiler
 from .exceptions import ChainException
 from . import ABI
@@ -37,7 +37,7 @@ class ChainNative(object):
         '''convert integer to name string
         Example:
         ```python
-            from uuoskit import uuosapi
+            from pyeoskit import uuosapi
             s = uuosapi.n2s(10927537166380695552)
             print(s)
         ```
@@ -45,31 +45,31 @@ class ChainNative(object):
             'myname'
         ```
         '''
-        return _uuoskit.n2s(n)
+        return _pyeoskit.n2s(n)
 
     @staticmethod
     def s2n(s):
-        n = _uuoskit.s2n(s)
-        if not _uuoskit.n2s(n) == s:
+        n = _pyeoskit.s2n(s)
+        if not _pyeoskit.n2s(n) == s:
             return 0
         return n
 
     @staticmethod
     def s2b(s):
-        n = _uuoskit.s2n(s)
+        n = _pyeoskit.s2n(s)
         return int.to_bytes(n, 8, 'little')
 
     @staticmethod
     def b2s(b):
         n = int.from_bytes(b, 'little')
-        return _uuoskit.n2s(n)
+        return _pyeoskit.n2s(n)
 
     @staticmethod
     def string_to_symbol(sym):
         try:
             precision, str_sym = sym.split(',')
             print('++++++++:', precision, str_sym)
-            return _uuoskit.sym2n(str_sym, int(precision))
+            return _pyeoskit.sym2n(str_sym, int(precision))
         except Exception as e:
             print(e)
             return 0
@@ -181,19 +181,19 @@ class ChainNative(object):
 
     @staticmethod
     def get_public_key(priv, eos_pub = True):
-        ret = _uuoskit.crypto_get_public_key(priv, eos_pub)
+        ret = _pyeoskit.crypto_get_public_key(priv, eos_pub)
         return check_result(ret)
 
     @staticmethod
     def recover_key(digest, sign):
-        ret = _uuoskit.crypto_recover_key(digest, sign)
+        ret = _pyeoskit.crypto_recover_key(digest, sign)
         return check_result(ret)
 
     @staticmethod
     def sign_digest(digest, priv_key):
         if isinstance(digest, bytes):
             digest = digest.hex()
-        ret = _uuoskit.crypto_sign_digest(digest, priv_key)
+        ret = _pyeoskit.crypto_sign_digest(digest, priv_key)
         return check_result(ret)
 
     @staticmethod
@@ -242,8 +242,8 @@ class ChainNative(object):
 
     @staticmethod
     def set_debug_flag(debug):
-        _uuoskit.set_debug_flag_(debug)
+        _pyeoskit.set_debug_flag_(debug)
 
     @staticmethod
     def get_debug_flag() -> bool:
-        return _uuoskit.get_debug_flag_()
+        return _pyeoskit.get_debug_flag_()

@@ -1,4 +1,4 @@
 
 [submodule "src/uuoskit"]
-	path = src/uuoskit
+	path = src/pyeoskit
 	url = https://github.com/uuosio/go-uuoskit

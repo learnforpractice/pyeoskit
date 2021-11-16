@@ -6,14 +6,14 @@ import pytest
 import logging
 import hashlib
 
-from uuoskit import ABI
+from pyeoskit import ABI
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(lineno)d %(module)s %(message)s')
 logger=logging.getLogger(__name__)
 test_dir = os.path.dirname(__file__)
 
 
-from uuoskit.chainapi import ChainApi
+from pyeoskit.chainapi import ChainApi
 
 class Test(object):
 
@@ -39,12 +39,12 @@ class Test(object):
         chain_id = info['chain_id']
         ref_block = info['last_irreversible_block_id']
 
-        from uuoskit import _uuoskit
-        _uuoskit.init()
+        from pyeoskit import _pyeoskit
+        _pyeoskit.init()
 
-        _uuoskit.wallet_import("test", "5JRYimgLBrRLCBAcjHUWCYRv3asNedTYYzVgmiU4q2ZVxMBiJXL")
+        _pyeoskit.wallet_import("test", "5JRYimgLBrRLCBAcjHUWCYRv3asNedTYYzVgmiU4q2ZVxMBiJXL")
 
-        idx = _uuoskit.transaction_new(int(time.time()) + 60, ref_block, chain_id)
+        idx = _pyeoskit.transaction_new(int(time.time()) + 60, ref_block, chain_id)
         pub = 'EOS6AjF6hvF7GSuSd4sCgfPKq5uWaXvGM2aQtEUCwmEHygQaqxBSV'
 
         transfer = {
@@ -59,10 +59,10 @@ class Test(object):
             'helloworld11': 'active'
         }
         perms = json.dumps(perms)
-        _uuoskit.transaction_add_action(idx, 'eosio.token', 'transfer', transfer, perms)
-        r = _uuoskit.transaction_sign(idx, pub)
+        _pyeoskit.transaction_add_action(idx, 'eosio.token', 'transfer', transfer, perms)
+        r = _pyeoskit.transaction_sign(idx, pub)
         logger.info(r)
-        r = _uuoskit.transaction_pack(idx, 0)
+        r = _pyeoskit.transaction_pack(idx, 0)
         logger.info(r)
         r = json.loads(r)
         logger.info(r)
@@ -70,21 +70,21 @@ class Test(object):
         logger.info(r)
 
     def test_debug(self):
-        from uuoskit import _uuoskit
-        _uuoskit.set_debug_flag(False)
-        assert _uuoskit.get_debug_flag() == False
+        from pyeoskit import _pyeoskit
+        _pyeoskit.set_debug_flag(False)
+        assert _pyeoskit.get_debug_flag() == False
 
     def test_bad_abi(self):
-        from uuoskit import _uuoskit
-        #_uuoskit.set_debug_flag(False)
+        from pyeoskit import _pyeoskit
+        #_pyeoskit.set_debug_flag(False)
         with pytest.raises(Exception) as e_info:
             abi = '{\n    "version": "eosio::abi/1.1",\n '
             r = ABI.set_contract_abi("test", abi)
             logger.info(r)
 
     def test_abi(self):
-        from uuoskit import _uuoskit
-        _uuoskit.init()
+        from pyeoskit import _pyeoskit
+        _pyeoskit.init()
 
         abi = '{\n    "version": "eosio::abi/1.1",\n    "structs": [],\n    "types": [],\n    "actions": [],\n    "tables": [],\n    "ricardian_clauses": [],\n    "variants": [],\n    "abi_extensions": [],\n    "error_messages": []\n}'
         r = ABI.set_contract_abi("test", abi)
@@ -158,7 +158,7 @@ class Test(object):
         logger.info(unpacked_abi)
 
     def test_wallet(self):
-        from uuoskit import wallet, uuosapi
+        from pyeoskit import wallet, uuosapi
         h = hashlib.sha256(b'123').hexdigest()
 
         priv = '5JRYimgLBrRLCBAcjHUWCYRv3asNedTYYzVgmiU4q2ZVxMBiJXL'

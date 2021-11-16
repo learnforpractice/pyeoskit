@@ -10,8 +10,8 @@ logger=logging.getLogger(__name__)
 test_dir = os.path.dirname(__file__)
 
 
-from uuoskit.chainapi import ChainApi, ChainApiAsync
-from uuoskit import uuosapi, wallet, config
+from pyeoskit.chainapi import ChainApi, ChainApiAsync
+from pyeoskit import uuosapi, wallet, config
 
 @pytest.fixture
 def event_loop():

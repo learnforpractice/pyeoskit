@@ -5,11 +5,11 @@ import json
 import pytest
 import logging
 import hashlib
-from uuoskit import uuosapi, config, wallet
-from uuoskit.chainapi import ChainApiAsync
-from uuoskit.exceptions import ChainException, WalletException
+from pyeoskit import uuosapi, config, wallet
+from pyeoskit.chainapi import ChainApiAsync
+from pyeoskit.exceptions import ChainException, WalletException
 
-from uuoskit.testnet import Testnet
+from pyeoskit.testnet import Testnet
 Testnet.__test__ = False
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(lineno)d %(module)s %(message)s')
@@ -248,7 +248,7 @@ def apply(a, b, c):
 
     @pytest.mark.asyncio
     async def test_pack_unpack_args(self):
-        from uuoskit import ABI
+        from pyeoskit import ABI
         args = {
             'from': 'test1',
             'to': 'test2',
@@ -328,7 +328,7 @@ def apply(a, b, c):
         try:
             uuosapi.push_action('token', 'transfer', args, {'helloworld11': 'active'})
         except Exception as e:
-            assert e.args[0] == '[error] in main.transaction_add_action_[/Users/newworld/dev/uuoskit/src/uuoskit/lib.go:150] abi struct not found for token::transfer'
+            assert e.args[0] == '[error] in main.transaction_add_action_[/Users/newworld/dev/pyeoskit/src/pyeoskit/lib.go:150] abi struct not found for token::transfer'
 
         #test for comporessed transaction
         uuosapi.push_action('eosio.token', 'transfer', args, {'helloworld12': 'active'}, compress=True)
@@ -359,7 +359,7 @@ def apply(a, b, c):
     def test_pack_tx(self):
         tx = {"expiration":"1980-01-01T00:01:00","ref_block_num":8,"ref_block_prefix":584400311,"max_net_usage_words":0,"max_cpu_usage_ms":0,"delay_sec":0,"context_free_actions":[],"actions":[{"account":"eosio.token","name":"transfer","authorization":[{"actor":"helloworld11","permission":"active"}],"data":"10428a97721aa36a0000000000ea3055e80300000000000004454f53000000000b68656c6c6f2c776f726c64"},{"account":"eosio.token","name":"transfer","authorization":[{"actor":"helloworld11","permission":"active"}],"data":"10428a97721aa36a0000000000ea3055d00700000000000004454f53000000000b68656c6c6f2c776f726c64"}],"transaction_extensions":[]}
         tx = json.dumps(tx)
-        from uuoskit import transaction
+        from pyeoskit import transaction
         t = transaction.Transaction()
         t.from_json(tx)
 
@@ -398,7 +398,7 @@ def apply(a, b, c):
         assert tx
 
     def test_sign_tx(self):
-        from uuoskit.transaction import Transaction
+        from pyeoskit.transaction import Transaction
         tx = self.gen_tx()
         logger.info(tx)
         t = Transaction.from_json(tx)
@@ -408,7 +408,7 @@ def apply(a, b, c):
         logger.info(t.pack())
 
     def test_unpack_tx(self):
-        from uuoskit.transaction import Transaction
+        from pyeoskit.transaction import Transaction
         tx = self.gen_tx()
         logger.info(tx)
         t = Transaction.from_json(tx)
@@ -421,8 +421,8 @@ def apply(a, b, c):
         logger.info(tx)
 
     def test_wallet_sign(self):
-        from uuoskit.transaction import Transaction
-        from uuoskit import wallet
+        from pyeoskit.transaction import Transaction
+        from pyeoskit import wallet
         tx = self.gen_tx()
         pubs = ['EOS6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5GDW5CV']
         tx = wallet.sign_transaction(tx, pubs, self.chain_id)

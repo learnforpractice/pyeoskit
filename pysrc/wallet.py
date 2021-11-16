@@ -2,7 +2,7 @@ import json
 import json as json_
 from typing import List, Dict, Union
 
-from . import _uuoskit
+from . import _pyeoskit
 from .exceptions import WalletException
 from .transaction import Transaction
 
@@ -34,7 +34,7 @@ def list_keys(name, psw) -> Dict[str, str]:
     pass
 
 def get_public_keys():
-    ret = _uuoskit.wallet_get_public_keys()
+    ret = _pyeoskit.wallet_get_public_keys()
     ret = json.loads(ret)
     return ret['data']
 
@@ -48,7 +48,7 @@ def unlock(name, password):
     pass
 
 def import_key(name, wif_key, save=True):
-    _uuoskit.wallet_import(name, wif_key)
+    _pyeoskit.wallet_import(name, wif_key)
 
 def remove_key(name, password, pub_key):
     pass
@@ -64,6 +64,6 @@ def sign_transaction(trx: Union[str, dict], public_keys: List[str], chain_id: st
 def sign_digest(digest: Union[bytes, str], public_key: str):
     if isinstance(digest, bytes):
         digest = digest.hex()
-    ret = _uuoskit.wallet_sign_digest(digest, public_key)
+    ret = _pyeoskit.wallet_sign_digest(digest, public_key)
     return check_result(ret)
 

@@ -5,7 +5,7 @@ test_account1 = 'ceyelqpjeeia'
 test_account2 = 'ebvjmdibybgq'
 
 def config_network():
-    from uuoskit import config
+    from pyeoskit import config
     config.main_token = 'UUOS'
     config.system_contract = 'uuos'
     config.main_token_contract = 'uuos.token'
@@ -30,7 +30,7 @@ except Exception as e:
     import os
     import sys
     import asyncio
-    from uuoskit import wallet
+    from pyeoskit import wallet
 
     def _load_code():
         with open('code.py', 'r') as f:
@@ -67,7 +67,7 @@ def run_test():
     import sys
     import asyncio
     import argparse
-    from uuoskit import config
+    from pyeoskit import config
     config.setup_eos_test_network()
 #    config.setup_uuos_test_network()
 

@@ -4,8 +4,8 @@ import time
 import pytest
 import logging
 import hashlib
-from uuoskit import uuosapi, config, wallet
-from uuoskit.exceptions import ChainException, WalletException
+from pyeoskit import uuosapi, config, wallet
+from pyeoskit.exceptions import ChainException, WalletException
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(lineno)d %(module)s %(message)s')
 logger=logging.getLogger(__name__)

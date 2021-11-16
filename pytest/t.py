@@ -4,7 +4,7 @@ import sys
 import json
 import subprocess
 import logging
-from uuoskit import wallet, uuosapi
+from pyeoskit import wallet, uuosapi
 
 import httpx
 

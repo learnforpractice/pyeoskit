@@ -10,11 +10,11 @@ import hashlib
 import platform
 import subprocess
 
-from uuoskit import config
-from uuoskit import wallet
-from uuoskit import utils
-from uuoskit import uuosapi
-from uuoskit import log
+from pyeoskit import config
+from pyeoskit import wallet
+from pyeoskit import utils
+from pyeoskit import uuosapi
+from pyeoskit import log
 
 logger = log.get_logger(__name__)
 

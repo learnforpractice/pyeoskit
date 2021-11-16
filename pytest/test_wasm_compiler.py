@@ -9,7 +9,7 @@ logger=logging.getLogger(__name__)
 test_dir = os.path.dirname(__file__)
 
 
-from uuoskit import wasmcompiler
+from pyeoskit import wasmcompiler
 
 class Test(object):
 

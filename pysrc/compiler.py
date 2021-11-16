@@ -4,8 +4,8 @@ import shutil
 import hashlib
 import marshal
 import subprocess
-from uuoskit import uuosapi, wallet
-from uuoskit import config
+from pyeoskit import uuosapi, wallet
+from pyeoskit import config
 
 config.main_token = 'UUOS'
 default_vm_type=1

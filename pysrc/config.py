@@ -57,7 +57,7 @@ def setup_uuos_network():
     main_token_contract = 'eosio.token'
     network_url = 'http://127.0.0.1:8888'
     code_permission_name = 'eosio.code'
-    from uuoskit import uuosapi
+    from pyeoskit import uuosapi
     uuosapi.set_public_key_prefix(main_token)
 
 def setup_uuos_test_network(url = 'http://127.0.0.1:8888', deploy_type=1):
@@ -78,7 +78,7 @@ def setup_uuos_test_network(url = 'http://127.0.0.1:8888', deploy_type=1):
     code_permission_name = 'eosio.code'
 
     python_contract = 'hello'
-    from uuoskit import uuosapi
+    from pyeoskit import uuosapi
     uuosapi.set_public_key_prefix(main_token)
 
 def setup_eos_network():
@@ -93,7 +93,7 @@ def setup_eos_network():
     main_token_contract = 'eosio.token'
     network_url = 'https://eos.greymass.com'
     code_permission_name = 'eosio.code'
-    from uuoskit import uuosapi
+    from pyeoskit import uuosapi
     uuosapi.set_public_key_prefix(main_token)
 
 def setup_eos_test_network(url = 'https://api.testnet.eos.io', deploy_type=1):
@@ -106,7 +106,7 @@ def setup_eos_test_network(url = 'https://api.testnet.eos.io', deploy_type=1):
     global contract_deploy_type
 
     import os
-    from uuoskit import uuosapi, wallet
+    from pyeoskit import uuosapi, wallet
 
     contract_deploy_type = deploy_type
     network_url = url

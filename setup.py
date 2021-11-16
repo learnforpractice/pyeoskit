@@ -3,16 +3,16 @@ from distutils.sysconfig import get_python_lib
 import glob
 
 setup(
-    name="uuoskit",
+    name="pyeoskit",
     version="1.0.4",
-    description="Python Toolkit for EOSIO",
-    author='The UUOSIO Team',
+    description="Python Toolkit for EOS",
+    author='learnforpractice',
     license="MIT",
-    url="https://github.com/uuosio/uuoskit",
-    packages=['uuoskit'],
+    url="https://github.com/uuosio/pyeoskit",
+    packages=['pyeoskit'],
     # The extra '/' was *only* added to check that scikit-build can handle it.
-    package_dir={'uuoskit': 'pysrc'},
-    package_data={'uuoskit': [
+    package_dir={'pyeoskit': 'pysrc'},
+    package_data={'pyeoskit': [
         'data/*',
         'contracts/eosio.bios/*',
         'contracts/eosio.msig/*',

@@ -1,5 +1,5 @@
-from uuoskit import uuosapi
-from uuoskit import wallet
+from pyeoskit import uuosapi
+from pyeoskit import wallet
 
 if os.path.exists('mywallet.wallet'):
     os.remove('mywallet.wallet')

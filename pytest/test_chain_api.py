@@ -1,4 +1,4 @@
-from uuoskit import uuosapi
+from pyeoskit import uuosapi
 
 info = uuosapi.get_info()
 

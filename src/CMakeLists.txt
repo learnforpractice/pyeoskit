@@ -1,38 +1,38 @@
 
-add_cython_target(_uuoskit CXX)
+add_cython_target(_pyeoskit CXX)
 
-add_library(_uuoskit MODULE
-    ${_uuoskit}
+add_library(_pyeoskit MODULE
+    ${_pyeoskit}
 )
 
-python_extension_module(_uuoskit)
+python_extension_module(_pyeoskit)
 
-add_dependencies(_uuoskit build_uuoskit)
+add_dependencies(_pyeoskit build_pyeoskit)
 
-target_link_libraries(_uuoskit ${CMAKE_CURRENT_SOURCE_DIR}/uuoskit/libuuoskit.a)
+target_link_libraries(_pyeoskit ${CMAKE_CURRENT_SOURCE_DIR}/pyeoskit/libpyeoskit.a)
 
-target_include_directories(_uuoskit PRIVATE 
-    ${CMAKE_CURRENT_SOURCE_DIR}/uuoskit
+target_include_directories(_pyeoskit PRIVATE 
+    ${CMAKE_CURRENT_SOURCE_DIR}/pyeoskit
 )
 
 if (WIN32)
     add_compile_definitions(MS_WIN64)
 endif()
 
-add_custom_command(OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/uuoskit/libuuoskit.a
-    COMMAND go build -o libuuoskit.a -buildmode=c-archive
-    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/uuoskit/lib.go
-    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/uuoskit/main.go
-    COMMENT "Creating libuuoskit.a"
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/uuoskit
+add_custom_command(OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/pyeoskit/libpyeoskit.a
+    COMMAND go build -o libpyeoskit.a -buildmode=c-archive
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/pyeoskit/lib.go
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/pyeoskit/main.go
+    COMMENT "Creating libpyeoskit.a"
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/pyeoskit
 )
 
-add_custom_target(build_uuoskit ALL
-    COMMAND echo "Building libuuoskit.a"
-    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/uuoskit/libuuoskit.a
+add_custom_target(build_pyeoskit ALL
+    COMMAND echo "Building libpyeoskit.a"
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/pyeoskit/libpyeoskit.a
     # to make quotes printable,for example
     VERBATIM
 )
 
-install(TARGETS _uuoskit LIBRARY DESTINATION pysrc)
+install(TARGETS _pyeoskit LIBRARY DESTINATION pysrc)
 

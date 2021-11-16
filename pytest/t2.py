@@ -1,12 +1,12 @@
 import json
-from uuoskit import ABI
+from pyeoskit import ABI
 import logging
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(lineno)d %(module)s %(message)s')
 logger=logging.getLogger(__name__)
 
-from uuoskit import _uuoskit
-_uuoskit.init()
+from pyeoskit import _pyeoskit
+_pyeoskit.init()
 
 with open('data/eosio.token.abi', 'rb') as f:
     abi = f.read()
