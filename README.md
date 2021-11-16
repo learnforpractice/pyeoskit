@@ -10,7 +10,7 @@ Python Toolkit for EOS
 pip install pyeoskit
 ```
 
-# [Docs](https://uuosio.github.io/UUOSKit)
+# [Docs](https://learnforpractice.github.io/pyeoskit)
 
 # Building from Source Code
 
@@ -41,7 +41,7 @@ cmd -k /path/to/gcc/mingwvars.bat
 ### Downloading Source Code
 
 ```
-git clone https://www.github.com/uuosio/pyeoskit
+git clone https://www.github.com/learnforpractice/pyeoskit
 cd pyeoskit
 git submodule update --init --recursive
 ```
