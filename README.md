@@ -80,10 +80,6 @@ python -m pip uninstall pyeoskit -y;python -m pip install .\dist\pyeoskit-[SUFFI
 ```python
 import os
 from pyeoskit import eosapi, wallet
-
-if os.path.exists('mywallet.wallet'):
-    os.remove('mywallet.wallet')
-psw = wallet.create('mywallet')
 #import your account private key here
 wallet.import_key('mywallet', '5K463ynhZoCDDa4RDcr63cUwWLTnKqmdcoTKTHBjqoKfv4u5V7p')
 
@@ -106,9 +102,6 @@ import asyncio
 from pyeoskit import wallet
 from pyeoskit.chainapi import ChainApiAsync
 
-if os.path.exists('mywallet.wallet'):
-    os.remove('mywallet.wallet')
-psw = wallet.create('mywallet')
 #import your account private key here
 wallet.import_key('mywallet', '5K463ynhZoCDDa4RDcr63cUwWLTnKqmdcoTKTHBjqoKfv4u5V7p')
 
