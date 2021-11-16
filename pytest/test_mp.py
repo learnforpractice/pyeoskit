@@ -9,7 +9,7 @@ logger=logging.getLogger(__name__)
 test_dir = os.path.dirname(__file__)
 
 
-from pyeoskit import uuosapi
+from pyeoskit import eosapi
 
 class Test(object):
 
@@ -29,5 +29,5 @@ class Test(object):
 
     def test_compile(self):
         for i in range(10000):
-            code = uuosapi.compile("print('hello,world')")
+            code = eosapi.compile("print('hello,world')")
             assert code

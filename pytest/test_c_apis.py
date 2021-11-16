@@ -158,18 +158,18 @@ class Test(object):
         logger.info(unpacked_abi)
 
     def test_wallet(self):
-        from pyeoskit import wallet, uuosapi
+        from pyeoskit import wallet, eosapi
         h = hashlib.sha256(b'123').hexdigest()
 
         priv = '5JRYimgLBrRLCBAcjHUWCYRv3asNedTYYzVgmiU4q2ZVxMBiJXL'
         wallet.import_key('test', priv)
-        pub = uuosapi.get_public_key(priv)
+        pub = eosapi.get_public_key(priv)
         sign = wallet.sign_digest(h, pub)
 
-        sign2 = uuosapi.sign_digest(h, priv)
+        sign2 = eosapi.sign_digest(h, priv)
         assert sign == sign2
 
-        pub2 = uuosapi.recover_key(h, sign)
+        pub2 = eosapi.recover_key(h, sign)
         assert sign == sign2
 
     def test_optional(self):

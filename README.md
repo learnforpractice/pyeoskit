@@ -71,7 +71,7 @@ python -m pip uninstall pyeoskit -y;python -m pip install .\dist\pyeoskit-[SUFFI
 ### Example1
 ```python
 import os
-from pyeoskit import uuosapi, wallet
+from pyeoskit import eosapi, wallet
 
 if os.path.exists('mywallet.wallet'):
     os.remove('mywallet.wallet')
@@ -79,8 +79,8 @@ psw = wallet.create('mywallet')
 #import your account private key here
 wallet.import_key('mywallet', '5K463ynhZoCDDa4RDcr63cUwWLTnKqmdcoTKTHBjqoKfv4u5V7p')
 
-uuosapi.set_node('https://eos.greymass.com')
-info = uuosapi.get_info()
+eosapi.set_node('https://eos.greymass.com')
+info = eosapi.get_info()
 print(info)
 args = {
     'from': 'test1',
@@ -88,7 +88,7 @@ args = {
     'quantity': '1.0000 EOS',
     'memo': 'hello,world'
 }
-uuosapi.push_action('eosio.token', 'transfer', args, {'test1':'active'})
+eosapi.push_action('eosio.token', 'transfer', args, {'test1':'active'})
 ```
 
 ### Async Example
@@ -105,8 +105,8 @@ psw = wallet.create('mywallet')
 wallet.import_key('mywallet', '5K463ynhZoCDDa4RDcr63cUwWLTnKqmdcoTKTHBjqoKfv4u5V7p')
 
 async def test():
-    uuosapi = ChainApiAsync('https://eos.greymass.com')
-    info = await uuosapi.get_info()
+    eosapi = ChainApiAsync('https://eos.greymass.com')
+    info = await eosapi.get_info()
     print(info)
     args = {
         'from': 'test1',
@@ -114,7 +114,7 @@ async def test():
         'quantity': '1.0000 EOS',
         'memo': 'hello,world'
     }
-    r = await uuosapi.push_action('eosio.token', 'transfer', args, {'test1':'active'})
+    r = await eosapi.push_action('eosio.token', 'transfer', args, {'test1':'active'})
     print(r)
 
 asyncio.run(test())

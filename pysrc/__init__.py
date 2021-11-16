@@ -9,4 +9,4 @@ __version__='1.0.4'
 
 _pyeoskit.init()
 
-uuosapi = ChainApi()
+eosapi = ChainApi()

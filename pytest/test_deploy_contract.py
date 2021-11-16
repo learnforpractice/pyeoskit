@@ -1,4 +1,4 @@
-from pyeoskit import uuosapi
+from pyeoskit import eosapi
 from pyeoskit import wallet
 
 if os.path.exists('mywallet.wallet'):
@@ -60,12 +60,12 @@ abi = b'''
   ]
 }
 '''
-r = uuosapi.pack_abi(abi)
+r = eosapi.pack_abi(abi)
 print(r)
 #import sys;sys.exit(0)
 
-uuosapi.deploy_contract('hello', code, abi, 1)
-r = uuosapi.push_action('hello', 'sayhello', b'hello,world', {'hello':'active'})
+eosapi.deploy_contract('hello', code, abi, 1)
+r = eosapi.push_action('hello', 'sayhello', b'hello,world', {'hello':'active'})
 print(r)
 
 

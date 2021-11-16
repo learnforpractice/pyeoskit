@@ -4,7 +4,7 @@ import time
 import pytest
 import logging
 import hashlib
-from pyeoskit import uuosapi, config, wallet
+from pyeoskit import eosapi, config, wallet
 from pyeoskit.exceptions import ChainException, WalletException
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(lineno)d %(module)s %(message)s')
@@ -15,7 +15,7 @@ config.main_token = 'UUOS'
 config.main_token_contract = 'uuos.token'
 config.system_contract = 'uuos'
 
-uuosapi.set_node('http://127.0.0.1:8899')
+eosapi.set_node('http://127.0.0.1:8899')
 
 if os.path.exists('mywallet.wallet'):
     os.remove('mywallet.wallet')
@@ -53,7 +53,7 @@ class Test(object):
         logger.info(r)
         assert r
 
-        # uuosapi.unpack_transaction(raw)
+        # eosapi.unpack_transaction(raw)
 
     
     def test_basic(self):
@@ -62,7 +62,7 @@ class Test(object):
             os.remove(f'{mywallet}.wallet')
         psw = wallet.create(mywallet)
 
-        key = uuosapi.create_key()
+        key = eosapi.create_key()
         logger.info(key)
 
         priv_key = key['private']
@@ -71,20 +71,20 @@ class Test(object):
 
         r = wallet.import_key(mywallet, priv_key)
         assert not r
-        logger.error(uuosapi.get_last_error())
+        logger.error(eosapi.get_last_error())
 
         wallet.save(mywallet)
         wallet.set_timeout(1)
         time.sleep(2)
-        priv_key = uuosapi.create_key()['private']
+        priv_key = eosapi.create_key()['private']
         r = wallet.import_key(mywallet, priv_key)
         assert not r
-        logger.error(uuosapi.get_last_error())
+        logger.error(eosapi.get_last_error())
 
         r = wallet.unlock(mywallet, psw)
         assert r
 
-        priv_key = uuosapi.create_key()['private']
+        priv_key = eosapi.create_key()['private']
         r = wallet.import_key(mywallet, priv_key)
         assert r
 
@@ -109,7 +109,7 @@ class Test(object):
         assert wallets == ['mywallet', 'mywallet2']
 
     def test_sign_digest(self):
-        pub = uuosapi.get_public_key('5K463ynhZoCDDa4RDcr63cUwWLTnKqmdcoTKTHBjqoKfv4u5V7p')
+        pub = eosapi.get_public_key('5K463ynhZoCDDa4RDcr63cUwWLTnKqmdcoTKTHBjqoKfv4u5V7p')
         digest = hashlib.sha256(b'hello,world').digest()
         signature1 = wallet.sign_digest(digest, pub)
         logger.info(signature1)
@@ -122,7 +122,7 @@ class Test(object):
     def test_import_key(self):
         wallet.unlock('mywallet', psw)
         priv_key = '5J4LuMP6A7R4QiEHFJX1FJQDy9RqUjMpkpdoTLTuPFgTyxBNsUp'
-        pub_key = uuosapi.get_public_key(priv_key)
+        pub_key = eosapi.get_public_key(priv_key)
         wallet.import_key('mywallet', priv_key)
         keys = wallet.list_keys('mywallet', psw)
         logger.info(keys)

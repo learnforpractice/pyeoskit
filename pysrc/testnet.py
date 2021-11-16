@@ -13,7 +13,7 @@ import subprocess
 from pyeoskit import config
 from pyeoskit import wallet
 from pyeoskit import utils
-from pyeoskit import uuosapi
+from pyeoskit import eosapi
 from pyeoskit import log
 
 logger = log.get_logger(__name__)
@@ -113,11 +113,11 @@ class Testnet(object):
 
         self.nodes.append(p)
 
-        uuosapi.set_node(f'http://{self.host}:9000')
+        eosapi.set_node(f'http://{self.host}:9000')
         while True:
             time.sleep(0.5)
             try:
-                info = uuosapi.get_info()
+                info = eosapi.get_info()
                 # logger.info(info)
                 break
             except Exception as e:
@@ -238,14 +238,14 @@ class Testnet(object):
         m.update(code)
         code_hash = m.hexdigest()
 
-        r = uuosapi.get_raw_code(account_name)
+        r = eosapi.get_raw_code(account_name)
         logger.info((code_hash, r['code_hash']))
         if code_hash == r['code_hash']:
             logger.info('contract already running this version of code')
             return True
 
         logger.info(f"++++++++++set contract: {account_name}")
-        r = uuosapi.deploy_contract(account_name, code, abi, vm_type=0, compress=True)
+        r = eosapi.deploy_contract(account_name, code, abi, vm_type=0, compress=True)
         return True
 
     def deploy_micropython_contract(self):
@@ -259,8 +259,8 @@ class Testnet(object):
 
         try:
             pass
-            #r = uuosapi.deploy_contract('hello', code, abi, vm_type=0, compress=True)
-            #r = uuosapi.deploy_contract('eosio.mpy', code, abi, vm_type=0, compress=True)
+            #r = eosapi.deploy_contract('hello', code, abi, vm_type=0, compress=True)
+            #r = eosapi.deploy_contract('eosio.mpy', code, abi, vm_type=0, compress=True)
         except Exception as e:
             logger.exception(e)
         return
@@ -270,15 +270,15 @@ def apply(a, b, c):
         '''
         account = 'hello'
 
-        code = uuosapi.mp_compile(account, code)
+        code = eosapi.mp_compile(account, code)
 
         account = 'hello'
-        args = uuosapi.s2b(account) + code
-        uuosapi.push_action(account, 'setcode', args, {account:'active'})
+        args = eosapi.s2b(account) + code
+        eosapi.push_action(account, 'setcode', args, {account:'active'})
 
         account = 'eosio.mpy'
-        args = uuosapi.s2b(account) + code
-        uuosapi.push_action(account, 'setcode', args, {account:'active'})
+        args = eosapi.s2b(account) + code
+        eosapi.push_action(account, 'setcode', args, {account:'active'})
 
     def create_account(self, account, key1, key2):
         newaccount = {
@@ -314,14 +314,14 @@ def apply(a, b, c):
         newaccount['name'] = account
         act = ['eosio', 'newaccount', newaccount, {'eosio':'active'}]
         actions.append(act)
-        r = uuosapi.push_actions(actions)
+        r = eosapi.push_actions(actions)
 
     def init_testnet(self):
         self.init_accounts()
         self.init_producer()
 
     def init_accounts(self):
-        if uuosapi.get_account('helloworld11'):
+        if eosapi.get_account('helloworld11'):
             return
         # formatter = logging.Formatter('%(asctime)s %(levelname)s %(module)s %(lineno)d %(message)s')
         # handler = logging.StreamHandler()
@@ -331,7 +331,7 @@ def apply(a, b, c):
 
         # if len(sys.argv) == 2:
         #     print(sys.argv)
-        #     uuosapi.set_nodes([sys.argv[1]])
+        #     eosapi.set_nodes([sys.argv[1]])
 
         key1 = 'EOS7ent7keWbVgvptfYaMYeF2cenMBiwYKcwEuc11uCbStsFKsrmV'
         key2 = 'EOS7ent7keWbVgvptfYaMYeF2cenMBiwYKcwEuc11uCbStsFKsrmV'
@@ -385,14 +385,14 @@ def apply(a, b, c):
             i += 1
 
         try:
-            uuosapi.schedule_protocol_feature_activations(['0ec7e080177b2c02b278d5088611686b49d739925a92d9bfcacd7fc6b74053bd']) #PREACTIVATE_FEATURE
+            eosapi.schedule_protocol_feature_activations(['0ec7e080177b2c02b278d5088611686b49d739925a92d9bfcacd7fc6b74053bd']) #PREACTIVATE_FEATURE
             time.sleep(1.0)
             logger.info('set PREACTIVATE_FEATURE done!')
         except Exception as e:
             logger.exception(e)
 
         # try:
-        #     uuosapi.update_runtime_options(max_transaction_time=230)
+        #     eosapi.update_runtime_options(max_transaction_time=230)
         #     time.sleep(2.0)
         # except Exception as e:
         #     logger.exception(e)
@@ -400,7 +400,7 @@ def apply(a, b, c):
         contracts_path = os.path.dirname(__file__)
         contracts_path = os.path.join(contracts_path, 'contracts')
 
-        if not uuosapi.get_raw_code_and_abi('eosio')['wasm']:
+        if not eosapi.get_raw_code_and_abi('eosio')['wasm']:
             self.deploy_contract('eosio', 'eosio.bios')
         time.sleep(1.0)
         feature_digests = [
@@ -426,7 +426,7 @@ def apply(a, b, c):
             try:
                 args = {'feature_digest': digest}
                 # logger.info(f'activate {digest}')
-                uuosapi.push_action('eosio', 'activate', args, {'eosio':'active'})
+                eosapi.push_action('eosio', 'activate', args, {'eosio':'active'})
             except Exception as e:
                 logger.error(e)
 
@@ -437,12 +437,12 @@ def apply(a, b, c):
         except Exception as e:
             logger.exception(e)
 
-        if not uuosapi.get_balance('eosio'):
+        if not eosapi.get_balance('eosio'):
             logger.info('issue system token...')
             msg = {"issuer":"eosio","maximum_supply":f"11000000000.0000 {config.main_token}"}
-            r = uuosapi.push_action('eosio.token', 'create', msg, {'eosio.token':'active'})
+            r = eosapi.push_action('eosio.token', 'create', msg, {'eosio.token':'active'})
             assert r
-            r = uuosapi.push_action('eosio.token','issue',{"to":"eosio","quantity":f"1000000000.0000 {config.main_token}","memo":""},{'eosio':'active'})
+            r = eosapi.push_action('eosio.token','issue',{"to":"eosio","quantity":f"1000000000.0000 {config.main_token}","memo":""},{'eosio':'active'})
             assert r
 
         try:
@@ -472,29 +472,29 @@ def apply(a, b, c):
 
             # args['min_bp_staking_amount'] = 10000000000
             try:
-                uuosapi.push_action('eosio', 'init', args, {'eosio':'active'})
+                eosapi.push_action('eosio', 'init', args, {'eosio':'active'})
             except Exception as e:
                 logger.exception(e)
 
-        if uuosapi.get_balance('helloworld11') <=0:
-            r = uuosapi.push_action('eosio.token', 'transfer', {"from":"eosio", "to":"helloworld11","quantity":f"10000000.0000 {config.main_token}","memo":""}, {'eosio':'active'})
+        if eosapi.get_balance('helloworld11') <=0:
+            r = eosapi.push_action('eosio.token', 'transfer', {"from":"eosio", "to":"helloworld11","quantity":f"10000000.0000 {config.main_token}","memo":""}, {'eosio':'active'})
 
-        if uuosapi.get_balance('helloworld12') <=0:
-            r = uuosapi.push_action('eosio.token', 'transfer', {"from":"eosio", "to":"helloworld12","quantity":f"10000000.0000 {config.main_token}","memo":""}, {'eosio':'active'})
+        if eosapi.get_balance('helloworld12') <=0:
+            r = eosapi.push_action('eosio.token', 'transfer', {"from":"eosio", "to":"helloworld12","quantity":f"10000000.0000 {config.main_token}","memo":""}, {'eosio':'active'})
 
-        if uuosapi.get_balance('helloworld13') <=0:
-            r = uuosapi.push_action('eosio.token', 'transfer', {"from":"eosio", "to":"helloworld13","quantity":f"10000000.0000 {config.main_token}","memo":""}, {'eosio':'active'})
+        if eosapi.get_balance('helloworld13') <=0:
+            r = eosapi.push_action('eosio.token', 'transfer', {"from":"eosio", "to":"helloworld13","quantity":f"10000000.0000 {config.main_token}","memo":""}, {'eosio':'active'})
 
-        if uuosapi.get_balance('helloworld14') <=0:
-            r = uuosapi.push_action('eosio.token', 'transfer', {"from":"eosio", "to":"helloworld14","quantity":f"10000000.0000 {config.main_token}","memo":""}, {'eosio':'active'})
+        if eosapi.get_balance('helloworld14') <=0:
+            r = eosapi.push_action('eosio.token', 'transfer', {"from":"eosio", "to":"helloworld14","quantity":f"10000000.0000 {config.main_token}","memo":""}, {'eosio':'active'})
 
 
-        if uuosapi.get_balance('hello') <=0:
+        if eosapi.get_balance('hello') <=0:
             args = {"from":"eosio", "to":"hello","quantity":f"600000000.0000 {config.main_token}","memo":""}
-            r = uuosapi.push_action('eosio.token', 'transfer', args, {'eosio':'active'})
+            r = eosapi.push_action('eosio.token', 'transfer', args, {'eosio':'active'})
 
         for account in  self.test_accounts:
-            uuosapi.transfer('eosio', account, 10000.0)
+            eosapi.transfer('eosio', account, 10000.0)
             utils.buyrambytes('eosio', account, 5*1024*1024)
             utils.dbw(account, account, 1.0, 1000)
 
@@ -503,31 +503,31 @@ def apply(a, b, c):
         if 0:
             try:
                 args = {'vmtype': 1, 'vmversion':0} #activate vm python
-                uuosapi.push_action('eosio', 'activatevm', args, {'eosio':'active'})
+                eosapi.push_action('eosio', 'activatevm', args, {'eosio':'active'})
             except Exception as e:
                 logger.info(e)
 
             try:
                 args = {'vmtype': 2, 'vmversion':0} #activate vm python
-                uuosapi.push_action('eosio', 'activatevm', args, {'eosio':'active'})
+                eosapi.push_action('eosio', 'activatevm', args, {'eosio':'active'})
             except Exception as e:
                 logger.info(e)
 
-        balance = uuosapi.get_balance('hello')
+        balance = eosapi.get_balance('hello')
         logger.info(f'++++balance: {balance}')
         while False:
             n = random.randint(0,10000000)
             elapsed = 0
             for i in range(n, n+10):
                 try:
-                    r = uuosapi.transfer('hello', 'eosio', 0.0001, str(i))
+                    r = eosapi.transfer('hello', 'eosio', 0.0001, str(i))
                     logger.info(r['processed']['elapsed'])
                     elapsed += int(r['processed']['elapsed'])
                 except Exception as e:
                     logger.exception(e)
 
             logger.info(f'AVG: {elapsed/10}')
-            logger.info(uuosapi.get_balance('hello'))
+            logger.info(eosapi.get_balance('hello'))
             time.sleep(2.0)
 
         for account in self.test_accounts:
@@ -541,13 +541,13 @@ def apply(a, b, c):
                 'owner': 'helloworld11',
                 'amount': '1.0000 UUOS'
             }
-            uuosapi.push_action('eosio', 'deposit', args, {'helloworld11': 'active'})
+            eosapi.push_action('eosio', 'deposit', args, {'helloworld11': 'active'})
 
     def init_producer(self):
         if self.single_node:
             return
 
-        a = uuosapi.get_producers(True, '0', 10)
+        a = eosapi.get_producers(True, '0', 10)
         logger.info(a)
         if len(a['rows']) > 1:
             return
@@ -563,7 +563,7 @@ def apply(a, b, c):
                 "url": '',
                 "location": 0
             }
-            uuosapi.push_action('eosio', 'regproducer', args, {p:'active'})
+            eosapi.push_action('eosio', 'regproducer', args, {p:'active'})
             index += 1
 
         logger.info('+++++++vote producers...')
@@ -574,5 +574,5 @@ def apply(a, b, c):
         }
         for account in self.test_accounts:
             args['voter'] = account
-            uuosapi.push_action('eosio', 'voteproducer', args, {account:'active'})
+            eosapi.push_action('eosio', 'voteproducer', args, {account:'active'})
 

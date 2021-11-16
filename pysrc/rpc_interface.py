@@ -281,7 +281,7 @@ class RPCInterface(HttpClient):
 
     def get_producers(self, json, lower_bound, limit) -> dict:
         """
-        Example: uuosapi.get_producers(True, "", 100)
+        Example: eosapi.get_producers(True, "", 100)
         """
         body = dict(
             json=json,

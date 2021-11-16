@@ -11,7 +11,7 @@ test_dir = os.path.dirname(__file__)
 
 
 from pyeoskit.chainapi import ChainApi, ChainApiAsync
-from pyeoskit import uuosapi, wallet, config
+from pyeoskit import eosapi, wallet, config
 
 @pytest.fixture
 def event_loop():
@@ -72,8 +72,8 @@ class Test(object):
         wallet.import_key('test', '5Jbb4wuwz8MAzTB9FJNmrVYGXo4ABb7wqPVoWGcZ6x8V2FwNeDo')
 
         #eosapi.set_nodes(['https://nodes.uuos.network:8443'])
-        uuosapi.set_node('http://127.0.0.1:8888')
-        uuosapi.db.reset()
+        eosapi.set_node('http://127.0.0.1:8888')
+        eosapi.db.reset()
 
         account_name = 'helloworld11'
 
@@ -81,8 +81,8 @@ class Test(object):
 def apply(receiver, code, action):
     print('hello,worldd')
 '''
-        code = uuosapi.compile(account_name, code, 1)
-        r = uuosapi.deploy_contract(account_name, code, g_abi, 1)
+        code = eosapi.compile(account_name, code, 1)
+        r = eosapi.deploy_contract(account_name, code, g_abi, 1)
         print('done!')
 
     def test_set_contract_async(self):

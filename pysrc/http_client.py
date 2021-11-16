@@ -37,7 +37,7 @@ class HttpClient(object):
 
     .. code-block:: python
 
-       from uuosapi.http_client import HttpClient
+       from eosapi.http_client import HttpClient
        rpc = HttpClient(['https://eosnode.com'])
 
     any call available to that port can be issued using the instance

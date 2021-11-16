@@ -11,7 +11,7 @@ default_nodes = [
 'https://api2.eosdublin.io',
 'https://mainnet.eoscannon.io',
 'https://eos-api.privex.io',
-'https://uuosapi.blockmatrix.network',
+'https://eosapi.blockmatrix.network',
 'https://user-api.eoseoul.io',
 'https://api.eos.bitspace.no',
 'https://node.eosflare.io',
@@ -24,7 +24,7 @@ nodes = []
 def set_nodes(_nodes):
     global nodes
     nodes = _nodes
-#set in uuosapi.py:uuosapi.__init__
+#set in eosapi.py:eosapi.__init__
 
 main_token = 'EOS'
 system_contract = 'eosio'
@@ -57,8 +57,8 @@ def setup_uuos_network():
     main_token_contract = 'eosio.token'
     network_url = 'http://127.0.0.1:8888'
     code_permission_name = 'eosio.code'
-    from pyeoskit import uuosapi
-    uuosapi.set_public_key_prefix(main_token)
+    from pyeoskit import eosapi
+    eosapi.set_public_key_prefix(main_token)
 
 def setup_uuos_test_network(url = 'http://127.0.0.1:8888', deploy_type=1):
     global main_token
@@ -78,8 +78,8 @@ def setup_uuos_test_network(url = 'http://127.0.0.1:8888', deploy_type=1):
     code_permission_name = 'eosio.code'
 
     python_contract = 'hello'
-    from pyeoskit import uuosapi
-    uuosapi.set_public_key_prefix(main_token)
+    from pyeoskit import eosapi
+    eosapi.set_public_key_prefix(main_token)
 
 def setup_eos_network():
     global main_token
@@ -93,8 +93,8 @@ def setup_eos_network():
     main_token_contract = 'eosio.token'
     network_url = 'https://eos.greymass.com'
     code_permission_name = 'eosio.code'
-    from pyeoskit import uuosapi
-    uuosapi.set_public_key_prefix(main_token)
+    from pyeoskit import eosapi
+    eosapi.set_public_key_prefix(main_token)
 
 def setup_eos_test_network(url = 'https://api.testnet.eos.io', deploy_type=1):
     global main_token
@@ -106,7 +106,7 @@ def setup_eos_test_network(url = 'https://api.testnet.eos.io', deploy_type=1):
     global contract_deploy_type
 
     import os
-    from pyeoskit import uuosapi, wallet
+    from pyeoskit import eosapi, wallet
 
     contract_deploy_type = deploy_type
     network_url = url
@@ -116,7 +116,7 @@ def setup_eos_test_network(url = 'https://api.testnet.eos.io', deploy_type=1):
     main_token_contract = 'eosio.token'
     python_contract = 'ceyelqpjeeia'
     code_permission_name = 'eosio.code'
-    uuosapi.set_public_key_prefix('EOS')
+    eosapi.set_public_key_prefix('EOS')
 
     if os.path.exists('test.wallet'):
         os.remove('test.wallet')

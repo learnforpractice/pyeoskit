@@ -37,8 +37,8 @@ class ChainNative(object):
         '''convert integer to name string
         Example:
         ```python
-            from pyeoskit import uuosapi
-            s = uuosapi.n2s(10927537166380695552)
+            from pyeoskit import eosapi
+            s = eosapi.n2s(10927537166380695552)
             print(s)
         ```
         ```
@@ -198,7 +198,7 @@ class ChainNative(object):
 
     @staticmethod
     def mp_compile(contract, src):
-        return _uuosapi.compile_py(contract, src)
+        return _eosapi.compile_py(contract, src)
 
     def mp_make_frozen(self, code):
         mpy_code = ((code, len(code)),)
