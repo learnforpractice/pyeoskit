@@ -126,7 +126,7 @@ class ChainApiAsync(RPCInterface, ChainNative):
         ref_block = chain_info['head_block_id']
         chain_id = chain_info['chain_id']
 
-        tx = self.generate_packed_transaction(actions, expiration, ref_block, chain_id, compress)
+        tx = await self.generate_packed_transaction(actions, expiration, ref_block, chain_id, compress)
         return super().push_transaction(tx)
 
     async def push_transactions(self, aaa, expiration=60, compress=0):
