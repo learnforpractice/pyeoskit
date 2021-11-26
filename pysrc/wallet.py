@@ -48,7 +48,8 @@ def unlock(name, password):
     pass
 
 def import_key(name, wif_key, save=True):
-    _pyeoskit.wallet_import(name, wif_key)
+    ret = _pyeoskit.wallet_import(name, wif_key)
+    return check_result(ret)
 
 def remove_key(name, password, pub_key):
     pass
