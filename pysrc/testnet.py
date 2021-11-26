@@ -6,6 +6,7 @@ import copy
 import shlex
 import shutil
 import random
+import signal
 import hashlib
 import platform
 import subprocess
@@ -204,7 +205,7 @@ class Testnet(object):
 
     def stop(self):
         for p in self.nodes:
-            p.kill()
+            p.send_signal(signal.SIGINT)
         self.wait()
         self.nodes = []
         print('done!')
