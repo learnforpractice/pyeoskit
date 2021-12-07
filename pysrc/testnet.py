@@ -80,20 +80,6 @@ class Testnet(object):
 
     def start_nodes(self, wait=False):
         self.nodes = []
-
-        bin_dir = shutil.which('run-uuos')
-        bin_dir = os.path.dirname(bin_dir)
-        uuos = os.path.join(bin_dir, 'uuos')
-
-        if platform.system() == 'Darwin':
-            os.environ['CHAIN_API_LIB'] = os.path.join(bin_dir, '../lib/libchain_api.dylib')
-            os.environ['VM_API_LIB'] = os.path.join(bin_dir, '../lib/libvm_api.dylib')
-            os.environ['PYTHON_SHARED_LIB_PATH'] = os.path.join(bin_dir, '../lib/libpython3.7m.dylib')
-        else:
-            os.environ['CHAIN_API_LIB'] = os.path.join(bin_dir, '../lib/libchain_api.so')
-            os.environ['VM_API_LIB'] = os.path.join(bin_dir, '../lib/libvm_api.so')
-            os.environ['PYTHON_SHARED_LIB_PATH'] = '/usr/lib/x86_64-linux-gnu/libpython3.7m.so'
-
         if self.log_config:
             configs = f'--data-dir ./{self.tmp_dir}/dd --config-dir ./{self.tmp_dir}/cd -l {self.log_config} {self.extra}'
         else:
@@ -459,7 +445,8 @@ def apply(a, b, c):
                     logger.info('deploy eosio.system done!')
                     break
             except Exception as e:
-                logger.info(e)
+                pass
+#                logger.info(e)
         else:
             assert False, 'deploy eosio.system failed!'
 
