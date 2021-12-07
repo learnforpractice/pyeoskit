@@ -85,7 +85,7 @@ class ChainApi(RPCInterface, ChainNative):
         keys = self.get_sign_keys(fake_actions)
 
         if not expiration:
-            expiration = int(time.time()) + 60
+            expiration = int(time.time()) + 3*60
         else:
             expiration = int(time.time()) + expiration
 

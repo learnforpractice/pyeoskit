@@ -62,7 +62,7 @@ cdef extern from "libpyeoskit.h" nogil:
     char* crypto_get_public_key_(char* privateKey, int eosPub)
     char* crypto_recover_key_(char* digest, char* signature);
 
-    char* crypto_create_key_()
+    char* crypto_create_key_(bool old_format)
 
 cdef object convert(char *_ret):
     ret = <object>_ret
@@ -227,9 +227,9 @@ def crypto_recover_key(digest, signature):
     return convert(ret)
 
 #crypto_create_key_
-def crypto_create_key():
+def crypto_create_key(bool old_format):
     cdef char *ret
-    ret = crypto_create_key_()
+    ret = crypto_create_key_(old_format)
     return convert(ret)
 
 #void set_debug_flag_(bool debug)
