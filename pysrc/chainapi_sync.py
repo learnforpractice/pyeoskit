@@ -8,6 +8,7 @@ from . import wallet
 from . import defaultabi
 from . import wasmcompiler
 from . import log
+from . import ledger
 
 from .transaction import Transaction
 from .chaincache import ChainCache
@@ -45,7 +46,7 @@ class ChainApi(RPCInterface, ChainNative):
         r = super().get_required_keys(trx, public_keys)
         return r['required_keys']
 
-    def get_sign_keys(self, actions):
+    def get_sign_keys(self, actions, pub_keys):
         fake_tx = {
             "expiration": "2021-09-01T16:15:16",
             "ref_block_num": 20676,
@@ -75,14 +76,12 @@ class ChainApi(RPCInterface, ChainNative):
                     "permission": permissions[key]
                 })
             fake_tx['actions'].append(action)
-        pub_keys = wallet.get_public_keys()
         return self.get_required_keys(json.dumps(fake_tx), pub_keys)
 
-    def generate_packed_transaction(self, actions, expiration, ref_block, chain_id, compress=0):
+    def generate_packed_transaction(self, actions, expiration, ref_block, chain_id, compress=0, indexes=None):
         fake_actions = []
         for a in actions:
             fake_actions.append([a[0], a[1], '', a[3]])
-        keys = self.get_sign_keys(fake_actions)
 
         if not expiration:
             expiration = int(time.time()) + 3*60
@@ -105,33 +104,53 @@ class ChainApi(RPCInterface, ChainNative):
             self.check_abi(contract)
             tx.add_action(contract, action_name, args, permissions)
 
-        for key in keys:
-            tx.sign(key)
-        try:
-            return tx.pack(compress)
-        finally:
-            tx.free()
+        if indexes is None:
+            available_pub_keys = wallet.get_public_keys()
+            keys = self.get_sign_keys(fake_actions, available_pub_keys)
+            for key in keys:
+                tx.sign(key)
+            try:
+                return tx.pack(compress)
+            finally:
+                tx.free()
+        else:
+            available_pub_keys = ledger.get_public_keys(indexes)
+            logger.info("++++available_pub_keys: %s", available_pub_keys)
+            keys = self.get_sign_keys(fake_actions, available_pub_keys)
+            if len(keys) == 0:
+                raise Exception('provided keys does not satisfy the authorizations')
+            sign_indexes = []
+            for i in range(len(available_pub_keys)):
+                if available_pub_keys[i] in keys:
+                    sign_indexes.append(indexes[i])
 
-    def push_action(self, contract, action, args, permissions=None, compress=False, expiration=0):
+            packed_tx = tx.pack(compress)
+            tx_json = tx.json()
+            signatures = ledger.sign(tx_json, sign_indexes, chain_id)
+            packed_tx['signatures'] = signatures
+            tx.free()
+            return packed_tx
+
+    def push_action(self, contract, action, args, permissions=None, compress=False, expiration=0, indexes=None):
         if not permissions:
             permissions = {contract:'active'}
         a = [contract, action, args, permissions]
-        return self.push_actions([a], expiration, compress)
+        return self.push_actions([a], expiration, compress, indexes)
 
-    def push_actions(self, actions, expiration=0, compress=0):
+    def push_actions(self, actions, expiration=0, compress=0, indexes=None):
         chain_info = self.get_info()
         ref_block = chain_info['head_block_id']
         chain_id = chain_info['chain_id']
-        tx = self.generate_packed_transaction(actions, expiration, ref_block, chain_id, compress)
+        tx = self.generate_packed_transaction(actions, expiration, ref_block, chain_id, compress, indexes=indexes)
         return super().push_transaction(tx)
 
-    def push_transactions(self, aaa, expiration=60, compress=False):
+    def push_transactions(self, aaa, expiration=60, compress=False, indexes=None):
         chain_info = self.get_info()
         ref_block = chain_info['last_irreversible_block_id']
         chain_id = chain_info['chain_id']
         txs = []
         for aa in aaa:
-            tx = self.generate_packed_transaction(aa, expiration, ref_block, chain_id, compress)
+            tx = self.generate_packed_transaction(aa, expiration, ref_block, chain_id, compress, indexes=indexes)
             txs.append(tx)
         return super().push_transactions(txs)
 
@@ -211,13 +230,13 @@ class ChainApi(RPCInterface, ChainNative):
             return 0.0
         return 0.0
 
-    def transfer(self, _from, to, amount, memo='', token_account=None, token_name=None, token_precision=4, permission='active'):
+    def transfer(self, _from, to, amount, memo='', token_account=None, token_name=None, token_precision=4, permission='active', indexes=None):
         if not token_account:
             token_account = config.main_token_contract
         if not token_name:
             token_name = config.main_token
         args = {"from":_from, "to": to, "quantity": f'%.{token_precision}f %s'%(amount, token_name), "memo":memo}
-        return self.push_action(token_account, 'transfer', args, {_from:permission})
+        return self.push_action(token_account, 'transfer', args, {_from:permission}, indexes=indexes)
 
     def get_code(self, account):
         code = self.db.get_code(account)
@@ -268,15 +287,15 @@ class ChainApi(RPCInterface, ChainNative):
             self.set_abi(account, abi)
         return abi
 
-    def deploy_contract(self, account, code, abi, vm_type=0, vm_version=0, sign=True, compress=False):
+    def deploy_contract(self, account, code, abi, vm_type=0, vm_version=0, sign=True, compress=False, indexes=None):
         if vm_type == 0:
-            return self.deploy_wasm_contract(account, code, abi, vm_type, vm_version, sign, compress)
+            return self.deploy_wasm_contract(account, code, abi, vm_type, vm_version, sign, compress, indexes=indexes)
         elif vm_type == 1:
-            return self.deploy_python_contract(account, code, abi)
+            return self.deploy_python_contract(account, code, abi, indexes=indexes)
         else:
             raise Exception(f'Unknown vm type {vm_type}')
 
-    def deploy_wasm_contract(self, account, code, abi, vm_type=0, vm_version=0, sign=True, compress=0):
+    def deploy_wasm_contract(self, account, code, abi, vm_type=0, vm_version=0, sign=True, compress=0, indexes=None):
         origin_abi = abi
         actions = []
         setcode = {"account":account,
@@ -299,7 +318,7 @@ class ChainApi(RPCInterface, ChainNative):
         setabi = [config.system_contract, 'setabi', setabi, {account:'active'}]
         actions.append(setabi)
 
-        ret = self.push_actions(actions, compress)
+        ret = self.push_actions(actions, compress, indexes=indexes)
         if 'error' in ret:
             raise Exception(ret['error'])
 
@@ -318,19 +337,19 @@ class ChainApi(RPCInterface, ChainNative):
         self.db.remove_code(account)
         return ret
 
-    def deploy_abi(self, account, abi):
+    def deploy_abi(self, account, abi, indexes=None):
         if isinstance(abi, dict):
             abi = json.dumps(abi)
 
         abi = self.pack_abi(abi)
         setabi = self.pack_args(config.system_contract, 'setabi', {'account':account, 'abi':abi.hex()})    
-        ret = self.push_action(config.system_contract, 'setabi', setabi, {account:'active'})
+        ret = self.push_action(config.system_contract, 'setabi', setabi, {account:'active'}, indexes=indexes)
         self.db.remove_abi(account)
         self.clear_abi_cache(account)
         return ret
 
 
-    def deploy_python_contract(self, account, code, abi, deploy_type=0):
+    def deploy_python_contract(self, account, code, abi, deploy_type=0, indexes=None):
         '''Deploy a python contract to EOSIO based network
         Args:
             deploy_type (int) : 0 for UUOS network, 1 for EOS network
@@ -377,7 +396,7 @@ class ChainApi(RPCInterface, ChainNative):
 
         ret = None
         if actions:
-            ret = self.push_actions(actions)
+            ret = self.push_actions(actions, indexes=indexes)
 
         self.set_abi(account, origin_abi)
         return ret

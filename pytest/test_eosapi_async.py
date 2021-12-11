@@ -11,7 +11,6 @@ from pyeoskit.exceptions import ChainException, WalletException
 
 from pyeoskit.testnet import Testnet
 
-from uuosio import uuos
 
 
 Testnet.__test__ = False
@@ -84,9 +83,11 @@ class TestChainApiAsync(object):
             'memo': 'hello'
         }
         act = ['eosio.token', 'transfer', args, {'helloworld11': 'active'}]
+        logger.info("+++++++eosapi: %s", self.eosapi)
         chain_info = await self.eosapi.get_info()
+        chain_id = chain_info['chain_id']
         reference_block_id = chain_info['head_block_id']
-        trx = self.eosapi.generate_transaction([act], 60, reference_block_id)
+        trx = self.eosapi.generate_transaction([act], 60, reference_block_id, chain_id)
         keys = await self.eosapi.get_required_keys(trx, wallet.get_public_keys())
         assert keys
 

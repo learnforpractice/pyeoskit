@@ -36,6 +36,7 @@ cdef extern from "libpyeoskit.h" nogil:
     char* transaction_add_action_(int64_t idx, char* account, char* name, char* data, char* permissions);
     char* transaction_sign_(int64_t idx, char* pub);
     char* transaction_sign_by_private_key_(int64_t idx, char* priv)
+    char* transaction_digest_(int64_t idx, char* chainId)
 
     char* transaction_pack_(int64_t idx, int compress)
     char* transaction_marshal_(int64_t idx)
@@ -60,7 +61,7 @@ cdef extern from "libpyeoskit.h" nogil:
     char* wallet_sign_digest_(char* digest, char* pubKey);
     char* crypto_sign_digest_(char* digest, char* privateKey);
     char* crypto_get_public_key_(char* privateKey, int eosPub)
-    char* crypto_recover_key_(char* digest, char* signature);
+    char* crypto_recover_key_(char* digest, char* signature, int eosPub);
 
     char* crypto_create_key_(bool old_format)
 
@@ -107,6 +108,11 @@ def transaction_add_action(int64_t idx, char* account, char* name, char* data, c
 def transaction_sign(int64_t idx, char* pub):
     cdef char *ret
     ret = transaction_sign_(idx, pub)
+    return convert(ret)
+
+def transaction_digest(int64_t idx, char* chainId):
+    cdef char *ret
+    ret = transaction_digest_(idx, chainId)
     return convert(ret)
 
 #    char* transaction_sign_by_private_key_(int64_t idx, char* priv)
@@ -221,9 +227,9 @@ def crypto_get_public_key(privateKey, eosPub):
     return convert(ret)
 
 #    char* crypto_recover_key_(char* digest, char* signature);
-def crypto_recover_key(digest, signature):
+def crypto_recover_key(digest, signature, eos_pub=True):
     cdef char *ret
-    ret = crypto_recover_key_(digest, signature)
+    ret = crypto_recover_key_(digest, signature, eos_pub)
     return convert(ret)
 
 #crypto_create_key_

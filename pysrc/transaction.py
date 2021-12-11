@@ -38,6 +38,13 @@ class Transaction(object):
             raise Exception(r['error'])
         return r['data']
 
+    def digest(self, chainId):
+        r = _pyeoskit.transaction_digest(self.idx, chainId)
+        r = json.loads(r)
+        if 'error' in r:
+            raise Exception(r['error'])
+        return r['data']
+
     def sign_by_private_key(self, priv_key):
         r = _pyeoskit.transaction_sign_by_private_key(self.idx, priv_key)
         r = json.loads(r)
@@ -55,7 +62,8 @@ class Transaction(object):
     @staticmethod
     def unpack(tx):
         ret = _pyeoskit.transaction_unpack(tx)
-        return check_result(ret)
+        ret = check_result(ret)
+        return Transaction.from_json(ret)
 
     def marshal(self):
         r = _pyeoskit.transaction_marshal(self.idx)
