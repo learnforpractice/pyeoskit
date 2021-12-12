@@ -2,7 +2,7 @@ Python Toolkit for EOS
 
 # Latest Release
 
-[pyeoskit v1.0.5](https://github.com/learnforpractice/pyeoskit/releases)
+[pyeoskit v1.0.6](https://github.com/learnforpractice/pyeoskit/releases)
 
 # Installation
 
@@ -119,6 +119,22 @@ async def test():
     print(r)
 
 asyncio.run(test())
+```
+
+### Sign With Ledger Hardware Wallet Example
+```python
+import os
+from pyeoskit import eosapi
+eosapi.set_node('https://eos.greymass.com')
+args = {
+    'from': 'test1',
+    'to': 'test2',
+    'quantity': '1.0000 EOS',
+    'memo': 'hello,world'
+}
+
+#indexes is an array of ledger signing key indexes
+eosapi.push_action('eosio.token', 'transfer', args, {'test1':'active'}, indexes=[0])
 ```
 
 ### License
