@@ -10,6 +10,7 @@ from urllib.parse import urlparse
 
 import requests
 import requests_unixsocket
+import httpx
 
 import certifi
 import urllib3
@@ -87,7 +88,6 @@ class HttpClient(object):
         self._async = _async
 
         if _async:
-            import httpx
             self.async_client = httpx.AsyncClient(proxies={})
         else:
             self.async_client = None
