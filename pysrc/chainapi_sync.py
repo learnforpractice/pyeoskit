@@ -138,11 +138,16 @@ class ChainApi(RPCInterface, ChainNative):
         return self.push_actions([a], expiration, compress, indexes)
 
     def push_actions(self, actions, expiration=0, compress=0, indexes=None):
-        chain_info = self.get_info()
-        ref_block = chain_info['head_block_id']
-        chain_id = chain_info['chain_id']
-        tx = self.generate_packed_transaction(actions, expiration, ref_block, chain_id, compress, indexes=indexes)
-        return super().push_transaction(tx)
+        try:
+            chain_info = self.get_info()
+            ref_block = chain_info['head_block_id']
+            chain_id = chain_info['chain_id']
+            tx = self.generate_packed_transaction(actions, expiration, ref_block, chain_id, compress, indexes=indexes)
+            return super().push_transaction(tx)
+        except Exception as e:
+            raise e
+        finally:
+            ledger.close_dongle()
 
     def push_transactions(self, aaa, expiration=60, compress=False, indexes=None):
         chain_info = self.get_info()

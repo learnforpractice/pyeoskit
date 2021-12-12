@@ -35,6 +35,13 @@ def get_dongle():
         dongle = getDongle(True)
     return dongle
 
+def close_dongle():
+    global dongle
+    if not dongle:
+        return
+    dongle.close()
+    dongle = None
+
 def sign_by_index(obj, index):
     donglePath = parse_bip32_path(f"44'/194'/0'/0/{index}")
     pathSize = len(donglePath) // 4
