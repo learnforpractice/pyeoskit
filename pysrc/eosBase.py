@@ -144,7 +144,7 @@ class Transaction:
             b = val & 0x7f
             val >>= 7
             b |= ((val > 0) << 7)
-            out += chr(b).encode()
+            out += b.to_bytes(1, 'little')
 
             if val == 0:
                 break
@@ -160,7 +160,7 @@ class Transaction:
 
         k = 0
         while True:
-            b = ord(buffer[k])
+            b = buffer[k]
             k += 1
             i += 1
             v |= (b & 0x7f) << by
