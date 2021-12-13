@@ -172,7 +172,7 @@ class ChainApiAsync(RPCInterface, ChainNative):
                 return None
             raise e
 
-    async def create_account(self, creator, account, owner_key, active_key, ram_bytes=0, stake_net=0.0, stake_cpu=0.0, sign=True):
+    async def create_account(self, creator, account, owner_key, active_key, ram_bytes=0, stake_net=0.0, stake_cpu=0.0, sign=True, indexes=None):
         actions = []
         args = {
             'creator': creator,
@@ -211,7 +211,7 @@ class ChainApiAsync(RPCInterface, ChainNative):
             args = self.pack_args(config.system_contract, 'delegatebw', args)
             act = [config.system_contract, 'delegatebw', args, {creator:'active'}]
             actions.append(act)
-        return self.push_actions(actions)
+        return self.push_actions(actions, indexes=indexes)
 
     async def get_balance(self, account, token_account=None, token_name=None):
         if not token_name:

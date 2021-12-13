@@ -70,7 +70,8 @@ class Transaction(object):
         r = json.loads(r)
         if 'error' in r:
             raise Exception(r['error'])
-        return r['data']
+        r = json.loads(r['data'])
+        return r
 
     def json(self):
         return self.marshal()
