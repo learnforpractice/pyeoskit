@@ -26,6 +26,8 @@ cdef extern from "libpyeoskit.h" nogil:
 
     void say_hello_(char* name)
     char* wallet_import_(char* name, char* priv)
+    bool wallet_remove_(char *name, char *pubKey)
+
     char* wallet_get_public_keys_()
 
     int64_t transaction_new_(int64_t expiration, char* refBlock, char* chainId);
@@ -80,6 +82,9 @@ def wallet_import(char* name, char* priv):
     cdef char *ret
     ret = wallet_import_(name, priv)
     return convert(ret)
+
+def wallet_remove(char *name, char *pubKey):
+    return wallet_remove_(name, pubKey)
 
 def transaction_new(int64_t expiration, char* refBlock, char* chainId):
     return transaction_new_(expiration, refBlock, chainId)

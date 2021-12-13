@@ -51,8 +51,9 @@ def import_key(name, wif_key, save=True):
     ret = _pyeoskit.wallet_import(name, wif_key)
     return check_result(ret)
 
-def remove_key(name, password, pub_key):
-    pass
+def remove_key(name, pub_key):
+    ret = _pyeoskit.wallet_remove(name, pub_key)
+    return ret
 
 def sign_transaction(trx: Union[str, dict], public_keys: List[str], chain_id: str, json=False):
     if isinstance(trx, dict):
