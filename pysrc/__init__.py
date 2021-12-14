@@ -5,7 +5,7 @@ from .rpc_interface import RPCInterface, WalletClient
 from .chainapi_sync import ChainApi
 from pyeoskit import _pyeoskit
 
-__version__='1.0.6'
+__version__='1.0.7'
 
 _pyeoskit.init()
 
