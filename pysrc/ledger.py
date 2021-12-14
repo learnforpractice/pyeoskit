@@ -100,7 +100,7 @@ def get_public_keys(indexes):
         public_keys.append(public_key)
     return public_keys
 
-def get_public_key(index):
+def _get_public_key(index):
     donglePath = parse_bip32_path(f"44'/194'/0'/0/{index}")
     apdu = bytearray.fromhex("D4020001") + bytes([len(donglePath) + 1, len(donglePath) // 4]) + donglePath
 
@@ -122,3 +122,11 @@ def get_public_key(index):
     pub2 = address.decode()
     assert pub1 == pub2
     return pub1
+
+def get_public_key(index):
+    try:
+        return _get_public_key(index)
+    except Exception as e:
+        raise e
+    finally:
+        close_dongle()
