@@ -14,13 +14,17 @@ on:
 jobs:
   run:
     runs-on: ${{ matrix.os }}
+    env:
+      VERSION: 1.0.7
     strategy:
       matrix:
         # python-version: [3.7, 3.8, 3.9, "3.10"]
         # os: ['windows-latest', 'ubuntu-latest', 'macos-latest']
         # os: ['ubuntu-latest', 'macos-10.15', 'macos-latest']
-        python-version: [3.7, 3.8, 3.9, "3.10"]
-        os: ['ubuntu-18.04', 'macos-10.15', 'windows-latest']
+        # python-version: [3.7, 3.8, 3.9, "3.10"]
+        # os: ['ubuntu-18.04', 'macos-10.15', 'windows-latest']
+        python-version: ["3.10"]
+        os: ['ubuntu-18.04']
       fail-fast: false
 
     steps:
@@ -84,3 +88,16 @@ jobs:
         with:
           files: |
             ./dist/wheelhouse/${{ steps.manylinuxwhlfile.outputs.value }}
+      - name: Downloading whl files
+        if: ${{ startsWith(github.ref, 'refs/tags/') && matrix.os == 'ubuntu-18.04' && matrix.python-version == '3.10' }}
+        working-directory: dist
+        run: |
+          python ../scripts/download.py ${{ env.VERSION }}
+          rm pyeoskit-1.0.7-cp310-cp310-linux_x86_64.whl
+          rm -r wheelhouse
+      - name: Publish a Python distribution to PyPI
+        if: ${{ startsWith(github.ref, 'refs/tags/') && matrix.os == 'ubuntu-18.04' && matrix.python-version == '3.10' }}
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_API_TOKEN }}
