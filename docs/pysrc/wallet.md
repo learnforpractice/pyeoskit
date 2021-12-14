@@ -94,10 +94,10 @@ def open(name):
 
 ## remove_key
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/wallet.py#L53)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/wallet.py#L54)
 
 ```python
-def remove_key(name, password, pub_key):
+def remove_key(name, pub_key):
 ```
 
 ## save
@@ -126,7 +126,7 @@ def set_timeout(secs):
 
 ## sign_digest
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/wallet.py#L64)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/wallet.py#L66)
 
 ```python
 def sign_digest(digest: Union[bytes, str], public_key: str):
@@ -134,7 +134,7 @@ def sign_digest(digest: Union[bytes, str], public_key: str):
 
 ## sign_transaction
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/wallet.py#L56)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/wallet.py#L58)
 
 ```python
 def sign_transaction(

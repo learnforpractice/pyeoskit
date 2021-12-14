@@ -10,5 +10,5 @@
 [[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/crypto.py#L4)
 
 ```python
-def create_key():
+def create_key(old_format=True):
 ```

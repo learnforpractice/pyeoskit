@@ -12,17 +12,9 @@ import requests
 import requests_unixsocket
 import httpx
 
-import certifi
-import urllib3
 from .exceptions import (
     NoResponse,
     ChainException,
-)
-from urllib3.connection import HTTPConnection
-from urllib3.exceptions import (
-    MaxRetryError,
-    ReadTimeoutError,
-    ProtocolError,
 )
 
 logger = logging.getLogger(__name__)
@@ -46,37 +38,10 @@ class HttpClient(object):
 
     """
 
-    def __init__(self, nodes, _async = False, **kwargs):
+    def __init__(self, nodes, _async = False, timeout=10, **kwargs):
         self.api_version = kwargs.get('api_version', 'v1')
-        self.max_retries = kwargs.get('max_retries', 2)
         self.json_decode = kwargs.get('json_decode', True)
-
-        if kwargs.get('tcp_keepalive', True):
-            socket_options = HTTPConnection.default_socket_options + \
-                             [(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1), ]
-        else:
-            socket_options = HTTPConnection.default_socket_options
-
-        timeout = urllib3.Timeout(
-            connect=kwargs.get('connect_timeout', 10),
-            read=kwargs.get('timeout', 10))
-
-        self.http = urllib3.poolmanager.PoolManager(
-            num_pools=kwargs.get('num_pools', 50),
-            maxsize=kwargs.get('maxsize', 10),
-            block=kwargs.get('pool_block', False),
-            retries=kwargs.get('http_retries', 1),
-            timeout=timeout,
-            socket_options=socket_options,
-            headers={'Content-Type': 'application/json'},
-            cert_reqs='CERT_REQUIRED',
-            ca_certs=certifi.where())
-        '''
-            urlopen(method, url, body=None, headers=None, retries=None,
-            redirect=True, assert_same_host=True, timeout=<object object>,
-            pool_timeout=None, release_conn=None, chunked=False, body_pos=None,
-            **response_kw)
-        '''
+        self.timeout = timeout
         self.set_nodes(nodes)
 
         log_level = kwargs.get('log_level', logging.INFO)
@@ -84,7 +49,6 @@ class HttpClient(object):
 
         self.session_unix = requests_unixsocket.Session()
         self.session = requests.Session()
-        self.timeout = 5
         self._async = _async
 
         if _async:
@@ -138,7 +102,7 @@ class HttpClient(object):
         body = self._body(body)
         method = 'POST' if body else 'GET'
         if self.node_url.startswith('unix://'):
-            url = "http+{}/{}/{}/{}".format(self.node_url, self.api_version, api, endpoint)
+            url = f"http+{self.node_url}/{self.api_version}/{api}/{endpoint}"
             try:
                 if body:
                     r = self.session_unix.post(url, data = body)
@@ -157,30 +121,34 @@ class HttpClient(object):
                 logger.info('Request error', extra=extra)
                 raise e
         else:
-            url = "{}/{}/{}/{}".format(self.node_url, self.api_version, api, endpoint)
-            try:
-                response = self.http.urlopen(method, url, body=body)
-            except Exception as e:
-                extra = dict(err=e, url=url, body=body, method=method)
-                logger.info('Request error', extra=extra)
-                raise e
+            url = f"{self.node_url}/{self.api_version}/{api}/{endpoint}"
+            if not body:
+                r = self.session.get(url, timeout=self.timeout)
             else:
-                ret = self._return(response=response, body=body)
-                return ret
+                body = self._body(body)
+                r = self.session.post(url, data=body, timeout=self.timeout)
+            result = r.text
+            if not r.status_code in [200, 202, 201] or not result:
+                raise ChainException(result, r.status_code)
+
+            ret = json.loads(result)
+            if 'error' in ret:
+                raise ChainException(ret, r.status_code)
+            return ret
 
     async def async_exec(self, api, endpoint, body=None):
         url = f'{self.node_url}/v1/{api}/{endpoint}'
         if not body:
-            r = await self.async_client.get(url)
+            r = await self.async_client.get(url, timeout=self.timeout)
         else:
             body = self._body(body)
-            r = await self.async_client.post(url, data=body)
+            r = await self.async_client.post(url, data=body, timeout=self.timeout)
 
         result = r.text
         if not r.status_code in [200, 202, 201] or not result:
             raise ChainException(result, r.status_code)
 
-        ret = json.loads(r.text)
+        ret = json.loads(result)
         if 'error' in ret:
             raise ChainException(ret, r.status_code)
         return ret

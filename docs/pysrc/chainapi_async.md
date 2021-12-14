@@ -20,8 +20,6 @@
         - [ChainApiAsync().get_balance](#chainapiasyncget_balance)
         - [ChainApiAsync().get_chain_id](#chainapiasyncget_chain_id)
         - [ChainApiAsync().get_code](#chainapiasyncget_code)
-        - [ChainApiAsync().get_keys](#chainapiasyncget_keys)
-        - [ChainApiAsync().get_public_keys](#chainapiasyncget_public_keys)
         - [ChainApiAsync().get_raw_code](#chainapiasyncget_raw_code)
         - [ChainApiAsync().get_required_keys](#chainapiasyncget_required_keys)
         - [ChainApiAsync().get_sign_keys](#chainapiasyncget_sign_keys)
@@ -32,13 +30,12 @@
         - [ChainApiAsync().push_transactions](#chainapiasyncpush_transactions)
         - [ChainApiAsync().set_abi](#chainapiasyncset_abi)
         - [ChainApiAsync().set_code](#chainapiasyncset_code)
-        - [ChainApiAsync().set_node](#chainapiasyncset_node)
         - [ChainApiAsync().strip_prefix](#chainapiasyncstrip_prefix)
         - [ChainApiAsync().transfer](#chainapiasynctransfer)
 
 ## ChainApiAsync
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L24)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L25)
 
 ```python
 class ChainApiAsync(RPCInterface, ChainNative):
@@ -47,7 +44,7 @@ class ChainApiAsync(RPCInterface, ChainNative):
 
 ### ChainApiAsync().create_account
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L161)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L178)
 
 ```python
 async def create_account(
@@ -59,20 +56,21 @@ async def create_account(
     stake_net=0.0,
     stake_cpu=0.0,
     sign=True,
+    indexes=None,
 ):
 ```
 
 ### ChainApiAsync().deploy_abi
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L329)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L344)
 
 ```python
-async def deploy_abi(account, abi):
+async def deploy_abi(account, abi, indexes=None):
 ```
 
 ### ChainApiAsync().deploy_code
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L318)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L333)
 
 ```python
 async def deploy_code(account, code, vm_type=0, vm_version=0):
@@ -80,7 +78,7 @@ async def deploy_code(account, code, vm_type=0, vm_version=0):
 
 ### ChainApiAsync().deploy_contract
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L279)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L294)
 
 ```python
 async def deploy_contract(
@@ -90,13 +88,14 @@ async def deploy_contract(
     vm_type=0,
     vm_version=0,
     sign=True,
-    compress=0,
+    compress=False,
+    indexes=None,
 ):
 ```
 
 ### ChainApiAsync().deploy_module
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L395)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L411)
 
 ```python
 async def deploy_module(account, module_name, code, deploy_type=1):
@@ -104,7 +103,7 @@ async def deploy_module(account, module_name, code, deploy_type=1):
 
 ### ChainApiAsync().deploy_python_code
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L392)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L408)
 
 ```python
 async def deploy_python_code(account, code, deploy_type=0):
@@ -112,10 +111,16 @@ async def deploy_python_code(account, code, deploy_type=0):
 
 ### ChainApiAsync().deploy_python_contract
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L341)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L356)
 
 ```python
-async def deploy_python_contract(account, code, abi, deploy_type=0):
+async def deploy_python_contract(
+    account,
+    code,
+    abi,
+    deploy_type=0,
+    indexes=None,
+):
 ```
 
 Deploy a python contract to EOSIO based network
@@ -126,10 +131,10 @@ deploy_type (int) : 0 for UUOS network, 1 for EOS network
 
 ### ChainApiAsync().deploy_wasm_contract
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L287)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L302)
 
 ```python
-def deploy_wasm_contract(
+async def deploy_wasm_contract(
     account,
     code,
     abi,
@@ -137,12 +142,13 @@ def deploy_wasm_contract(
     vm_version=0,
     sign=True,
     compress=0,
+    indexes=None,
 ):
 ```
 
 ### ChainApiAsync().enable_decode
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L34)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L32)
 
 ```python
 def enable_decode(json_format):
@@ -150,7 +156,7 @@ def enable_decode(json_format):
 
 ### ChainApiAsync().exec
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L404)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L420)
 
 ```python
 async def exec(account, args, permissions={}):
@@ -158,7 +164,7 @@ async def exec(account, args, permissions={}):
 
 ### ChainApiAsync().generate_packed_transaction
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L84)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L81)
 
 ```python
 async def generate_packed_transaction(
@@ -167,12 +173,13 @@ async def generate_packed_transaction(
     ref_block,
     chain_id,
     compress=0,
+    indexes=None,
 ):
 ```
 
 ### ChainApiAsync().get_abi
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L256)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L272)
 
 ```python
 async def get_abi(account):
@@ -180,7 +187,7 @@ async def get_abi(account):
 
 ### ChainApiAsync().get_account
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L151)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L167)
 
 ```python
 async def get_account(account):
@@ -188,7 +195,7 @@ async def get_account(account):
 
 ### ChainApiAsync().get_balance
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L202)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L219)
 
 ```python
 async def get_balance(account, token_account=None, token_name=None):
@@ -196,7 +203,7 @@ async def get_balance(account, token_account=None, token_name=None):
 
 ### ChainApiAsync().get_chain_id
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L41)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L39)
 
 ```python
 def get_chain_id():
@@ -204,31 +211,15 @@ def get_chain_id():
 
 ### ChainApiAsync().get_code
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L229)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L245)
 
 ```python
 async def get_code(account):
 ```
 
-### ChainApiAsync().get_keys
-
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L427)
-
-```python
-async def get_keys(account_name, perm_name):
-```
-
-### ChainApiAsync().get_public_keys
-
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L421)
-
-```python
-async def get_public_keys(account_name, perm_name):
-```
-
 ### ChainApiAsync().get_raw_code
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L242)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L258)
 
 ```python
 async def get_raw_code(account):
@@ -236,7 +227,7 @@ async def get_raw_code(account):
 
 ### ChainApiAsync().get_required_keys
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L47)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L45)
 
 ```python
 async def get_required_keys(trx, public_keys):
@@ -244,15 +235,15 @@ async def get_required_keys(trx, public_keys):
 
 ### ChainApiAsync().get_sign_keys
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L51)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L49)
 
 ```python
-async def get_sign_keys(actions):
+async def get_sign_keys(actions, pub_keys):
 ```
 
 ### ChainApiAsync().init
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L37)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L35)
 
 ```python
 def init():
@@ -260,7 +251,7 @@ def init():
 
 ### ChainApiAsync().push_action
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L118)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L137)
 
 ```python
 async def push_action(
@@ -268,38 +259,39 @@ async def push_action(
     action,
     args,
     permissions=None,
-    compress=0,
+    compress=False,
     expiration=0,
+    indexes=None,
 ):
 ```
 
 ### ChainApiAsync().push_actions
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L124)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L143)
 
 ```python
-async def push_actions(actions, expiration=0, compress=0):
+async def push_actions(actions, expiration=0, compress=0, indexes=None):
 ```
 
 ### ChainApiAsync().push_transaction
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L44)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L42)
 
 ```python
-def push_transaction(trx: Union[str, dict], compress=0):
+def push_transaction(trx: Union[str, dict]):
 ```
 
 ### ChainApiAsync().push_transactions
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L132)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L150)
 
 ```python
-async def push_transactions(aaa, expiration=60, compress=0):
+async def push_transactions(aaa, expiration=60, compress=False, indexes=None):
 ```
 
 ### ChainApiAsync().set_abi
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L252)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L268)
 
 ```python
 def set_abi(account, abi):
@@ -307,23 +299,15 @@ def set_abi(account, abi):
 
 ### ChainApiAsync().set_code
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L249)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L265)
 
 ```python
 def set_code(account, code):
 ```
 
-### ChainApiAsync().set_node
-
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L31)
-
-```python
-def set_node(node_url):
-```
-
 ### ChainApiAsync().strip_prefix
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L143)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L161)
 
 ```python
 def strip_prefix(pub_key):
@@ -331,7 +315,7 @@ def strip_prefix(pub_key):
 
 ### ChainApiAsync().transfer
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L220)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L237)
 
 ```python
 async def transfer(
@@ -343,5 +327,6 @@ async def transfer(
     token_name=None,
     token_precision=4,
     permission='active',
+    indexes=None,
 ):
 ```

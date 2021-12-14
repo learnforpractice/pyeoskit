@@ -9,7 +9,7 @@ Full Pyeoskit project documentation can be found in [Modules](MODULES.md#pyeoski
 - [Pyeoskit Index](#pyeoskit-index)
 - [Latest Release](#latest-release)
 - [Installation](#installation)
-- [[Docs](https://learnforpractice.github.io/pyeoskit)](#docshttpslearnforpracticegithubiopyeoskit)
+- [[Full List of Pyeoskit Project Modules.](https://learnforpractice.github.io/pyeoskit/#/MODULES?id=pyeoskit-modules)](#full-list-of-pyeoskit-project-moduleshttpslearnforpracticegithubiopyeoskitmodulesidpyeoskit-modules)
 - [Building from Source Code](#building-from-source-code)
         - [Installing Prerequisites](#installing-prerequisites)
         - [Downloading Source Code](#downloading-source-code)
@@ -18,15 +18,23 @@ Full Pyeoskit project documentation can be found in [Modules](MODULES.md#pyeoski
 
 # Latest Release
 
-[pyeoskit v1.0.5](https://github.com/learnforpractice/pyeoskit/releases)
+[pyeoskit v1.0.7](https://github.com/learnforpractice/pyeoskit/releases)
 
 # Installation
 
 ```bash
-pip install pyeoskit
+python3 -m pip install --upgrade pip
+python3 -m pip install pyeoskit
 ```
 
-# [Docs](https://learnforpractice.github.io/pyeoskit)
+On Windows platform:
+
+```bash
+python -m pip install --upgrade pip
+python -m pip install pyeoskit
+```
+
+# [Full List of Pyeoskit Project Modules.](https://learnforpractice.github.io/pyeoskit/#/MODULES?id=pyeoskit-modules)
 
 # Building from Source Code
 
@@ -57,7 +65,7 @@ cmd -k /path/to/gcc/mingwvars.bat
 ### Downloading Source Code
 
 ```
-git clone https://www.github.com/uuosio/pyeoskit
+git clone https://www.github.com/learnforpractice/pyeoskit
 cd pyeoskit
 git submodule update --init --recursive
 ```
@@ -88,10 +96,6 @@ python -m pip uninstall pyeoskit -y;python -m pip install .\dist\pyeoskit-[SUFFI
 ```python
 import os
 from pyeoskit import eosapi, wallet
-
-if os.path.exists('mywallet.wallet'):
-    os.remove('mywallet.wallet')
-psw = wallet.create('mywallet')
 #import your account private key here
 wallet.import_key('mywallet', '5K463ynhZoCDDa4RDcr63cUwWLTnKqmdcoTKTHBjqoKfv4u5V7p')
 
@@ -114,9 +118,6 @@ import asyncio
 from pyeoskit import wallet
 from pyeoskit.chainapi import ChainApiAsync
 
-if os.path.exists('mywallet.wallet'):
-    os.remove('mywallet.wallet')
-psw = wallet.create('mywallet')
 #import your account private key here
 wallet.import_key('mywallet', '5K463ynhZoCDDa4RDcr63cUwWLTnKqmdcoTKTHBjqoKfv4u5V7p')
 
@@ -134,6 +135,22 @@ async def test():
     print(r)
 
 asyncio.run(test())
+```
+
+### Sign With Ledger Hardware Wallet Example
+```python
+import os
+from pyeoskit import eosapi
+eosapi.set_node('https://eos.greymass.com')
+args = {
+    'from': 'test1',
+    'to': 'test2',
+    'quantity': '1.0000 EOS',
+    'memo': 'hello,world'
+}
+
+#indexes is an array of ledger signing key indexes
+eosapi.push_action('eosio.token', 'transfer', args, {'test1':'active'}, indexes=[0])
 ```
 
 ### License

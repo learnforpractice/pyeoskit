@@ -18,7 +18,7 @@ python -m pip install --upgrade pip
 python -m pip install pyeoskit
 ```
 
-# [Docs](https://learnforpractice.github.io/pyeoskit)
+# [Full List of Pyeoskit Project Modules.](https://learnforpractice.github.io/pyeoskit/#/MODULES?id=pyeoskit-modules)
 
 # Building from Source Code
 

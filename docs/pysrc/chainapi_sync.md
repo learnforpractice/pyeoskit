@@ -37,7 +37,7 @@
 
 ## ChainApi
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L24)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L25)
 
 ```python
 class ChainApi(RPCInterface, ChainNative):
@@ -46,7 +46,7 @@ class ChainApi(RPCInterface, ChainNative):
 
 ### ChainApi().create_account
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L157)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L182)
 
 ```python
 def create_account(
@@ -58,20 +58,21 @@ def create_account(
     stake_net=0.0,
     stake_cpu=0.0,
     sign=True,
+    indexes=None,
 ):
 ```
 
 ### ChainApi().deploy_abi
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L323)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L348)
 
 ```python
-def deploy_abi(account, abi):
+def deploy_abi(account, abi, indexes=None):
 ```
 
 ### ChainApi().deploy_code
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L312)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L337)
 
 ```python
 def deploy_code(account, code, vm_type=0, vm_version=0):
@@ -79,7 +80,7 @@ def deploy_code(account, code, vm_type=0, vm_version=0):
 
 ### ChainApi().deploy_contract
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L273)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L298)
 
 ```python
 def deploy_contract(
@@ -90,12 +91,13 @@ def deploy_contract(
     vm_version=0,
     sign=True,
     compress=False,
+    indexes=None,
 ):
 ```
 
 ### ChainApi().deploy_module
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L390)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L415)
 
 ```python
 def deploy_module(account, module_name, code, deploy_type=1):
@@ -103,7 +105,7 @@ def deploy_module(account, module_name, code, deploy_type=1):
 
 ### ChainApi().deploy_python_code
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L387)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L412)
 
 ```python
 def deploy_python_code(account, code, deploy_type=0):
@@ -111,10 +113,10 @@ def deploy_python_code(account, code, deploy_type=0):
 
 ### ChainApi().deploy_python_contract
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L335)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L360)
 
 ```python
-def deploy_python_contract(account, code, abi, deploy_type=0):
+def deploy_python_contract(account, code, abi, deploy_type=0, indexes=None):
 ```
 
 Deploy a python contract to EOSIO based network
@@ -125,7 +127,7 @@ deploy_type (int) : 0 for UUOS network, 1 for EOS network
 
 ### ChainApi().deploy_wasm_contract
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L281)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L306)
 
 ```python
 def deploy_wasm_contract(
@@ -136,12 +138,13 @@ def deploy_wasm_contract(
     vm_version=0,
     sign=True,
     compress=0,
+    indexes=None,
 ):
 ```
 
 ### ChainApi().enable_decode
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L31)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L32)
 
 ```python
 def enable_decode(json_format):
@@ -149,7 +152,7 @@ def enable_decode(json_format):
 
 ### ChainApi().exec
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L399)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L424)
 
 ```python
 def exec(account, args, permissions={}):
@@ -166,12 +169,13 @@ def generate_packed_transaction(
     ref_block,
     chain_id,
     compress=0,
+    indexes=None,
 ):
 ```
 
 ### ChainApi().get_abi
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L251)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L276)
 
 ```python
 def get_abi(account):
@@ -179,7 +183,7 @@ def get_abi(account):
 
 ### ChainApi().get_account
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L146)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L171)
 
 ```python
 def get_account(account):
@@ -187,7 +191,7 @@ def get_account(account):
 
 ### ChainApi().get_balance
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L198)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L223)
 
 ```python
 def get_balance(account, token_account=None, token_name=None):
@@ -195,7 +199,7 @@ def get_balance(account, token_account=None, token_name=None):
 
 ### ChainApi().get_chain_id
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L38)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L39)
 
 ```python
 def get_chain_id():
@@ -203,7 +207,7 @@ def get_chain_id():
 
 ### ChainApi().get_code
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L224)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L249)
 
 ```python
 def get_code(account):
@@ -211,7 +215,7 @@ def get_code(account):
 
 ### ChainApi().get_keys
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L422)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L447)
 
 ```python
 def get_keys(account_name, perm_name):
@@ -219,7 +223,7 @@ def get_keys(account_name, perm_name):
 
 ### ChainApi().get_public_keys
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L416)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L441)
 
 ```python
 def get_public_keys(account_name, perm_name):
@@ -227,7 +231,7 @@ def get_public_keys(account_name, perm_name):
 
 ### ChainApi().get_raw_code
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L237)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L262)
 
 ```python
 def get_raw_code(account):
@@ -235,7 +239,7 @@ def get_raw_code(account):
 
 ### ChainApi().get_required_keys
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L44)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L45)
 
 ```python
 def get_required_keys(trx, public_keys):
@@ -243,15 +247,15 @@ def get_required_keys(trx, public_keys):
 
 ### ChainApi().get_sign_keys
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L48)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L49)
 
 ```python
-def get_sign_keys(actions):
+def get_sign_keys(actions, pub_keys):
 ```
 
 ### ChainApi().init
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L34)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L35)
 
 ```python
 def init():
@@ -259,7 +263,7 @@ def init():
 
 ### ChainApi().push_action
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L115)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L137)
 
 ```python
 def push_action(
@@ -269,20 +273,21 @@ def push_action(
     permissions=None,
     compress=False,
     expiration=0,
+    indexes=None,
 ):
 ```
 
 ### ChainApi().push_actions
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L121)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L143)
 
 ```python
-def push_actions(actions, expiration=0, compress=0):
+def push_actions(actions, expiration=0, compress=0, indexes=None):
 ```
 
 ### ChainApi().push_transaction
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L41)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L42)
 
 ```python
 def push_transaction(trx: Union[str, dict]):
@@ -290,15 +295,15 @@ def push_transaction(trx: Union[str, dict]):
 
 ### ChainApi().push_transactions
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L128)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L155)
 
 ```python
-def push_transactions(aaa, expiration=60, compress=False):
+def push_transactions(aaa, expiration=60, compress=False, indexes=None):
 ```
 
 ### ChainApi().set_abi
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L247)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L272)
 
 ```python
 def set_abi(account, abi):
@@ -306,7 +311,7 @@ def set_abi(account, abi):
 
 ### ChainApi().set_code
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L244)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L269)
 
 ```python
 def set_code(account, code):
@@ -314,7 +319,7 @@ def set_code(account, code):
 
 ### ChainApi().strip_prefix
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L138)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L165)
 
 ```python
 def strip_prefix(pub_key):
@@ -322,7 +327,7 @@ def strip_prefix(pub_key):
 
 ### ChainApi().transfer
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L216)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L241)
 
 ```python
 def transfer(
@@ -334,5 +339,6 @@ def transfer(
     token_name=None,
     token_precision=4,
     permission='active',
+    indexes=None,
 ):
 ```

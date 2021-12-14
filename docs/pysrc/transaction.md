@@ -5,6 +5,7 @@
 - [Pyeoskit](../README.md#pyeoskit-index) / [Modules](../MODULES.md#pyeoskit-modules) / [Pysrc](index.md#pysrc) / Transaction
     - [Transaction](#transaction)
         - [Transaction().add_action](#transactionadd_action)
+        - [Transaction().digest](#transactiondigest)
         - [Transaction().free](#transactionfree)
         - [Transaction.from_json](#transactionfrom_json)
         - [Transaction().json](#transactionjson)
@@ -32,9 +33,17 @@ class Transaction(object):
 def add_action(contract, action, args, permissions):
 ```
 
+### Transaction().digest
+
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/transaction.py#L41)
+
+```python
+def digest(chainId):
+```
+
 ### Transaction().free
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/transaction.py#L70)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/transaction.py#L82)
 
 ```python
 def free():
@@ -51,7 +60,7 @@ def from_json(tx, chain_id=None):
 
 ### Transaction().json
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/transaction.py#L67)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/transaction.py#L79)
 
 ```python
 def json():
@@ -59,7 +68,7 @@ def json():
 
 ### Transaction().marshal
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/transaction.py#L60)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/transaction.py#L71)
 
 ```python
 def marshal():
@@ -67,10 +76,10 @@ def marshal():
 
 ### Transaction().pack
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/transaction.py#L48)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/transaction.py#L55)
 
 ```python
-def pack(compress=False):
+def pack(compress=False, load=False):
 ```
 
 ### Transaction().set_chain_id
@@ -91,7 +100,7 @@ def sign(pub_key):
 
 ### Transaction().sign_by_private_key
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/transaction.py#L41)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/transaction.py#L48)
 
 ```python
 def sign_by_private_key(priv_key):
@@ -99,7 +108,7 @@ def sign_by_private_key(priv_key):
 
 ### Transaction.unpack
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/transaction.py#L55)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/transaction.py#L65)
 
 ```python
 @staticmethod

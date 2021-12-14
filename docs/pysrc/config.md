@@ -7,8 +7,6 @@
     - [set_nodes](#set_nodes)
     - [setup_eos_network](#setup_eos_network)
     - [setup_eos_test_network](#setup_eos_test_network)
-    - [setup_uuos_network](#setup_uuos_network)
-    - [setup_uuos_test_network](#setup_uuos_test_network)
 
 ## config_network
 
@@ -28,7 +26,7 @@ def set_nodes(_nodes):
 
 ## setup_eos_network
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/config.py#L84)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/config.py#L50)
 
 ```python
 def setup_eos_network():
@@ -36,24 +34,8 @@ def setup_eos_network():
 
 ## setup_eos_test_network
 
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/config.py#L99)
+[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/config.py#L65)
 
 ```python
 def setup_eos_test_network(url='https://api.testnet.eos.io', deploy_type=1):
-```
-
-## setup_uuos_network
-
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/config.py#L50)
-
-```python
-def setup_uuos_network():
-```
-
-## setup_uuos_test_network
-
-[[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/config.py#L63)
-
-```python
-def setup_uuos_test_network(url='http://127.0.0.1:8888', deploy_type=1):
 ```

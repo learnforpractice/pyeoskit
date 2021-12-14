@@ -24,14 +24,10 @@ setup(
         ]
     },
     install_requires=[
-        'urllib3>=1.21.1',
-        'certifi>=2021.10.8',
-        'toolz>=0.11.1',
-        'funcy>=1.16',
-        'prettytable>=2.2.1',
         'requests_unixsocket>=0.2.0',
         'httpx>=0.19.0',
-        'asn1',
+        'base58>=2.1.1',
+        'asn1>=2.4.2',
         'ledgerblue>=0.1.41'
     ],
     include_package_data=True
