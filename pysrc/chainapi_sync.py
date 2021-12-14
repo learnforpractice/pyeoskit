@@ -104,32 +104,35 @@ class ChainApi(RPCInterface, ChainNative):
             self.check_abi(contract)
             tx.add_action(contract, action_name, args, permissions)
 
-        if indexes is None:
-            available_pub_keys = wallet.get_public_keys()
-            keys = self.get_sign_keys(fake_actions, available_pub_keys)
-            for key in keys:
-                tx.sign(key)
-            try:
-                return tx.pack(compress)
-            finally:
-                tx.free()
-        else:
-            available_pub_keys = ledger.get_public_keys(indexes)
-            logger.info("++++available_pub_keys: %s", available_pub_keys)
-            keys = self.get_sign_keys(fake_actions, available_pub_keys)
-            if len(keys) == 0:
-                raise Exception('provided keys does not satisfy the authorizations')
-            sign_indexes = []
-            for i in range(len(available_pub_keys)):
-                if available_pub_keys[i] in keys:
-                    sign_indexes.append(indexes[i])
+        local_wallet_pub_keys = wallet.get_public_keys()
+        available_pub_keys = set(local_wallet_pub_keys)
 
-            packed_tx = tx.pack(compress)
-            tx_json = tx.json()
-            signatures = ledger.sign(tx_json, sign_indexes, chain_id)
-            packed_tx['signatures'] = signatures
-            tx.free()
+        ledger_pub_keys = set()
+        if not indexes is None:
+            ledger_pub_keys = ledger.get_public_keys(indexes)
+            available_pub_keys |= set(ledger_pub_keys)
+
+        required_keys = self.get_sign_keys(fake_actions, list(available_pub_keys))
+        required_keys = set(required_keys)
+
+        signatures = set()
+        sign_keys = required_keys & set(local_wallet_pub_keys)
+        for key in sign_keys:
+            signatures.add(tx.sign(key))
+
+        packed_tx = tx.pack(compress, False)
+        sign_keys = required_keys & set(ledger_pub_keys)
+        if not sign_keys:
             return packed_tx
+
+        packed_tx = json.loads(packed_tx)
+        tx_json = tx.json()
+        for key in sign_keys:
+            index = indexes[ledger_pub_keys.index(key)]
+            signs = ledger.sign(tx_json, [index], chain_id)
+            signatures |= set(signs)
+        packed_tx['signatures'] = list(signatures)
+        return json.dumps(packed_tx)
 
     def push_action(self, contract, action, args, permissions=None, compress=False, expiration=0, indexes=None):
         if not permissions:

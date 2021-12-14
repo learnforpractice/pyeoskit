@@ -52,12 +52,15 @@ class Transaction(object):
             raise Exception(r['error'])
         return r['data']
 
-    def pack(self, compress=False):
+    def pack(self, compress=False, load=False):
         r = _pyeoskit.transaction_pack(self.idx, compress)
         r = json.loads(r)
         if 'error' in r:
             raise Exception(r['error'])
-        return json.loads(r['data'])
+        data = r['data']
+        if load:
+            data = json.loads(r['data'])
+        return data
 
     @staticmethod
     def unpack(tx):
