@@ -1,3 +1,5 @@
+#multisig example
+
 from pyeoskit import eosapi, wallet
 #account to update authorization
 account = 'testaccount'

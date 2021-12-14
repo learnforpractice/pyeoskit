@@ -1,4 +1,4 @@
-#add public key as permission to account example
+#add eosio.code permission to account example
 
 from pyeoskit import eosapi, wallet
 eosapi.set_node('https://eos.greymass.com')
@@ -19,6 +19,14 @@ args = {
         "threshold": 1,
         "keys": [{'key': pub_key, 'weight': 1}],
         "accounts": [
+            {
+                "permission":
+                {
+                    "actor":account,
+                    "permission": "eosio.code"
+                },
+                "weight":1
+            }
         ],
         "waits": []
     }

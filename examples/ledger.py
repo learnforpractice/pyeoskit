@@ -1,3 +1,5 @@
+# sign with ledger example
+
 from pyeoskit import eosapi
 eosapi.set_node('https://eos.greymass.com')
 args = {
