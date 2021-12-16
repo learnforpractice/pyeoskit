@@ -38,7 +38,9 @@ tx = eosapi.gen_transaction([action], 10*60, ref_block, chain_id)
 args = {
     "proposer": proposer,
     "proposal_name": 'hello',
-    "requested": [{'actor': account, 'permission': 'active'}],
+    "requested": [
+        {'actor': account, 'permission': 'active'}
+    ],
     "trx": tx
 }
 a1 = 'eosio.msig', 'propose', args, {proposer: 'active'}
