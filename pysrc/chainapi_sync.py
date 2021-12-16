@@ -247,13 +247,9 @@ class ChainApi(RPCInterface, ChainNative):
         return self.push_action(token_account, 'transfer', args, {_from:permission}, indexes=indexes)
 
     def get_code(self, account):
-        code = self.db.get_code(account)
-        if code:
-            return code
-
         try:
             code = super().get_code(account)
-            code = base64.b64decode(code['wasm'])
+            code = code['wasm']
             self.db.set_code(account, code)
             return code
         except Exception as e:
