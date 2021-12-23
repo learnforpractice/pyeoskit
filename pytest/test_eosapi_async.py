@@ -93,8 +93,9 @@ class TestChainApiAsync(object):
 
         chain_id = chain_info['chain_id']
         trx = wallet.sign_transaction(trx, keys, chain_id, json=True)
+
+        logger.info('+++++++++=trx: %s', trx)
         assert trx['signatures']
-        logger.info(trx)
 
     @pytest.mark.asyncio
     async def test_tx(self):

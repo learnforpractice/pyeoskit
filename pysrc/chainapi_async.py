@@ -28,6 +28,7 @@ class ChainApiAsync(RPCInterface, ChainNative):
 
         self.db = ChainCache(self, network)
         self.set_node(node_url)
+        self.chain_id = None
 
     def enable_decode(self, json_format):
         super().json_decode = json_format
@@ -134,18 +135,27 @@ class ChainApiAsync(RPCInterface, ChainNative):
         packed_tx['signatures'] = list(signatures)
         return json.dumps(packed_tx)
 
-    async def push_action(self, contract, action, args, permissions=None, compress=False, expiration=0, indexes=None):
+    async def push_action(self, contract, action, args, permissions=None, compress=False, expiration=0, ref_block_id=None, indexes=None):
         if not permissions:
             permissions = {contract:'active'}
         a = [contract, action, args, permissions]
-        return await self.push_actions([a], expiration, compress, indexes)
+        return await self.push_actions([a], expiration, compress, ref_block_id, indexes)
 
-    async def push_actions(self, actions, expiration=0, compress=0, indexes=None):
-        chain_info = await self.get_info()
-        ref_block = chain_info['head_block_id']
-        chain_id = chain_info['chain_id']
-        tx = await self.generate_packed_transaction(actions, expiration, ref_block, chain_id, compress, indexes=indexes)
-        return await super().push_transaction(tx)
+    async def push_actions(self, actions, expiration=0, compress=0, ref_block_id=None, indexes=None):
+        try:
+            chain_info = None
+            if not self.chain_id or not ref_block_id:
+                chain_info = await self.get_info()
+                if not self.chain_id:
+                    self.chain_id = chain_info['chain_id']
+                if not ref_block_id:
+                    ref_block_id = chain_info['last_irreversible_block_id']
+            tx = await self.generate_packed_transaction(actions, expiration, ref_block_id, self.chain_id, compress, indexes=indexes)
+            return await super().push_transaction(tx)
+        except Exception as e:
+            raise e
+        finally:
+            ledger.close_dongle()
 
     async def push_transactions(self, aaa, expiration=60, compress=False, indexes=None):
         chain_info = await self.get_info()

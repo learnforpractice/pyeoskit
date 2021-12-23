@@ -28,6 +28,7 @@ class ChainApi(RPCInterface, ChainNative):
 
         self.db = ChainCache(self, network)
         self.set_node(node_url)
+        self.chain_id = None
 
     def enable_decode(self, json_format):
         super().json_decode = json_format
@@ -134,18 +135,22 @@ class ChainApi(RPCInterface, ChainNative):
         packed_tx['signatures'] = list(signatures)
         return json.dumps(packed_tx)
 
-    def push_action(self, contract, action, args, permissions=None, compress=False, expiration=0, indexes=None):
+    def push_action(self, contract, action, args, permissions=None, compress=False, expiration=0, ref_block_id=None, indexes=None):
         if not permissions:
             permissions = {contract:'active'}
         a = [contract, action, args, permissions]
-        return self.push_actions([a], expiration, compress, indexes)
+        return self.push_actions([a], expiration, compress, ref_block_id, indexes)
 
-    def push_actions(self, actions, expiration=0, compress=0, indexes=None):
+    def push_actions(self, actions, expiration=0, compress=0, ref_block_id=None, indexes=None):
         try:
-            chain_info = self.get_info()
-            ref_block = chain_info['head_block_id']
-            chain_id = chain_info['chain_id']
-            tx = self.generate_packed_transaction(actions, expiration, ref_block, chain_id, compress, indexes=indexes)
+            chain_info = None
+            if not self.chain_id or not ref_block_id:
+                chain_info = self.get_info()
+                if not self.chain_id:
+                    self.chain_id = chain_info['chain_id']
+                if not ref_block_id:
+                    ref_block_id = chain_info['last_irreversible_block_id']
+            tx = self.generate_packed_transaction(actions, expiration, ref_block_id, self.chain_id, compress, indexes=indexes)
             return super().push_transaction(tx)
         except Exception as e:
             raise e
@@ -270,17 +275,17 @@ class ChainApi(RPCInterface, ChainNative):
         self.db.set_abi(account, abi)
 
     def get_abi(self, account):
-        if account == config.main_token_contract:
-            return defaultabi.eosio_token_abi
-        elif account == config.system_contract:
-            if config.main_token in defaultabi.eosio_system_abi:
-                return defaultabi.eosio_system_abi[config.main_token]
-            else:
-                return defaultabi.eosio_system_abi['EOS']
+        # if account == config.main_token_contract:
+        #     return defaultabi.eosio_token_abi
+        # elif account == config.system_contract:
+        #     if config.main_token in defaultabi.eosio_system_abi:
+        #         return defaultabi.eosio_system_abi[config.main_token]
+        #     else:
+        #         return defaultabi.eosio_system_abi['EOS']
 
-        abi = self.db.get_abi(account)
-        if abi:
-            return abi
+        # abi = self.db.get_abi(account)
+        # if abi:
+        #     return abi
 
         abi = super().get_abi(account)
         if abi and 'abi' in abi:
@@ -322,7 +327,7 @@ class ChainApi(RPCInterface, ChainNative):
         setabi = [config.system_contract, 'setabi', setabi, {account:'active'}]
         actions.append(setabi)
 
-        ret = self.push_actions(actions, compress, indexes=indexes)
+        ret = self.push_actions(actions, compress=compress, indexes=indexes)
         if 'error' in ret:
             raise Exception(ret['error'])
 
