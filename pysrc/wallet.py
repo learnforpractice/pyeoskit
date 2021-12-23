@@ -61,7 +61,7 @@ def sign_transaction(trx: Union[str, dict], public_keys: List[str], chain_id: st
     t = Transaction.from_json(trx, chain_id)
     for pub in public_keys:
         t.sign(pub)
-    return t.pack()
+    return t.pack(load=True)
 
 def sign_digest(digest: Union[bytes, str], public_key: str):
     if isinstance(digest, bytes):
