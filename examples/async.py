@@ -4,10 +4,10 @@ from pyeoskit import wallet
 from pyeoskit.chainapi import ChainApiAsync
 
 #import your account private key here
-wallet.import_key('mywallet', '5K463ynhZoCDDa4RDcr63cUwWLTnKqmdcoTKTHBjqoKfv4u5V7p')
+#wallet.import_key('mywallet', '')
 
 async def test():
-    eosapi = ChainApiAsync('https://eos.greymass.com')
+    eosapi = ChainApiAsync('https://api.eosn.com')
     info = await eosapi.get_info()
     print(info)
     args = {

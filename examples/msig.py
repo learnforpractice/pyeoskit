@@ -9,9 +9,9 @@ pub_key = 'EOS6wJhZLfAjG9F9nXJL3x5EJRpEBximZqmoST7hskqQ3AYBVv9bm'
 proposer = 'proposer'
 
 #import your account private key here
-# wallet.import_key('mywallet', '5K463ynhZoCDDa4RDcr63cUwWLTnKqmdcoTKTHBjqoKfv4u5V7p')
+# wallet.import_key('mywallet', '')
 
-eosapi.set_node('https://eos.greymass.com')
+eosapi.set_node('https://api.eosn.com')
 
 info = eosapi.get_info()
 chain_id = info['chain_id']
