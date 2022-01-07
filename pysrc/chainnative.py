@@ -90,13 +90,14 @@ class ChainNative(object):
         binargs = ABI.pack_action_args(account, action, args)
         return bytes.fromhex(binargs)
 
-    def unpack_args(self, account, action, binargs, json=False):
+    def unpack_args(self, account, action, binargs):
         if isinstance(binargs, bytes):
             binargs = binargs.hex()
 
         self.check_abi(account)
 
-        return ABI.unpack_action_args(account, action, binargs)
+        ret = ABI.unpack_action_args(account, action, binargs)
+        return json.loads(ret)
 
     def pack_abi_type(self, account, struct_name, args):
         if isinstance(args, dict):
