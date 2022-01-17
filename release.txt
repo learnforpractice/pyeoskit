@@ -1,4 +1,4 @@
-V1.0.9 Release
+V1.1.0 Release
 1. Fix unpack inner array types
 2. Fix UnpackAbiType
 

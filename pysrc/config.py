@@ -17,7 +17,7 @@ default_nodes = [
 'https://node.eosflare.io',
 'https://api-eos.blckchnd.com',
 'https://mainnet.eosimpera.com',
-'https://api.eosn.com',
+'https://api.eosn.io',
 ]
 
 nodes = []
@@ -57,7 +57,7 @@ def setup_eos_network():
     main_token = 'EOS'
     system_contract = 'eosio'
     main_token_contract = 'eosio.token'
-    network_url = 'https://api.eosn.com'
+    network_url = 'https://api.eosn.io'
     code_permission_name = 'eosio.code'
     from pyeoskit import eosapi
     eosapi.set_public_key_prefix(main_token)
