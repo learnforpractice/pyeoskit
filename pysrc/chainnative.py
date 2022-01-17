@@ -148,7 +148,7 @@ class ChainNative(object):
                 pass
             else:
                 tx.free()
-                raise Exception('Invalid args type')
+                raise Exception(f'Invalid args type: {type(args)}')
             permissions = json.dumps(permissions)
             self.check_abi(contract)
             tx.add_action(contract, action_name, args, permissions)

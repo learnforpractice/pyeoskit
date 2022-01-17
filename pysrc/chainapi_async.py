@@ -340,14 +340,14 @@ class ChainApiAsync(RPCInterface, ChainNative):
 
         return ret
 
-    async def deploy_code(self, account, code, vm_type=0, vm_version=0):
+    async def deploy_code(self, account, code, vm_type=0, vm_version=0, indexes=None):
         setcode = {"account":account,
                 "vmtype":vm_type,
                 "vmversion":vm_version,
                 "code":code.hex()
                 }
         setcode = self.pack_args(config.system_contract, 'setcode', setcode)
-        ret = await self.push_action(config.system_contract, 'setcode', setcode, {account:'active'})
+        ret = await self.push_action(config.system_contract, 'setcode', setcode, {account:'active'}, indexes=indexes)
         self.db.remove_code(account)
         return ret
 

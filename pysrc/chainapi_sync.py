@@ -271,8 +271,8 @@ class ChainApi(RPCInterface, ChainNative):
         self.db.set_code(account, code)
 
     def set_abi(self, account, abi):
-        super().set_abi(account, abi)
         self.db.set_abi(account, abi)
+        return super().set_abi(account, abi)
 
     def get_abi(self, account):
         # if account == config.main_token_contract:
@@ -335,14 +335,14 @@ class ChainApi(RPCInterface, ChainNative):
 
         return ret
 
-    def deploy_code(self, account, code, vm_type=0, vm_version=0):
+    def deploy_code(self, account, code, vm_type=0, vm_version=0, indexes=None):
         setcode = {"account":account,
                 "vmtype":vm_type,
                 "vmversion":vm_version,
                 "code":code.hex()
                 }
         setcode = self.pack_args(config.system_contract, 'setcode', setcode)
-        ret = self.push_action(config.system_contract, 'setcode', setcode, {account:'active'})
+        ret = self.push_action(config.system_contract, 'setcode', setcode, {account:'active'}, indexes=indexes)
         self.db.remove_code(account)
         return ret
 
