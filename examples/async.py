@@ -7,7 +7,7 @@ from pyeoskit.chainapi import ChainApiAsync
 #wallet.import_key('mywallet', '')
 
 async def test():
-    eosapi = ChainApiAsync('https://api.eosn.com')
+    eosapi = ChainApiAsync('https://api.eosn.io')
     info = await eosapi.get_info()
     print(info)
     args = {

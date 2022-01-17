@@ -11,7 +11,7 @@ proposer = 'proposer'
 #import your account private key here
 # wallet.import_key('mywallet', '')
 
-eosapi.set_node('https://api.eosn.com')
+eosapi.set_node('https://api.eosn.io')
 
 info = eosapi.get_info()
 chain_id = info['chain_id']

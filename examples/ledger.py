@@ -2,7 +2,7 @@
 
 from pyeoskit import eosapi
 from pyeoskit import ledger
-eosapi.set_node('https://api.eosn.com')
+eosapi.set_node('https://api.eosn.io')
 args = {
     'from': 'test1',
     'to': 'test2',
