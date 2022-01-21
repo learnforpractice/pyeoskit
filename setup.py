@@ -4,7 +4,7 @@ import glob
 
 setup(
     name="pyeoskit",
-    version="1.1.2",
+    version="1.1.3",
     description="Python Toolkit for EOS",
     author='learnforpractice',
     license="MIT",

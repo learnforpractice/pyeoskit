@@ -18,7 +18,7 @@ Full Pyeoskit project documentation can be found in [Modules](MODULES.md#pyeoski
 
 # Latest Release
 
-[pyeoskit v1.1.2](https://github.com/learnforpractice/pyeoskit/releases)
+[pyeoskit v1.1.3](https://github.com/learnforpractice/pyeoskit/releases)
 
 # Installation
 
