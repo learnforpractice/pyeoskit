@@ -1,4 +1,4 @@
-# cython: c_string_type=str, c_string_encoding=ascii
+# cython: c_string_type=str, c_string_encoding=utf8
 
 from cython.operator cimport dereference as deref, preincrement as inc
 from cpython.bytes cimport PyBytes_AS_STRING
@@ -174,7 +174,7 @@ def abiserializer_pack_abi_type(char* contractName, char* actionName, args):
     return convert(ret)
 
 #char* abiserializer_unpack_abi_type_(char* contractName, char* actionName, char* args);
-def abiserializer_unpack_abi_type(char* contractName, char* actionName, char* args):
+def abiserializer_unpack_abi_type(char* contractName, char* actionName, args: bytes):
     cdef char *ret
     ret = abiserializer_unpack_abi_type_(contractName, actionName, args)
     return convert(ret)
