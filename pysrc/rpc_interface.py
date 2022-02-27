@@ -100,6 +100,19 @@ class RPCInterface(HttpClient):
             body=body
         )
 
+    def get_block_trace(self, block_num) -> dict:
+        """ Fetch a block trace from the blockchain. """
+
+        body = dict(
+            block_num=block_num,
+        )
+
+        return self.rpc_request(
+            api='trace_api',
+            endpoint='get_block',
+            body=body
+        )
+
     def get_block(self, block_num_or_id) -> dict:
         """ Fetch a block from the blockchain. """
 
