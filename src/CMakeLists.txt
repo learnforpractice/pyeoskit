@@ -28,6 +28,7 @@ add_custom_command(OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/_pyeoskit.cxx
 
 add_custom_command(OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/pyeoskit/libpyeoskit.a
     COMMAND go build -o libpyeoskit.a -buildmode=c-archive
+    COMMAND cp libpyeoskit.bk.h libpyeoskit.h
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/pyeoskit/lib.go
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/pyeoskit/main.go
     COMMENT "Creating libpyeoskit.a"
