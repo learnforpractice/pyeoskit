@@ -1,6 +1,23 @@
 from skbuild import setup
 from distutils.sysconfig import get_python_lib
 import glob
+import platform
+import shutil
+import shlex
+
+data = [
+        'data/*',
+        'contracts/eosio.bios/*',
+        'contracts/eosio.msig/*',
+        'contracts/eosio.system/*',
+        'contracts/eosio.token/*',
+        'contracts/eosio.wrap/*',
+        'contracts/micropython/*',
+        'test_template.py',
+]
+
+if platform.system() == 'Windows':
+    data.append("pyeoskit.dll")
 
 setup(
     name="pyeoskit",
@@ -12,16 +29,7 @@ setup(
     packages=['pyeoskit'],
     # The extra '/' was *only* added to check that scikit-build can handle it.
     package_dir={'pyeoskit': 'pysrc'},
-    package_data={'pyeoskit': [
-        'data/*',
-        'contracts/eosio.bios/*',
-        'contracts/eosio.msig/*',
-        'contracts/eosio.system/*',
-        'contracts/eosio.token/*',
-        'contracts/eosio.wrap/*',
-        'contracts/micropython/*',
-        'test_template.py',
-        ]
+    package_data={'pyeoskit': data
     },
     install_requires=[
         'requests_unixsocket>=0.2.0',
