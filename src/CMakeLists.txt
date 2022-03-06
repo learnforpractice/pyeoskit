@@ -1,8 +1,8 @@
 
-add_cython_target(_pyeoskit CXX)
+# add_cython_target(_pyeoskit CXX)
 
 add_library(_pyeoskit MODULE
-    ${_pyeoskit}
+    ${CMAKE_CURRENT_SOURCE_DIR}/_pyeoskit.cxx
 )
 
 python_extension_module(_pyeoskit)
@@ -18,6 +18,13 @@ target_include_directories(_pyeoskit PRIVATE
 if (WIN32)
     add_compile_definitions(MS_WIN64)
 endif()
+
+add_custom_command(OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/_pyeoskit.cxx
+    COMMAND python3 -m cython --cplus -3 -o ${CMAKE_CURRENT_SOURCE_DIR}/_pyeoskit.cxx _pyeoskit.pyx
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/_pyeoskit.pyx
+    COMMENT "Creating _pyeoskit.cxx"
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+)
 
 add_custom_command(OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/pyeoskit/libpyeoskit.a
     COMMAND go build -o libpyeoskit.a -buildmode=c-archive
