@@ -1,9 +1,6 @@
 from skbuild import setup
 from distutils.sysconfig import get_python_lib
-import glob
 import platform
-import shutil
-import shlex
 
 data = [
         'data/*',

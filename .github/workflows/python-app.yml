@@ -62,10 +62,11 @@ jobs:
       - name: Install pyeoskit
         run: |
           python -m pip uninstall pyeoskit -y;python -m pip install ./dist/${{ steps.whlfile.outputs.value }}
-      # - name: Test
-      #   working-directory: ./pytest
-      #   run: |
-      #     pytest test_c_apis.py
+      - name: Test
+        working-directory: ./pytest
+        run: |
+          python -c "import pyeoskit"
+      #        pytest test_c_apis.py
       - name: auditwheel repair
         if: ${{ matrix.os == 'ubuntu-18.04' }}
         id: manylinuxwhlfile
