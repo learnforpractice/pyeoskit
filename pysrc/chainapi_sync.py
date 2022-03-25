@@ -472,3 +472,19 @@ class ChainApi(RPCInterface, ChainNative):
                weight = account['weight']
                self._get_keys(actor, per, keys, depth-1)
         return threshold
+
+    def get_abi_sync(self, account):
+        args = {
+            'account_name': account
+        }
+        r = self.session.post(f'{self.node_url}/v1/chain/get_abi', json=args)
+        try:
+            r = r.json()
+        except json.decoder.JSONDecodeError:
+            return ''
+
+        try:
+            abi = r['abi']
+            return json.dumps(abi)
+        except KeyError:
+            return ''
