@@ -101,6 +101,12 @@ class ChainApiAsync(RPCInterface, ChainNative):
             else:
                 tx.free()
                 raise Exception('Invalid args type')
+
+            if isinstance(permissions, dict):
+                _permissions = permissions
+                permissions = []
+                for actor in _permissions:
+                    permissions.append({actor: _permissions[actor]})
             permissions = json.dumps(permissions)
             self.check_abi(contract)
             tx.add_action(contract, action_name, args, permissions)
