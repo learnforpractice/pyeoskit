@@ -34,6 +34,5 @@ def undbw(_from, _to, net, cpu, transfer=False):
             'receiver':_to, 
             'unstake_net_quantity':'%.4f %s'%(net, config.main_token), 
             'unstake_cpu_quantity':'%.4f %s'%(cpu, config.main_token), 
-            'transfer':transfer
             }
     return eosapi.push_action(config.system_contract, 'undelegatebw', args, {_from:'active'})
