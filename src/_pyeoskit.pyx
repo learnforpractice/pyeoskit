@@ -19,8 +19,10 @@ cdef extern from "<Python.h>":
     object PyBytes_FromStringAndSize(const char* str, int size)
     int _PyLong_AsByteArray(PyLongObject* v, unsigned char* bytes, size_t n, int little_endian, int is_signed)
 
+
 cdef extern from "libpyeoskit.h" nogil:
-    void init_();
+    ctypedef char *(*fn_malloc)(uint64_t size);
+    void init_(fn_malloc fn);
     void set_debug_flag_(bool debug)
     bool get_debug_flag_()
 
@@ -72,8 +74,11 @@ cdef object convert(char *_ret):
     free(_ret)
     return ret
 
+cdef char *user_malloc(uint64_t size):
+    return <char *>malloc(size)
+
 def init():
-    init_()
+    init_(<fn_malloc>user_malloc)
 
 def say_hello(char* name):
     say_hello_(name)
