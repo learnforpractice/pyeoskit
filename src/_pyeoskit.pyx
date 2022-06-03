@@ -20,9 +20,9 @@ cdef extern from "<Python.h>":
     int _PyLong_AsByteArray(PyLongObject* v, unsigned char* bytes, size_t n, int little_endian, int is_signed)
 
 
-cdef extern from "libpyeoskit.h" nogil:
-    ctypedef char *(*fn_malloc)(uint64_t size);
-    void init_(fn_malloc fn);
+cdef extern from "wrapper.h" nogil:
+    ctypedef char *(*fn_malloc)(uint64_t size)
+    void init_(fn_malloc fn)
     void set_debug_flag_(bool debug)
     bool get_debug_flag_()
 
