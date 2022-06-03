@@ -1,2 +1,2 @@
-V1.1.6 Release
-1. maintain permission order
+V1.1.7 Release
+1. Fix crash on Windows

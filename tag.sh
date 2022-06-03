@@ -1,4 +1,4 @@
-VERSION=v1.1.6
+VERSION=v1.1.7
 TARGET=origin
 # git push $TARGET :refs/tags/$VERSION
 git tag -d $VERSION
