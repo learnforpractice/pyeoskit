@@ -18,7 +18,7 @@ if platform.system() == 'Windows':
 
 setup(
     name="pyeoskit",
-    version="1.1.7",
+    version="1.1.8",
     description="Python Toolkit for EOS",
     author='learnforpractice',
     license="MIT",
