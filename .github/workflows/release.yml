@@ -37,28 +37,13 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install flake8 pytest scikit-build cython ninja auditwheel
           mkdir -p dist
       - name: Downloading whl files
-        if: ${{ startsWith(github.ref, 'refs/tags/') && matrix.os == 'ubuntu-18.04' && matrix.python-version == '3.10' }}
         working-directory: dist
         run: |
           python ../scripts/download.py ${{ env.VERSION }}
-          rm pyeoskit-${{ env.VERSION }}-cp310-cp310-linux_x86_64.whl
-          rm -r wheelhouse
-      - name: Upload wheel checksums
-        uses: softprops/action-gh-release@v1
-        if: ${{ startsWith(github.ref, 'refs/tags/') && matrix.os == 'ubuntu-18.04' && matrix.python-version == '3.10' }}
-        with:
-          files: |
-            ./dist/checksum.txt
-      - name: Remove dist/checksum.txt
-        if: ${{ startsWith(github.ref, 'refs/tags/') && matrix.os == 'ubuntu-18.04' && matrix.python-version == '3.10' }}
-        working-directory: dist
-        run: |
-          rm ./dist/checksum.txt
+          rm checksum.txt
       - name: Publish a Python distribution to PyPI
-        if: ${{ startsWith(github.ref, 'refs/tags/') && matrix.os == 'ubuntu-18.04' && matrix.python-version == '3.10' }}
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           user: __token__
