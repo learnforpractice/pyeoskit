@@ -2,6 +2,7 @@ import os
 import sys
 import time
 import subprocess
+import hashlib
 
 version = sys.argv[1]
 files = [
@@ -31,3 +32,16 @@ for f in files:
         count -= 1
         if count <= 0:
             break
+
+out = open('checksum.txt', 'w')
+out.write('file\t SHA256 Checksum\n')
+for file in files:
+    with open(file, 'rb') as f:
+        data = f.read()
+        h = hashlib.sha256()
+        h.update(data)
+        out.write(file)
+        out.write('\t')
+        out.write(h.hexdigest())
+        out.write('\n')
+out.close()

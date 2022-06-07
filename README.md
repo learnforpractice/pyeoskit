@@ -59,8 +59,7 @@ git submodule update --init --recursive
 ./build.sh
 ```
 
-For Windows platform
-In the cmd dialog, enter the following command:
+For Windows platform, in the cmd dialog, enter the following command:
 ```
 python setup.py sdist bdist_wheel
 ```
