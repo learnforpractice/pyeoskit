@@ -89,57 +89,60 @@ class ChainApiAsync(RPCInterface, ChainNative):
         else:
             expiration = int(time.time()) + expiration
 
-        tx = Transaction(expiration, ref_block, chain_id)
-        for a in actions:
-            contract, action_name, args, permissions = a
-            if isinstance(args, bytes):
-                args = args.hex()
-            elif isinstance(args, dict):
-                args = json.dumps(args)
-            elif isinstance(args, str):
-                pass
-            else:
-                tx.free()
-                raise Exception('Invalid args type')
+        try:
+            tx = Transaction(expiration, ref_block, chain_id)
+            for a in actions:
+                contract, action_name, args, permissions = a
+                if isinstance(args, bytes):
+                    args = args.hex()
+                elif isinstance(args, dict):
+                    args = json.dumps(args)
+                elif isinstance(args, str):
+                    pass
+                else:
+                    tx.free()
+                    raise Exception('Invalid args type')
 
-            if isinstance(permissions, dict):
-                _permissions = permissions
-                permissions = []
-                for actor in _permissions:
-                    permissions.append({actor: _permissions[actor]})
-            permissions = json.dumps(permissions)
-            self.check_abi(contract)
-            tx.add_action(contract, action_name, args, permissions)
+                if isinstance(permissions, dict):
+                    _permissions = permissions
+                    permissions = []
+                    for actor in _permissions:
+                        permissions.append({actor: _permissions[actor]})
+                permissions = json.dumps(permissions)
+                self.check_abi(contract)
+                tx.add_action(contract, action_name, args, permissions)
 
-        local_wallet_pub_keys = wallet.get_public_keys()
-        available_pub_keys = set(local_wallet_pub_keys)
+            local_wallet_pub_keys = wallet.get_public_keys()
+            available_pub_keys = set(local_wallet_pub_keys)
 
-        ledger_pub_keys = set()
-        if not indexes is None:
-            ledger_pub_keys = ledger.get_public_keys(indexes)
-            available_pub_keys |= set(ledger_pub_keys)
+            ledger_pub_keys = set()
+            if not indexes is None:
+                ledger_pub_keys = ledger.get_public_keys(indexes)
+                available_pub_keys |= set(ledger_pub_keys)
 
-        required_keys = await self.get_sign_keys(fake_actions, list(available_pub_keys))
-        required_keys = set(required_keys)
+            required_keys = await self.get_sign_keys(fake_actions, list(available_pub_keys))
+            required_keys = set(required_keys)
 
-        signatures = set()
-        sign_keys = required_keys & set(local_wallet_pub_keys)
-        for key in sign_keys:
-            signatures.add(tx.sign(key))
+            signatures = set()
+            sign_keys = required_keys & set(local_wallet_pub_keys)
+            for key in sign_keys:
+                signatures.add(tx.sign(key))
 
-        packed_tx = tx.pack(compress, False)
-        sign_keys = required_keys & set(ledger_pub_keys)
-        if not sign_keys:
-            return packed_tx
+            packed_tx = tx.pack(compress, False)
+            sign_keys = required_keys & set(ledger_pub_keys)
+            if not sign_keys:
+                return packed_tx
 
-        packed_tx = json.loads(packed_tx)
-        tx_json = tx.json()
-        for key in sign_keys:
-            index = indexes[ledger_pub_keys.index(key)]
-            signs = ledger.sign(tx_json, [index], chain_id)
-            signatures |= set(signs)
-        packed_tx['signatures'] = list(signatures)
-        return json.dumps(packed_tx)
+            packed_tx = json.loads(packed_tx)
+            tx_json = tx.json()
+            for key in sign_keys:
+                index = indexes[ledger_pub_keys.index(key)]
+                signs = ledger.sign(tx_json, [index], chain_id)
+                signatures |= set(signs)
+            packed_tx['signatures'] = list(signatures)
+            return json.dumps(packed_tx)
+        finally:
+            tx.free()
 
     async def push_action(self, contract, action, args, permissions=None, compress=False, expiration=0, ref_block_id=None, indexes=None, payer=None, payer_permission="active"):
         if not permissions:

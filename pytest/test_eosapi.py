@@ -45,6 +45,13 @@ class TestApi(object):
     def teardown_method(self, method):
         pass
 
+    def test_tx_idx_overflow(self):
+        for i in range(1024+1):
+            account = 'eosio'
+            if i % 100 == 0:
+                logger.info('+++%s', i)
+            r = eosapi.push_action(account, 'sayhello', int.to_bytes(i, 8, 'little'), {account:'active'})
+
     def test_gen_transaction(self):
         args = {
             'from': 'alice',
@@ -354,6 +361,7 @@ def apply(a, b, c):
         from pyeoskit import transaction
         t = transaction.Transaction()
         t.from_json(tx)
+        t.free()
 
     def test_crypto(self):
         key_pair = eosapi.create_key()

@@ -8,6 +8,14 @@ class Transaction(object):
             self.idx = -1
             return
         self.idx = _pyeoskit.transaction_new(expiration, ref_block, chain_id)
+        if self.idx == -1:
+            raise Exception("too many transactions has been created!")
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, type, value, traceback):
+        self.free()
 
     @staticmethod
     def from_json(tx, chain_id=None):

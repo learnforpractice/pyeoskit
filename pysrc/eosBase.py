@@ -288,81 +288,84 @@ class Transaction:
 
     @staticmethod
     def parse(json):
-        tx = Transaction()
-        tx.json = json
+        try:
+            tx = Transaction()
+            tx.json = json
 
-        tx.chain_id = binascii.unhexlify(json['chain_id'])
+            tx.chain_id = binascii.unhexlify(json['chain_id'])
 
-        body = json['transaction']
+            body = json['transaction']
 
-#        expiration = int(datetime.strptime(body['expiration'], '%Y-%m-%dT%H:%M:%S').strftime("%s"))
-        delta = datetime.strptime(body['expiration'], '%Y-%m-%dT%H:%M:%S') - datetime(1970, 1, 1)
-        expiration = int(delta.total_seconds())
-        tx.expiration = struct.pack('I', expiration)
-        tx.ref_block_num = struct.pack('H', body['ref_block_num'])
-        tx.ref_block_prefix = struct.pack('I', body['ref_block_prefix'])
-        tx.net_usage_words = struct.pack('B', body['max_net_usage_words'])
-        tx.max_cpu_usage_ms = struct.pack('B', body['max_cpu_usage_ms'])
-        tx.delay_sec = struct.pack('B', body['delay_sec'])
+    #        expiration = int(datetime.strptime(body['expiration'], '%Y-%m-%dT%H:%M:%S').strftime("%s"))
+            delta = datetime.strptime(body['expiration'], '%Y-%m-%dT%H:%M:%S') - datetime(1970, 1, 1)
+            expiration = int(delta.total_seconds())
+            tx.expiration = struct.pack('I', expiration)
+            tx.ref_block_num = struct.pack('H', body['ref_block_num'])
+            tx.ref_block_prefix = struct.pack('I', body['ref_block_prefix'])
+            tx.net_usage_words = struct.pack('B', body['max_net_usage_words'])
+            tx.max_cpu_usage_ms = struct.pack('B', body['max_cpu_usage_ms'])
+            tx.delay_sec = struct.pack('B', body['delay_sec'])
 
-        tx.ctx_free_actions_size = struct.pack('B', len(body['context_free_actions']))
-        tx.actions_size = struct.pack('B', len(body['actions']))
+            tx.ctx_free_actions_size = struct.pack('B', len(body['context_free_actions']))
+            tx.actions_size = struct.pack('B', len(body['actions']))
 
-        tx.actions = []
-        for action in body['actions']:
-            act = Action()
-            act.account = Transaction.name_to_number(action['account'])
-            act.name = Transaction.name_to_number(action['name'])
+            tx.actions = []
+            for action in body['actions']:
+                act = Action()
+                act.account = Transaction.name_to_number(action['account'])
+                act.name = Transaction.name_to_number(action['name'])
 
-            act.auth_size = struct.pack('B', len(action['authorization']))
-            act.auth = []
-            for auth in action['authorization']:
-                act.auth.append((Transaction.name_to_number(auth['actor']), Transaction.name_to_number(auth['permission'])))
+                act.auth_size = struct.pack('B', len(action['authorization']))
+                act.auth = []
+                for auth in action['authorization']:
+                    act.auth.append((Transaction.name_to_number(auth['actor']), Transaction.name_to_number(auth['permission'])))
 
-            data = action['data']
-            if isinstance(data, str):
-                parameters = bytes.fromhex(data)
-            elif action['name'] == 'transfer':
-                parameters = Transaction.parse_transfer(data)
-            elif action['name'] == 'voteproducer':
-                parameters = Transaction.parse_vote_producer(data)
-            elif action['name'] == 'buyram':
-                parameters = Transaction.parse_buy_ram(data)
-            elif action['name'] == 'buyrambytes':
-                parameters = Transaction.parse_buy_rambytes(data)
-            elif action['name'] == 'sellram':
-                parameters = Transaction.parse_sell_ram(data)
-            elif action['name'] == 'updateauth':
-                parameters = Transaction.parse_update_auth(data)
-            elif action['name'] == 'deleteauth':
-                parameters = Transaction.parse_delete_auth(data)
-            elif action['name'] == 'refund':
-                parameters = Transaction.parse_refund(data)
-            elif action['name'] == 'linkauth':
-                parameters = Transaction.parse_link_auth(data)
-            elif action['name'] == 'unlinkauth':
-                parameters = Transaction.parse_unlink_auth(data)
-            elif action['name'] == 'newaccount':
-                parameters = Transaction.parse_newaccount(data)
-            elif action['name'] == 'delegatebw':
-                parameters = Transaction.parse_delegate(data)
-            else:
-                parameters = Transaction.parse_unknown(data)
+                data = action['data']
+                if isinstance(data, str):
+                    parameters = bytes.fromhex(data)
+                elif action['name'] == 'transfer':
+                    parameters = Transaction.parse_transfer(data)
+                elif action['name'] == 'voteproducer':
+                    parameters = Transaction.parse_vote_producer(data)
+                elif action['name'] == 'buyram':
+                    parameters = Transaction.parse_buy_ram(data)
+                elif action['name'] == 'buyrambytes':
+                    parameters = Transaction.parse_buy_rambytes(data)
+                elif action['name'] == 'sellram':
+                    parameters = Transaction.parse_sell_ram(data)
+                elif action['name'] == 'updateauth':
+                    parameters = Transaction.parse_update_auth(data)
+                elif action['name'] == 'deleteauth':
+                    parameters = Transaction.parse_delete_auth(data)
+                elif action['name'] == 'refund':
+                    parameters = Transaction.parse_refund(data)
+                elif action['name'] == 'linkauth':
+                    parameters = Transaction.parse_link_auth(data)
+                elif action['name'] == 'unlinkauth':
+                    parameters = Transaction.parse_unlink_auth(data)
+                elif action['name'] == 'newaccount':
+                    parameters = Transaction.parse_newaccount(data)
+                elif action['name'] == 'delegatebw':
+                    parameters = Transaction.parse_delegate(data)
+                else:
+                    parameters = Transaction.parse_unknown(data)
 
-            act.data_size = Transaction.pack_fc_uint(len(parameters))
-            act.data = parameters
+                act.data_size = Transaction.pack_fc_uint(len(parameters))
+                act.data = parameters
 
-            tx.actions.append(act)
+                tx.actions.append(act)
 
-        tx.tx_ext = struct.pack('B', len(body['transaction_extensions']))
-        tx.cfd = binascii.unhexlify('00' * 32)
+            tx.tx_ext = struct.pack('B', len(body['transaction_extensions']))
+            tx.cfd = binascii.unhexlify('00' * 32)
 
-        for action in tx.actions:
-            sha = hashlib.sha256()
-            sha.update(action.data_size)
-            sha.update(action.data)
+            for action in tx.actions:
+                sha = hashlib.sha256()
+                sha.update(action.data_size)
+                sha.update(action.data)
 
-        return tx
+            return tx
+        finally:
+            tx.free()
 
     def encode(self):
         encoder = Encoder()

@@ -136,29 +136,27 @@ class ChainNative(object):
             expiration = int(time.time()) + 60
         else:
             expiration = int(time.time()) + expiration
-
-        tx = Transaction(expiration, reference_block_id, chain_id)
-        for a in actions:
-            contract, action_name, args, permissions = a
-            if isinstance(args, bytes):
-                args = args.hex()
-            elif isinstance(args, dict):
-                args = json.dumps(args)
-            elif isinstance(args, str):
-                pass
-            else:
-                tx.free()
-                raise Exception(f'Invalid args type: {type(args)}')
-            if isinstance(permissions, dict):
-                _permissions = permissions
-                permissions = []
-                for actor in _permissions:
-                    permissions.append({actor: _permissions[actor]})
-            permissions = json.dumps(permissions)
-            self.check_abi(contract)
-            tx.add_action(contract, action_name, args, permissions)
-
         try:
+            tx = Transaction(expiration, reference_block_id, chain_id)
+            for a in actions:
+                contract, action_name, args, permissions = a
+                if isinstance(args, bytes):
+                    args = args.hex()
+                elif isinstance(args, dict):
+                    args = json.dumps(args)
+                elif isinstance(args, str):
+                    pass
+                else:
+                    tx.free()
+                    raise Exception(f'Invalid args type: {type(args)}')
+                if isinstance(permissions, dict):
+                    _permissions = permissions
+                    permissions = []
+                    for actor in _permissions:
+                        permissions.append({actor: _permissions[actor]})
+                permissions = json.dumps(permissions)
+                self.check_abi(contract)
+                tx.add_action(contract, action_name, args, permissions)
             return tx.marshal()
         finally:
             tx.free()
