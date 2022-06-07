@@ -1,2 +1,2 @@
-V1.1.7 Release
-1. Fix crash on Windows
+V1.1.8 Release
+1. Fix running out of transaction index issue

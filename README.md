@@ -2,7 +2,7 @@ Python Toolkit for EOS
 
 # Latest Release
 
-[pyeoskit v1.1.7](https://github.com/learnforpractice/pyeoskit/releases)
+[pyeoskit v1.1.8](https://github.com/learnforpractice/pyeoskit/releases)
 
 # Installation
 

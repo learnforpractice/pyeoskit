@@ -45,12 +45,19 @@ class TestApi(object):
     def teardown_method(self, method):
         pass
 
-    def test_tx_idx_overflow(self):
+    @pytest.mark.asyncio
+    async def test_tx_idx_overflow(self):
         for i in range(1024+1):
             account = 'eosio'
             if i % 100 == 0:
                 logger.info('+++%s', i)
             r = eosapi.push_action(account, 'sayhello', int.to_bytes(i, 8, 'little'), {account:'active'})
+        time.sleep(0.5)
+        for i in range(0, 1025):
+            account = 'eosio'
+            if i % 100 == 0:
+                logger.info('+++%s', i)
+            r = await eosapi_async.push_action(account, 'sayhello', int.to_bytes(i, 8, 'little'), {account:'active'})
 
     def test_gen_transaction(self):
         args = {
