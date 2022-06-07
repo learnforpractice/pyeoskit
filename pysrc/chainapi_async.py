@@ -24,7 +24,8 @@ logger = log.get_logger(__name__)
 
 class ChainApiAsync(RPCInterface, ChainNative):
     def __init__(self, node_url = 'http://127.0.0.1:8888', network='EOS'):
-        super().__init__(_async=True)
+        RPCInterface.__init__(self, _async=True)
+        ChainNative.__init__(self)
 
         self.db = ChainCache(self, network)
         self.set_node(node_url)
@@ -90,7 +91,7 @@ class ChainApiAsync(RPCInterface, ChainNative):
             expiration = int(time.time()) + expiration
 
         try:
-            tx = Transaction(expiration, ref_block, chain_id)
+            tx = Transaction(self.chain_index, expiration, ref_block, chain_id)
             for a in actions:
                 contract, action_name, args, permissions = a
                 if isinstance(args, bytes):
@@ -137,7 +138,7 @@ class ChainApiAsync(RPCInterface, ChainNative):
             tx_json = tx.json()
             for key in sign_keys:
                 index = indexes[ledger_pub_keys.index(key)]
-                signs = ledger.sign(tx_json, [index], chain_id)
+                signs = ledger.sign(self.chain_index, tx_json, [index], chain_id)
                 signatures |= set(signs)
             packed_tx['signatures'] = list(signatures)
             return json.dumps(packed_tx)
@@ -288,7 +289,7 @@ class ChainApiAsync(RPCInterface, ChainNative):
         self.db.set_code(account, code)
 
     def set_abi(self, account, abi):
-        super().set_abi(account, abi)
+        super().set_abi(self.chain_index, account, abi)
         self.db.set_abi(account, abi)
 
     async def get_abi(self, account):
@@ -336,7 +337,7 @@ class ChainApiAsync(RPCInterface, ChainNative):
         if abi:
             if isinstance(abi, dict):
                 abi = json.dumps(abi)
-            abi = self.pack_abi(abi)
+            abi = self.pack_abi(self.chain_index, abi)
             assert abi
         else:
             abi = b''
@@ -367,7 +368,7 @@ class ChainApiAsync(RPCInterface, ChainNative):
         if isinstance(abi, dict):
             abi = json.dumps(abi)
 
-        abi = self.pack_abi(abi)
+        abi = self.pack_abi(self.chain_index, abi)
         setabi = self.pack_args(config.system_contract, 'setabi', {'account':account, 'abi':abi.hex()})    
         ret = await self.push_action(config.system_contract, 'setabi', setabi, {account:'active'}, indexes=indexes, payer=payer, payer_permission=payer_permission)
         self.db.remove_abi(account)
@@ -395,7 +396,7 @@ class ChainApiAsync(RPCInterface, ChainNative):
             except Exception as e:
                 assert e.json['error']['what'] == "Contract is already running this version of code"
 
-            abi = self.pack_abi(abi)
+            abi = self.pack_abi(self.chain_index, abi)
             if abi:
                 setabi = self.pack_args(config.system_contract, 'setabi', {'account':account, 'abi':abi.hex()})
                 setabi = [config.system_contract, 'setabi', setabi, {account:'active'}]
@@ -412,7 +413,7 @@ class ChainApiAsync(RPCInterface, ChainNative):
             setcode = [python_contract, 'setcode', args, {account:'active'}]
             actions.append(setcode)
 
-            abi = self.pack_abi(abi)
+            abi = self.pack_abi(self.chain_index, abi)
             if abi:
                 setabi = self.s2b(account) + abi
                 setabi = [python_contract, 'setabi', setabi, {account:'active'}]

@@ -42,11 +42,11 @@ def close_dongle():
     dongle.close()
     dongle = None
 
-def sign_by_index(obj, index):
+def sign_by_index(chain_index, obj, index):
     donglePath = parse_bip32_path(f"44'/194'/0'/0/{index}")
     pathSize = len(donglePath) // 4
 
-    tx = Transaction.parse(obj)
+    tx = Transaction.parse(chain_index, obj)
     tx_chunks = tx.encode2()
     first = True
     dongle = get_dongle()
@@ -78,7 +78,7 @@ def sign_by_index(obj, index):
             result = 'SIG_K1_' + base58.b58encode(result).decode()
             return result
 
-def sign(tx, indexes, chain_id):
+def sign(chain_index, tx, indexes, chain_id):
     if isinstance(tx, str):
         tx = json.loads(tx)
     #TODO: verify public keys with indexes
@@ -88,7 +88,7 @@ def sign(tx, indexes, chain_id):
     }
     signatures = []
     for index in indexes:
-        signature = sign_by_index(obj, index)
+        signature = sign_by_index(chain_index, obj, index)
         signatures.append(signature)
     signatures.sort()
     return signatures

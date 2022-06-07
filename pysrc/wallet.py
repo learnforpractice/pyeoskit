@@ -55,10 +55,10 @@ def remove_key(name, pub_key):
     ret = _pyeoskit.wallet_remove(name, pub_key)
     return ret
 
-def sign_transaction(trx: Union[str, dict], public_keys: List[str], chain_id: str, json=False):
+def sign_transaction(chain_index, trx: Union[str, dict], public_keys: List[str], chain_id: str, json=False):
     if isinstance(trx, dict):
         trx = json_.dumps(trx)
-    t = Transaction.from_json(trx, chain_id)
+    t = Transaction.from_json(chain_index, trx, chain_id)
     for pub in public_keys:
         t.sign(pub)
     return t.pack(load=True)

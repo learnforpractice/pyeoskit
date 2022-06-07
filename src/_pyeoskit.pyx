@@ -21,6 +21,9 @@ cdef extern from "<Python.h>":
 
 
 cdef extern from "wrapper.h" nogil:
+    int64_t new_chain_context_()
+    char* chain_context_free_(int64_t _index)
+
     ctypedef char *(*fn_malloc)(uint64_t size)
     void init_(fn_malloc fn)
     void set_debug_flag_(bool debug)
@@ -32,35 +35,35 @@ cdef extern from "wrapper.h" nogil:
 
     char* wallet_get_public_keys_()
 
-    int64_t transaction_new_(int64_t expiration, char* refBlock, char* chainId);
-    char* transaction_from_json_(char* tx, char* chainId)
-    char* transaction_set_chain_id_(int64_t _index, char* chainId)
+    int64_t transaction_new_(int64_t chain_index, int64_t expiration, char* refBlock, char* chainId);
+    char* transaction_from_json_(int64_t chain_index, char* tx, char* chainId)
+    char* transaction_set_chain_id_(int64_t chain_index, int64_t _index, char* chainId)
 
-    char* transaction_free_(int64_t _index);
-    char* transaction_add_action_(int64_t idx, char* account, char* name, char* data, char* permissions);
-    char* transaction_sign_(int64_t idx, char* pub);
-    char* transaction_sign_by_private_key_(int64_t idx, char* priv)
-    char* transaction_digest_(int64_t idx, char* chainId)
+    char* transaction_free_(int64_t chain_index, int64_t _index);
+    char* transaction_add_action_(int64_t chain_index, int64_t idx, char* account, char* name, char* data, char* permissions);
+    char* transaction_sign_(int64_t chain_index, int64_t idx, char* pub);
+    char* transaction_sign_by_private_key_(int64_t chain_index, int64_t idx, char* priv)
+    char* transaction_digest_(int64_t chain_index, int64_t idx, char* chainId)
 
-    char* transaction_pack_(int64_t idx, int compress)
-    char* transaction_marshal_(int64_t idx)
+    char* transaction_pack_(int64_t chain_index, int64_t idx, int compress)
+    char* transaction_marshal_(int64_t chain_index, int64_t idx)
     char* transaction_unpack_(char* data)
 
-    char* abiserializer_set_contract_abi_(char* account, char* abi, int length);
-    char* abiserializer_pack_action_args_(char* contractName, char* actionName, char* args, int args_len);
-    char* abiserializer_unpack_action_args_(char* contractName, char* actionName, char* args);
+    char* abiserializer_set_contract_abi_(int64_t chain_index, char* account, char* abi, int length);
+    char* abiserializer_pack_action_args_(int64_t chain_index, char* contractName, char* actionName, char* args, int args_len);
+    char* abiserializer_unpack_action_args_(int64_t chain_index, char* contractName, char* actionName, char* args);
 
-    char* abiserializer_pack_abi_type_(char* contractName, char* actionName, char* args, int args_len);
-    char* abiserializer_unpack_abi_type_(char* contractName, char* actionName, char* args);
-    int abiserializer_is_abi_cached_(char* contractName);
+    char* abiserializer_pack_abi_type_(int64_t chain_index, char* contractName, char* actionName, char* args, int args_len);
+    char* abiserializer_unpack_abi_type_(int64_t chain_index, char* contractName, char* actionName, char* args);
+    int abiserializer_is_abi_cached_(int64_t chain_index, char* contractName);
 
     uint64_t s2n_(char* s);
     char* n2s_(uint64_t n);
 
     uint64_t sym2n_(char* symbol, uint64_t precision)
 
-    char* abiserializer_pack_abi_(char* str_abi);
-    char* abiserializer_unpack_abi_(char* abi, int length);
+    char* abiserializer_pack_abi_(int64_t chain_index, char* str_abi);
+    char* abiserializer_unpack_abi_(int64_t chain_index, char* abi, int length);
 
     char* wallet_sign_digest_(char* digest, char* pubKey);
     char* crypto_sign_digest_(char* digest, char* privateKey);
@@ -77,6 +80,12 @@ cdef object convert(char *_ret):
 cdef char *user_malloc(uint64_t size):
     return <char *>malloc(size)
 
+def new_chain_context():
+    return new_chain_context_()
+
+def chain_context_free(int64_t _index):
+    return chain_context_free(_index)
+
 def init():
     init_(<fn_malloc>user_malloc)
 
@@ -91,55 +100,55 @@ def wallet_import(char* name, char* priv):
 def wallet_remove(char *name, char *pubKey):
     return wallet_remove_(name, pubKey)
 
-def transaction_new(int64_t expiration, char* refBlock, char* chainId):
-    return transaction_new_(expiration, refBlock, chainId)
+def transaction_new(int64_t chain_index, int64_t expiration, char* refBlock, char* chainId):
+    return transaction_new_(chain_index, expiration, refBlock, chainId)
 
-def transaction_from_json(char* tx, char* chainId):
+def transaction_from_json(int64_t chain_index, char* tx, char* chainId):
     cdef char *ret
-    ret = transaction_from_json_(tx, chainId)
+    ret = transaction_from_json_(chain_index, tx, chainId)
     return convert(ret)
 
-def transaction_free(int64_t _index):
+def transaction_free(int64_t chain_index, int64_t _index):
     cdef char *ret
-    ret = transaction_free_(_index)
+    ret = transaction_free_(chain_index, _index)
     return convert(ret)
 
 #    char* transaction_set_chain_id_(int64_t _index, char* chainId)
-def transaction_set_chain_id(int64_t idx, char* chainId):
+def transaction_set_chain_id(int64_t chain_index, int64_t idx, char* chainId):
     cdef char *ret
-    ret = transaction_set_chain_id_(idx, chainId)
+    ret = transaction_set_chain_id_(chain_index, idx, chainId)
     return convert(ret)
 
-def transaction_add_action(int64_t idx, char* account, char* name, char* data, char* permissions):
+def transaction_add_action(int64_t chain_index, int64_t idx, char* account, char* name, char* data, char* permissions):
     cdef char *ret
-    ret = transaction_add_action_(idx, account, name, data, permissions)
+    ret = transaction_add_action_(chain_index, idx, account, name, data, permissions)
     return convert(ret)
 
-def transaction_sign(int64_t idx, char* pub):
+def transaction_sign(int64_t chain_index, int64_t idx, char* pub):
     cdef char *ret
-    ret = transaction_sign_(idx, pub)
+    ret = transaction_sign_(chain_index, idx, pub)
     return convert(ret)
 
-def transaction_digest(int64_t idx, char* chainId):
+def transaction_digest(int64_t chain_index, int64_t idx, char* chainId):
     cdef char *ret
-    ret = transaction_digest_(idx, chainId)
+    ret = transaction_digest_(chain_index, idx, chainId)
     return convert(ret)
 
 #    char* transaction_sign_by_private_key_(int64_t idx, char* priv)
-def transaction_sign_by_private_key(int64_t idx, char* priv):
+def transaction_sign_by_private_key(int64_t chain_index, int64_t idx, char* priv):
     cdef char *ret
-    ret = transaction_sign_by_private_key_(idx, priv)
+    ret = transaction_sign_by_private_key_(chain_index, idx, priv)
     return convert(ret)
 
 # char* transaction_pack_(int64_t idx);
-def transaction_pack(int64_t idx, int compress):
+def transaction_pack(int64_t chain_index, int64_t idx, int compress):
     cdef char *ret
-    ret = transaction_pack_(idx, compress)
+    ret = transaction_pack_(chain_index, idx, compress)
     return convert(ret)
 
-def transaction_marshal(int64_t idx):
+def transaction_marshal(int64_t chain_index, int64_t idx):
     cdef char *ret
-    ret = transaction_marshal_(idx)
+    ret = transaction_marshal_(chain_index, idx)
     return convert(ret)
 
 #    char* transaction_unpack_(char* data)
@@ -155,38 +164,38 @@ def wallet_get_public_keys():
     return convert(ret)
 
 #     char* abiserializer_set_contract_abi_(char* account, char* abi, int length);
-def abiserializer_set_contract_abi(char* account, abi):
+def abiserializer_set_contract_abi(int64_t chain_index, char* account, abi):
     cdef char *ret
-    ret = abiserializer_set_contract_abi_(account, abi, len(abi))
+    ret = abiserializer_set_contract_abi_(chain_index, account, abi, len(abi))
     return convert(ret)
 
 #    char* abiserializer_pack_action_args_(char* contractName, char* actionName, char* args, int args_len);
-def abiserializer_pack_action_args(char* contractName, char* actionName, args):
+def abiserializer_pack_action_args(int64_t chain_index, char* contractName, char* actionName, args):
     cdef char *ret
-    ret = abiserializer_pack_action_args_(contractName, actionName, args, len(args))
+    ret = abiserializer_pack_action_args_(chain_index, contractName, actionName, args, len(args))
     return convert(ret)
 
 #    char* abiserializer_unpack_action_args_(char* contractName, char* actionName, char* args);
-def abiserializer_unpack_action_args(char* contractName, char* actionName, char* args):
+def abiserializer_unpack_action_args(int64_t chain_index, char* contractName, char* actionName, char* args):
     cdef char *ret
-    ret = abiserializer_unpack_action_args_(contractName, actionName, args)
+    ret = abiserializer_unpack_action_args_(chain_index, contractName, actionName, args)
     return convert(ret)
 
 #char* abiserializer_pack_abi_type_(char* contractName, char* actionName, char* args, int args_len);
-def abiserializer_pack_abi_type(char* contractName, char* actionName, args):
+def abiserializer_pack_abi_type(int64_t chain_index, char* contractName, char* actionName, args):
     cdef char *ret
-    ret = abiserializer_pack_abi_type_(contractName, actionName, args, len(args))
+    ret = abiserializer_pack_abi_type_(chain_index, contractName, actionName, args, len(args))
     return convert(ret)
 
 #char* abiserializer_unpack_abi_type_(char* contractName, char* actionName, char* args);
-def abiserializer_unpack_abi_type(char* contractName, char* actionName, args: bytes):
+def abiserializer_unpack_abi_type(int64_t chain_index, char* contractName, char* actionName, char* args):
     cdef char *ret
-    ret = abiserializer_unpack_abi_type_(contractName, actionName, args)
+    ret = abiserializer_unpack_abi_type_(chain_index, contractName, actionName, args)
     return convert(ret)
 
 #    int abiserializer_is_abi_cached_(char* contractName);
-def abiserializer_is_abi_cached(char* contractName):
-    return abiserializer_is_abi_cached_(contractName)
+def abiserializer_is_abi_cached(int64_t chain_index, char* contractName):
+    return abiserializer_is_abi_cached_(chain_index, contractName)
 
 #uint64_t s2n(char* s);
 def s2n(char* s):
@@ -207,15 +216,15 @@ def n2sym(n):
     return f'{sym[0]},'+ sym[1:].rstrip(b'\x00').decode()
 
 # char* abiserializer_pack_abi_(char* str_abi);
-def abiserializer_pack_abi(str_abi):
+def abiserializer_pack_abi(int64_t chain_index, str_abi):
     cdef char *ret
-    ret = abiserializer_pack_abi_(str_abi)
+    ret = abiserializer_pack_abi_(chain_index, str_abi)
     return convert(ret)
 
 # char* abiserializer_unpack_abi_(char* abi, int length);
-def abiserializer_unpack_abi(abi):
+def abiserializer_unpack_abi(int64_t chain_index, abi):
     cdef char *ret
-    ret = abiserializer_unpack_abi_(abi, len(abi))
+    ret = abiserializer_unpack_abi_(chain_index, abi, len(abi))
     return convert(ret)
 
 #    char* wallet_sign_digest_(char* pubKey, char* digest);

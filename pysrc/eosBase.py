@@ -287,9 +287,9 @@ class Transaction:
         return parameters
 
     @staticmethod
-    def parse(json):
+    def parse(chain_index, json):
         try:
-            tx = Transaction()
+            tx = Transaction(chain_index)
             tx.json = json
 
             tx.chain_id = binascii.unhexlify(json['chain_id'])

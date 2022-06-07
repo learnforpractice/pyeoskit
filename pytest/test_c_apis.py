@@ -85,13 +85,13 @@ class Test(object):
     def test_abi(self):
         from pyeoskit import _pyeoskit
         _pyeoskit.init()
-
+        chain_index = _pyeoskit.new_chain_context()
         abi = '{\n    "version": "eosio::abi/1.1",\n    "structs": [],\n    "types": [],\n    "actions": [],\n    "tables": [],\n    "ricardian_clauses": [],\n    "variants": [],\n    "abi_extensions": [],\n    "error_messages": []\n}'
-        r = ABI.set_contract_abi("test", abi)
+        r = ABI.set_contract_abi(chain_index, "test", abi)
 
         with open('data/eosio.token.abi', 'rb') as f:
             abi = f.read()
-        r = ABI.set_contract_abi("hello", abi)
+        r = ABI.set_contract_abi(chain_index, "hello", abi)
         logger.info(r)
         transfer = {
             'from': 'helloworld11',
@@ -102,17 +102,17 @@ class Test(object):
         transfer = json.dumps(transfer)
         logger.info(transfer)
 
-        r = ABI.pack_action_args('hello', 'transfer', transfer)
+        r = ABI.pack_action_args(chain_index, 'hello', 'transfer', transfer)
         logger.info(r)
 
-        r = ABI.unpack_action_args('hello', 'transfer', r)
+        r = ABI.unpack_action_args(chain_index, 'hello', 'transfer', r)
         logger.info(r)
 
 
-        r = ABI.pack_abi_type('hello', 'transfer', transfer)
+        r = ABI.pack_abi_type(chain_index, 'hello', 'transfer', transfer)
         logger.info(r)
 
-        r = ABI.unpack_abi_type('hello', 'transfer', r)
+        r = ABI.unpack_abi_type(chain_index, 'hello', 'transfer', r)
         logger.info(r)
 
         abi = '''
@@ -143,18 +143,18 @@ class Test(object):
     "abi_extensions": []
 }
 '''
-        r = ABI.set_contract_abi("test", abi)
+        r = ABI.set_contract_abi(chain_index, "test", abi)
         args = {'name': [123, 456]}
-        r = ABI.pack_abi_type('test', 'sayhello', json.dumps(args))
+        r = ABI.pack_abi_type(chain_index, 'test', 'sayhello', json.dumps(args))
         logger.info(r)
 
-        r = ABI.unpack_abi_type('test', 'sayhello', r)
+        r = ABI.unpack_abi_type(chain_index, 'test', 'sayhello', r)
         logger.info(r)
 
-        packed_abi = ABI.pack_abi(abi)
+        packed_abi = ABI.pack_abi(chain_index, abi)
         logger.info(packed_abi)
 
-        unpacked_abi = ABI.unpack_abi(packed_abi)
+        unpacked_abi = ABI.unpack_abi(chain_index, packed_abi)
         logger.info(unpacked_abi)
 
     def test_wallet(self):

@@ -15,6 +15,18 @@ SRC_TYPE_PY = 1
 SRC_TYPE_GO = 2
 
 class ChainNative(object):
+    def __init__(self):
+        self._chain_index = _pyeoskit.new_chain_context()
+
+    def free(self):
+        if self._chain_index == -1:
+            return
+        _pyeoskit.chain_context_free(self._chain_index)
+        self._chain_index = -1
+
+    @property
+    def chain_index(self):
+        return self._chain_index
 
     def get_abi_sync(self, account):
         args = {
@@ -75,7 +87,7 @@ class ChainNative(object):
             return 0
 
     def check_abi(self, account):
-        if not ABI.is_abi_cached(account):
+        if not ABI.is_abi_cached(self.chain_index, account):
             abi = self.get_abi_sync(account)
             self.set_abi(account, abi.encode('utf8'))
 
@@ -87,7 +99,7 @@ class ChainNative(object):
 
         self.check_abi(account)
 
-        binargs = ABI.pack_action_args(account, action, args)
+        binargs = ABI.pack_action_args(self.chain_index, account, action, args)
         return bytes.fromhex(binargs)
 
     def unpack_args(self, account, action, binargs):
@@ -96,7 +108,7 @@ class ChainNative(object):
 
         self.check_abi(account)
 
-        ret = ABI.unpack_action_args(account, action, binargs)
+        ret = ABI.unpack_action_args(self.chain_index, account, action, binargs)
         return json.loads(ret)
 
     def pack_abi_type(self, account, struct_name, args):
@@ -105,31 +117,31 @@ class ChainNative(object):
 
         self.check_abi(account)
 
-        return ABI.pack_abi_type(account, struct_name, args)
+        return ABI.pack_abi_type(self.chain_index, account, struct_name, args)
 
     def unpack_abi_type(self, account, struct_name, binargs):
         self.check_abi(account)
-        return ABI.unpack_abi_type(account, struct_name, binargs)
+        return ABI.unpack_abi_type(self.chain_index, account, struct_name, binargs)
 
     @staticmethod
-    def clear_abi_cache(account):
-        return ABI.set_contract_abi(account, "")
+    def clear_abi_cache(chain_index, account):
+        return ABI.set_contract_abi(chain_index, account, "")
 
     @staticmethod
-    def set_abi(account, abi):
+    def set_abi(chain_index, account, abi):
         if isinstance(abi, str):
             abi = abi.encode('utf8')
-        return ABI.set_contract_abi(account, abi)
+        return ABI.set_contract_abi(chain_index, account, abi)
 
     @staticmethod
-    def pack_abi(abi):
+    def pack_abi(chain_index, abi):
         if isinstance(abi, dict):
             abi = json.dumps(abi)
-        return ABI.pack_abi(abi)
+        return ABI.pack_abi(chain_index, abi)
 
     @staticmethod
-    def unpack_abi(packed_abi):
-        return ABI.unpack_abi(packed_abi)
+    def unpack_abi(chain_index, packed_abi):
+        return ABI.unpack_abi(chain_index, packed_abi)
 
     def gen_transaction(self, actions, expiration, reference_block_id, chain_id):
         if not expiration:
@@ -137,7 +149,7 @@ class ChainNative(object):
         else:
             expiration = int(time.time()) + expiration
         try:
-            tx = Transaction(expiration, reference_block_id, chain_id)
+            tx = Transaction(self.chain_index, expiration, reference_block_id, chain_id)
             for a in actions:
                 contract, action_name, args, permissions = a
                 if isinstance(args, bytes):
@@ -165,19 +177,19 @@ class ChainNative(object):
         return self.gen_transaction(actions, expiration, reference_block_id, chain_id)
 
     @staticmethod
-    def sign_transaction(tx, private_key, chain_id, json=False):
-        t = Transaction.from_json(tx, chain_id)
+    def sign_transaction(chain_index, tx, private_key, chain_id, json=False):
+        t = Transaction.from_json(chain_index, tx, chain_id)
         return t.sign_by_private_key(private_key)
 
     @staticmethod
-    def pack_transaction(tx, compress=0, json=False):
-        t = Transaction.from_json(tx, '00'*32)
+    def pack_transaction(chain_index, tx, compress=0, json=False):
+        t = Transaction.from_json(chain_index, tx, '00'*32)
         r = t.pack(compress)
         return r['packed_trx']
 
     @staticmethod
-    def unpack_transaction(trx, json=False):
-        return Transaction.unpack(trx)
+    def unpack_transaction(chain_index, trx, json=False):
+        return Transaction.unpack(chain_index, trx)
 
     @staticmethod
     def create_key():
@@ -199,10 +211,6 @@ class ChainNative(object):
             digest = digest.hex()
         ret = _pyeoskit.crypto_sign_digest(digest, priv_key)
         return check_result(ret)
-
-    @staticmethod
-    def mp_compile(contract, src):
-        return _eosapi.compile_py(contract, src)
 
     def mp_make_frozen(self, code):
         mpy_code = ((code, len(code)),)
