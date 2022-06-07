@@ -1,0 +1,65 @@
+# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
+name: Python application
+
+on:
+  push:
+    branches: [ release ]
+
+jobs:
+  run:
+    runs-on: ${{ matrix.os }}
+    env:
+      VERSION: 1.1.8
+    strategy:
+      matrix:
+        # python-version: [3.7, 3.8, 3.9, "3.10"]
+        # os: ['windows-latest', 'ubuntu-latest', 'macos-latest']
+        # os: ['ubuntu-latest', 'macos-10.15', 'macos-latest']
+        python-version: ["3.10"]
+        os: ['ubuntu-18.04']
+      fail-fast: false
+
+    steps:
+      - name: Setup cmake
+        uses: jwlawson/actions-setup-cmake@v1.9
+        with:
+          cmake-version: '3.16.x'
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install flake8 pytest scikit-build cython ninja auditwheel
+          mkdir -p dist
+      - name: Downloading whl files
+        if: ${{ startsWith(github.ref, 'refs/tags/') && matrix.os == 'ubuntu-18.04' && matrix.python-version == '3.10' }}
+        working-directory: dist
+        run: |
+          python ../scripts/download.py ${{ env.VERSION }}
+          rm pyeoskit-${{ env.VERSION }}-cp310-cp310-linux_x86_64.whl
+          rm -r wheelhouse
+      - name: Upload wheel checksums
+        uses: softprops/action-gh-release@v1
+        if: ${{ startsWith(github.ref, 'refs/tags/') && matrix.os == 'ubuntu-18.04' && matrix.python-version == '3.10' }}
+        with:
+          files: |
+            ./dist/checksum.txt
+      - name: Remove dist/checksum.txt
+        if: ${{ startsWith(github.ref, 'refs/tags/') && matrix.os == 'ubuntu-18.04' && matrix.python-version == '3.10' }}
+        working-directory: dist
+        run: |
+          rm ./dist/checksum.txt
+      - name: Publish a Python distribution to PyPI
+        if: ${{ startsWith(github.ref, 'refs/tags/') && matrix.os == 'ubuntu-18.04' && matrix.python-version == '3.10' }}
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_API_TOKEN }}
