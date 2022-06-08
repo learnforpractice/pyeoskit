@@ -84,7 +84,7 @@ def new_chain_context():
     return new_chain_context_()
 
 def chain_context_free(int64_t _index):
-    return chain_context_free(_index)
+    return chain_context_free_(_index)
 
 def init():
     init_(<fn_malloc>user_malloc)

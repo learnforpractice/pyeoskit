@@ -33,6 +33,20 @@ class Test(object):
     def teardown_method(self, method):
         pass
 
+    def test_chain_context(self):
+        #self.chain_index is 1 as chain index 0 has been allocated in __init__.py
+        r = _pyeoskit.chain_context_free(self.chain_index)
+        idxes = []
+        for i in range(63):
+            idx = _pyeoskit.new_chain_context()
+            idxes.append(idx)
+        idx = _pyeoskit.new_chain_context()
+        assert idx == -1, 'bad return value'
+        for idx in idxes:
+            _pyeoskit.chain_context_free(idx)
+        self.chain_index = _pyeoskit.new_chain_context()
+        assert self.chain_index == 1, 'bad return value'
+
     def test_transaction(self):
         logger.info('hello,world')
         # api = ChainApi('https://testnode.uuos.network:8443', 'UUOS')
@@ -45,7 +59,19 @@ class Test(object):
 
         _pyeoskit.wallet_import("test", "5JRYimgLBrRLCBAcjHUWCYRv3asNedTYYzVgmiU4q2ZVxMBiJXL")
 
+        idxes = []
+        for i in range(1024):
+            idx = _pyeoskit.transaction_new(self.chain_index, int(time.time()) + 60, ref_block, chain_id)
+            idxes.append(i)
         idx = _pyeoskit.transaction_new(self.chain_index, int(time.time()) + 60, ref_block, chain_id)
+        assert idx == -1, 'bad return'
+        for idx in idxes:
+            r = _pyeoskit.transaction_free(self.chain_index, idx)
+
+        idx = _pyeoskit.transaction_new(self.chain_index, int(time.time()) + 60, ref_block, chain_id)
+        logger.info(idx)
+        assert idx == 0, 'bad return value'
+
         pub = 'EOS6AjF6hvF7GSuSd4sCgfPKq5uWaXvGM2aQtEUCwmEHygQaqxBSV'
 
         transfer = {
