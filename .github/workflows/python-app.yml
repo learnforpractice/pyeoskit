@@ -65,8 +65,7 @@ jobs:
       - name: Test
         working-directory: ./pytest
         run: |
-          python -c "import pyeoskit"
-      #        pytest test_c_apis.py
+          python3 -m pytest test_c_apis.py
       - name: auditwheel repair
         if: ${{ matrix.os == 'ubuntu-18.04' }}
         id: manylinuxwhlfile

@@ -6,7 +6,7 @@ import pytest
 import logging
 import hashlib
 
-from pyeoskit import ABI
+from pyeoskit import ABI, _pyeoskit
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(lineno)d %(module)s %(message)s')
 logger=logging.getLogger(__name__)
@@ -19,7 +19,9 @@ class Test(object):
 
     @classmethod
     def setup_class(cls):
-        pass
+        from pyeoskit import _pyeoskit
+        _pyeoskit.init()
+        cls.chain_index = _pyeoskit.new_chain_context()
 
     @classmethod
     def teardown_class(cls):
@@ -33,18 +35,17 @@ class Test(object):
 
     def test_transaction(self):
         logger.info('hello,world')
-        api = ChainApi('https://testnode.uuos.network:8443', 'UUOS')
-        info = api.get_info()
+        # api = ChainApi('https://testnode.uuos.network:8443', 'UUOS')
+        # info = api.get_info()
 
-        chain_id = info['chain_id']
-        ref_block = info['last_irreversible_block_id']
-
-        from pyeoskit import _pyeoskit
-        _pyeoskit.init()
+        # chain_id = info['chain_id']
+        # ref_block = info['last_irreversible_block_id']
+        chain_id = '00' * 32
+        ref_block = '11' * 32
 
         _pyeoskit.wallet_import("test", "5JRYimgLBrRLCBAcjHUWCYRv3asNedTYYzVgmiU4q2ZVxMBiJXL")
 
-        idx = _pyeoskit.transaction_new(int(time.time()) + 60, ref_block, chain_id)
+        idx = _pyeoskit.transaction_new(self.chain_index, int(time.time()) + 60, ref_block, chain_id)
         pub = 'EOS6AjF6hvF7GSuSd4sCgfPKq5uWaXvGM2aQtEUCwmEHygQaqxBSV'
 
         transfer = {
@@ -59,10 +60,10 @@ class Test(object):
             'helloworld11': 'active'
         }
         perms = json.dumps(perms)
-        _pyeoskit.transaction_add_action(idx, 'eosio.token', 'transfer', transfer, perms)
-        r = _pyeoskit.transaction_sign(idx, pub)
+        _pyeoskit.transaction_add_action(self.chain_index, idx, 'eosio.token', 'transfer', transfer, perms)
+        r = _pyeoskit.transaction_sign(self.chain_index, idx, pub)
         logger.info(r)
-        r = _pyeoskit.transaction_pack(idx, 0)
+        r = _pyeoskit.transaction_pack(self.chain_index, idx, 0)
         logger.info(r)
         r = json.loads(r)
         logger.info(r)
@@ -83,15 +84,12 @@ class Test(object):
             logger.info(r)
 
     def test_abi(self):
-        from pyeoskit import _pyeoskit
-        _pyeoskit.init()
-        chain_index = _pyeoskit.new_chain_context()
         abi = '{\n    "version": "eosio::abi/1.1",\n    "structs": [],\n    "types": [],\n    "actions": [],\n    "tables": [],\n    "ricardian_clauses": [],\n    "variants": [],\n    "abi_extensions": [],\n    "error_messages": []\n}'
-        r = ABI.set_contract_abi(chain_index, "test", abi)
+        r = ABI.set_contract_abi(self.chain_index, "test", abi)
 
         with open('data/eosio.token.abi', 'rb') as f:
             abi = f.read()
-        r = ABI.set_contract_abi(chain_index, "hello", abi)
+        r = ABI.set_contract_abi(self.chain_index, "hello", abi)
         logger.info(r)
         transfer = {
             'from': 'helloworld11',
@@ -102,18 +100,19 @@ class Test(object):
         transfer = json.dumps(transfer)
         logger.info(transfer)
 
-        r = ABI.pack_action_args(chain_index, 'hello', 'transfer', transfer)
+        r = ABI.pack_action_args(self.chain_index, 'hello', 'transfer', transfer)
         logger.info(r)
 
-        r = ABI.unpack_action_args(chain_index, 'hello', 'transfer', r)
+        r = ABI.unpack_action_args(self.chain_index, 'hello', 'transfer', r)
+        logger.info(r)
+        assert json.loads(r) == json.loads(transfer), "bad return"
+
+        r = ABI.pack_abi_type(self.chain_index, 'hello', 'transfer', transfer)
         logger.info(r)
 
-
-        r = ABI.pack_abi_type(chain_index, 'hello', 'transfer', transfer)
+        r = ABI.unpack_abi_type(self.chain_index, 'hello', 'transfer', r)
         logger.info(r)
-
-        r = ABI.unpack_abi_type(chain_index, 'hello', 'transfer', r)
-        logger.info(r)
+        assert json.loads(r) == json.loads(transfer), "bad return"
 
         abi = '''
 {
@@ -143,18 +142,18 @@ class Test(object):
     "abi_extensions": []
 }
 '''
-        r = ABI.set_contract_abi(chain_index, "test", abi)
+        r = ABI.set_contract_abi(self.chain_index, "test", abi)
         args = {'name': [123, 456]}
-        r = ABI.pack_abi_type(chain_index, 'test', 'sayhello', json.dumps(args))
+        r = ABI.pack_abi_type(self.chain_index, 'test', 'sayhello', json.dumps(args))
         logger.info(r)
 
-        r = ABI.unpack_abi_type(chain_index, 'test', 'sayhello', r)
+        r = ABI.unpack_abi_type(self.chain_index, 'test', 'sayhello', r)
         logger.info(r)
 
-        packed_abi = ABI.pack_abi(chain_index, abi)
+        packed_abi = ABI.pack_abi(self.chain_index, abi)
         logger.info(packed_abi)
 
-        unpacked_abi = ABI.unpack_abi(chain_index, packed_abi)
+        unpacked_abi = ABI.unpack_abi(self.chain_index, packed_abi)
         logger.info(unpacked_abi)
 
     def test_wallet(self):
@@ -211,30 +210,30 @@ class Test(object):
         "error_messages": []
     }        
 '''
-        r = ABI.set_contract_abi("test", abi)
+        r = ABI.set_contract_abi(self.chain_index, "test", abi)
         args = {
             "a": "hello", 
             "b": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
             "c": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
         }
-        r = ABI.pack_abi_type('test', 'testext', json.dumps(args))
+        r = ABI.pack_abi_type(self.chain_index, 'test', 'testext', json.dumps(args))
         assert r == '0568656c6c6f01aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-        r = ABI.unpack_abi_type('test', 'testext', r)
+        r = ABI.unpack_abi_type(self.chain_index, 'test', 'testext', r)
         logger.info(r)
         assert r == '{"a":"hello","b":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","c":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}'
 
         args = {"a": "hello", "b": None, "c": 'aa'*32}
-        r = ABI.pack_abi_type('test', 'testext', json.dumps(args))
+        r = ABI.pack_abi_type(self.chain_index, 'test', 'testext', json.dumps(args))
         logger.info(r)
         assert r == '0568656c6c6f00aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-        r = ABI.unpack_abi_type('test', 'testext', r)
+        r = ABI.unpack_abi_type(self.chain_index, 'test', 'testext', r)
         logger.info(r)
         assert r == '{"a":"hello","b":null,"c":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}'
 
         args = {"a": "hello", "b": None}
-        r = ABI.pack_abi_type('test', 'testext', json.dumps(args))
+        r = ABI.pack_abi_type(self.chain_index, 'test', 'testext', json.dumps(args))
         logger.info(r)
         assert r == '0568656c6c6f00'
-        r = ABI.unpack_abi_type('test', 'testext', r)
+        r = ABI.unpack_abi_type(self.chain_index, 'test', 'testext', r)
         logger.info(r)
         assert r == '{"a":"hello","b":null}'
