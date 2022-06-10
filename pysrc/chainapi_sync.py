@@ -137,7 +137,7 @@ class ChainApi(RPCInterface, ChainNative):
             tx_json = tx.json()
             for key in sign_keys:
                 index = indexes[ledger_pub_keys.index(key)]
-                signs = ledger.sign(self.chain_index, tx_json, [index], chain_id)
+                signs = ledger.sign(tx_json, [index], chain_id)
                 signatures |= set(signs)
             packed_tx['signatures'] = list(signatures)
             return json.dumps(packed_tx)
