@@ -80,7 +80,7 @@ class ChainApi(RPCInterface, ChainNative):
             fake_tx['actions'].append(action)
         return self.get_required_keys(json.dumps(fake_tx), pub_keys)
 
-    def generate_packed_transaction(self, actions, expiration, ref_block, chain_id, compress=0, indexes=None):
+    def generate_packed_transaction(self, actions, expiration, ref_block, chain_id, compress=0, indices=None):
         fake_actions = []
         for a in actions:
             fake_actions.append([a[0], a[1], '', a[3]])
@@ -116,8 +116,8 @@ class ChainApi(RPCInterface, ChainNative):
             available_pub_keys = set(local_wallet_pub_keys)
 
             ledger_pub_keys = set()
-            if not indexes is None:
-                ledger_pub_keys = ledger.get_public_keys(indexes)
+            if not indices is None:
+                ledger_pub_keys = ledger.get_public_keys(indices)
                 available_pub_keys |= set(ledger_pub_keys)
 
             required_keys = self.get_sign_keys(fake_actions, list(available_pub_keys))
@@ -136,7 +136,7 @@ class ChainApi(RPCInterface, ChainNative):
             packed_tx = json.loads(packed_tx)
             tx_json = tx.json()
             for key in sign_keys:
-                index = indexes[ledger_pub_keys.index(key)]
+                index = indices[ledger_pub_keys.index(key)]
                 signs = ledger.sign(tx_json, [index], chain_id)
                 signatures |= set(signs)
             packed_tx['signatures'] = list(signatures)
@@ -144,13 +144,13 @@ class ChainApi(RPCInterface, ChainNative):
         finally:
             tx.free()
 
-    def push_action(self, contract, action, args, permissions=None, compress=False, expiration=0, ref_block_id=None, indexes=None, payer=None, payer_permission="active"):
+    def push_action(self, contract, action, args, permissions=None, compress=False, expiration=0, ref_block_id=None, indices=None, payer=None, payer_permission="active"):
         if not permissions:
             permissions = {contract:'active'}
         a = [contract, action, args, permissions]
-        return self.push_actions([a], expiration, compress, ref_block_id, indexes, payer, payer_permission)
+        return self.push_actions([a], expiration, compress, ref_block_id, indices, payer, payer_permission)
 
-    def push_actions(self, actions, expiration=0, compress=0, ref_block_id=None, indexes=None, payer=None, payer_permission="active"):
+    def push_actions(self, actions, expiration=0, compress=0, ref_block_id=None, indices=None, payer=None, payer_permission="active"):
         if payer:
             action = [payer, 'noop', b'', {payer: payer_permission}]
             actions.insert(0, action)
@@ -162,20 +162,20 @@ class ChainApi(RPCInterface, ChainNative):
                     self.chain_id = chain_info['chain_id']
                 if not ref_block_id:
                     ref_block_id = chain_info['last_irreversible_block_id']
-            tx = self.generate_packed_transaction(actions, expiration, ref_block_id, self.chain_id, compress, indexes=indexes)
+            tx = self.generate_packed_transaction(actions, expiration, ref_block_id, self.chain_id, compress, indices=indices)
             return super().push_transaction(tx)
         except Exception as e:
             raise e
         finally:
             ledger.close_dongle()
 
-    def push_transactions(self, aaa, expiration=60, compress=False, indexes=None):
+    def push_transactions(self, aaa, expiration=60, compress=False, indices=None):
         chain_info = self.get_info()
         ref_block = chain_info['last_irreversible_block_id']
         chain_id = chain_info['chain_id']
         txs = []
         for aa in aaa:
-            tx = self.generate_packed_transaction(aa, expiration, ref_block, chain_id, compress, indexes=indexes)
+            tx = self.generate_packed_transaction(aa, expiration, ref_block, chain_id, compress, indices=indices)
             txs.append(tx)
         return super().push_transactions(txs)
 
@@ -196,7 +196,7 @@ class ChainApi(RPCInterface, ChainNative):
                 return None
             raise e
 
-    def create_account(self, creator, account, owner_key, active_key, ram_bytes=0, stake_net=0.0, stake_cpu=0.0, sign=True, indexes=None):
+    def create_account(self, creator, account, owner_key, active_key, ram_bytes=0, stake_net=0.0, stake_cpu=0.0, sign=True, indices=None):
         actions = []
         args = {
             'creator': creator,
@@ -235,7 +235,7 @@ class ChainApi(RPCInterface, ChainNative):
             args = self.pack_args(config.system_contract, 'delegatebw', args)
             act = [config.system_contract, 'delegatebw', args, {creator:'active'}]
             actions.append(act)
-        return self.push_actions(actions, indexes=indexes)
+        return self.push_actions(actions, indices=indices)
 
     def get_balance(self, account, token_account=None, token_name=None):
         if not token_name:
@@ -255,13 +255,13 @@ class ChainApi(RPCInterface, ChainNative):
             return 0.0
         return 0.0
 
-    def transfer(self, _from, to, amount, memo='', token_account=None, token_name=None, token_precision=4, permission='active', indexes=None, payer=None, payer_permission="active"):
+    def transfer(self, _from, to, amount, memo='', token_account=None, token_name=None, token_precision=4, permission='active', indices=None, payer=None, payer_permission="active"):
         if not token_account:
             token_account = config.main_token_contract
         if not token_name:
             token_name = config.main_token
         args = {"from":_from, "to": to, "quantity": f'%.{token_precision}f %s'%(amount, token_name), "memo":memo}
-        return self.push_action(token_account, 'transfer', args, {_from:permission}, indexes=indexes, payer=payer, payer_permission=payer_permission)
+        return self.push_action(token_account, 'transfer', args, {_from:permission}, indices=indices, payer=payer, payer_permission=payer_permission)
 
     def get_code(self, account):
         try:
@@ -308,15 +308,15 @@ class ChainApi(RPCInterface, ChainNative):
             self.set_abi(account, abi)
         return abi
 
-    def deploy_contract(self, account, code, abi, vm_type=0, vm_version=0, sign=True, compress=False, indexes=None, payer=None, payer_permission="active"):
+    def deploy_contract(self, account, code, abi, vm_type=0, vm_version=0, sign=True, compress=False, indices=None, payer=None, payer_permission="active"):
         if vm_type == 0:
-            return self.deploy_wasm_contract(account, code, abi, vm_type, vm_version, sign, compress, indexes=indexes, payer=payer, payer_permission=payer_permission)
+            return self.deploy_wasm_contract(account, code, abi, vm_type, vm_version, sign, compress, indices=indices, payer=payer, payer_permission=payer_permission)
         elif vm_type == 1:
-            return self.deploy_python_contract(account, code, abi, indexes=indexes)
+            return self.deploy_python_contract(account, code, abi, indices=indices)
         else:
             raise Exception(f'Unknown vm type {vm_type}')
 
-    def deploy_wasm_contract(self, account, code, abi, vm_type=0, vm_version=0, sign=True, compress=0, indexes=None, payer=None, payer_permission="active"):
+    def deploy_wasm_contract(self, account, code, abi, vm_type=0, vm_version=0, sign=True, compress=0, indices=None, payer=None, payer_permission="active"):
         origin_abi = abi
         actions = []
         setcode = {"account":account,
@@ -339,7 +339,7 @@ class ChainApi(RPCInterface, ChainNative):
         setabi = [config.system_contract, 'setabi', setabi, {account:'active'}]
         actions.append(setabi)
 
-        ret = self.push_actions(actions, compress=compress, indexes=indexes, payer=payer, payer_permission=payer_permission)
+        ret = self.push_actions(actions, compress=compress, indices=indices, payer=payer, payer_permission=payer_permission)
         if 'error' in ret:
             raise Exception(ret['error'])
 
@@ -347,30 +347,30 @@ class ChainApi(RPCInterface, ChainNative):
 
         return ret
 
-    def deploy_code(self, account, code, vm_type=0, vm_version=0, indexes=None, payer=None, payer_permission="active"):
+    def deploy_code(self, account, code, vm_type=0, vm_version=0, indices=None, payer=None, payer_permission="active"):
         setcode = {"account":account,
                 "vmtype":vm_type,
                 "vmversion":vm_version,
                 "code":code.hex()
                 }
         setcode = self.pack_args(config.system_contract, 'setcode', setcode)
-        ret = self.push_action(config.system_contract, 'setcode', setcode, {account:'active'}, indexes=indexes, payer=payer, payer_permission=payer_permission)
+        ret = self.push_action(config.system_contract, 'setcode', setcode, {account:'active'}, indices=indices, payer=payer, payer_permission=payer_permission)
         self.db.remove_code(account)
         return ret
 
-    def deploy_abi(self, account, abi, indexes=None, payer=None, payer_permission="active"):
+    def deploy_abi(self, account, abi, indices=None, payer=None, payer_permission="active"):
         if isinstance(abi, dict):
             abi = json.dumps(abi)
 
         abi = self.pack_abi(self.chain_index, abi)
         setabi = self.pack_args(config.system_contract, 'setabi', {'account':account, 'abi':abi.hex()})    
-        ret = self.push_action(config.system_contract, 'setabi', setabi, {account:'active'}, indexes=indexes, payer=payer, payer_permission=payer_permission)
+        ret = self.push_action(config.system_contract, 'setabi', setabi, {account:'active'}, indices=indices, payer=payer, payer_permission=payer_permission)
         self.db.remove_abi(account)
         self.clear_abi_cache(account)
         return ret
 
 
-    def deploy_python_contract(self, account, code, abi, deploy_type=0, indexes=None):
+    def deploy_python_contract(self, account, code, abi, deploy_type=0, indices=None):
         '''Deploy a python contract to EOSIO based network
         Args:
             deploy_type (int) : 0 for UUOS network, 1 for EOS network
@@ -417,7 +417,7 @@ class ChainApi(RPCInterface, ChainNative):
 
         ret = None
         if actions:
-            ret = self.push_actions(actions, indexes=indexes)
+            ret = self.push_actions(actions, indices=indices)
 
         self.set_abi(account, origin_abi)
         return ret

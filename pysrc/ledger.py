@@ -78,24 +78,24 @@ def sign_by_index(obj, index):
             result = 'SIG_K1_' + base58.b58encode(result).decode()
             return result
 
-def sign(tx, indexes, chain_id):
+def sign(tx, indices, chain_id):
     if isinstance(tx, str):
         tx = json.loads(tx)
-    #TODO: verify public keys with indexes
+    #TODO: verify public keys with indices
     obj = {
         "chain_id": chain_id,
         "transaction": tx
     }
     signatures = []
-    for index in indexes:
+    for index in indices:
         signature = sign_by_index(obj, index)
         signatures.append(signature)
     signatures.sort()
     return signatures
 
-def get_public_keys(indexes):
+def get_public_keys(indices):
     public_keys = []
-    for index in indexes:
+    for index in indices:
         public_key = get_public_key(index)
         public_keys.append(public_key)
     return public_keys

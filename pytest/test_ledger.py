@@ -35,7 +35,7 @@ class Test(object):
             'quantity': '1.0000 EOS',
             'memo': 'hello'
         }
-        eosapi.push_action('eosio.token', 'transfer', args, {'helloworld11': 'active'}, indexes=[0])
+        eosapi.push_action('eosio.token', 'transfer', args, {'helloworld11': 'active'}, indices=[0])
 
     def test_2ledger(self):
         from pyeoskit import ledger

@@ -56,7 +56,7 @@ def get_public_key(index):
 [[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/ledger.py#L96)
 
 ```python
-def get_public_keys(indexes):
+def get_public_keys(indices):
 ```
 
 ## sign
@@ -64,7 +64,7 @@ def get_public_keys(indexes):
 [[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/ledger.py#L81)
 
 ```python
-def sign(tx, indexes, chain_id):
+def sign(tx, indices, chain_id):
 ```
 
 ## sign_by_index

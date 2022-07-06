@@ -56,7 +56,7 @@ async def create_account(
     stake_net=0.0,
     stake_cpu=0.0,
     sign=True,
-    indexes=None,
+    indices=None,
 ):
 ```
 
@@ -65,7 +65,7 @@ async def create_account(
 [[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L344)
 
 ```python
-async def deploy_abi(account, abi, indexes=None):
+async def deploy_abi(account, abi, indices=None):
 ```
 
 ### ChainApiAsync().deploy_code
@@ -89,7 +89,7 @@ async def deploy_contract(
     vm_version=0,
     sign=True,
     compress=False,
-    indexes=None,
+    indices=None,
 ):
 ```
 
@@ -119,7 +119,7 @@ async def deploy_python_contract(
     code,
     abi,
     deploy_type=0,
-    indexes=None,
+    indices=None,
 ):
 ```
 
@@ -142,7 +142,7 @@ async def deploy_wasm_contract(
     vm_version=0,
     sign=True,
     compress=0,
-    indexes=None,
+    indices=None,
 ):
 ```
 
@@ -173,7 +173,7 @@ async def generate_packed_transaction(
     ref_block,
     chain_id,
     compress=0,
-    indexes=None,
+    indices=None,
 ):
 ```
 
@@ -261,7 +261,7 @@ async def push_action(
     permissions=None,
     compress=False,
     expiration=0,
-    indexes=None,
+    indices=None,
 ):
 ```
 
@@ -270,7 +270,7 @@ async def push_action(
 [[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L143)
 
 ```python
-async def push_actions(actions, expiration=0, compress=0, indexes=None):
+async def push_actions(actions, expiration=0, compress=0, indices=None):
 ```
 
 ### ChainApiAsync().push_transaction
@@ -286,7 +286,7 @@ def push_transaction(trx: Union[str, dict]):
 [[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_async.py#L150)
 
 ```python
-async def push_transactions(aaa, expiration=60, compress=False, indexes=None):
+async def push_transactions(aaa, expiration=60, compress=False, indices=None):
 ```
 
 ### ChainApiAsync().set_abi
@@ -327,6 +327,6 @@ async def transfer(
     token_name=None,
     token_precision=4,
     permission='active',
-    indexes=None,
+    indices=None,
 ):
 ```

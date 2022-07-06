@@ -11,5 +11,5 @@ args = {
 }
 pub_key = ledger.get_public_key(0)
 print('++++public key:', pub_key)
-#indexes is an array of ledger signing key indexes
-eosapi.push_action('eosio.token', 'transfer', args, {'test1':'active'}, indexes=[0])
+#indices is an array of ledger signing key indices
+eosapi.push_action('eosio.token', 'transfer', args, {'test1':'active'}, indices=[0])

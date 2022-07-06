@@ -58,7 +58,7 @@ def create_account(
     stake_net=0.0,
     stake_cpu=0.0,
     sign=True,
-    indexes=None,
+    indices=None,
 ):
 ```
 
@@ -67,7 +67,7 @@ def create_account(
 [[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L348)
 
 ```python
-def deploy_abi(account, abi, indexes=None):
+def deploy_abi(account, abi, indices=None):
 ```
 
 ### ChainApi().deploy_code
@@ -91,7 +91,7 @@ def deploy_contract(
     vm_version=0,
     sign=True,
     compress=False,
-    indexes=None,
+    indices=None,
 ):
 ```
 
@@ -116,7 +116,7 @@ def deploy_python_code(account, code, deploy_type=0):
 [[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L360)
 
 ```python
-def deploy_python_contract(account, code, abi, deploy_type=0, indexes=None):
+def deploy_python_contract(account, code, abi, deploy_type=0, indices=None):
 ```
 
 Deploy a python contract to EOSIO based network
@@ -138,7 +138,7 @@ def deploy_wasm_contract(
     vm_version=0,
     sign=True,
     compress=0,
-    indexes=None,
+    indices=None,
 ):
 ```
 
@@ -169,7 +169,7 @@ def generate_packed_transaction(
     ref_block,
     chain_id,
     compress=0,
-    indexes=None,
+    indices=None,
 ):
 ```
 
@@ -273,7 +273,7 @@ def push_action(
     permissions=None,
     compress=False,
     expiration=0,
-    indexes=None,
+    indices=None,
 ):
 ```
 
@@ -282,7 +282,7 @@ def push_action(
 [[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L143)
 
 ```python
-def push_actions(actions, expiration=0, compress=0, indexes=None):
+def push_actions(actions, expiration=0, compress=0, indices=None):
 ```
 
 ### ChainApi().push_transaction
@@ -298,7 +298,7 @@ def push_transaction(trx: Union[str, dict]):
 [[find in source code]](https://github.com/learnforpractice/pyeoskit/blob/master/pysrc/chainapi_sync.py#L155)
 
 ```python
-def push_transactions(aaa, expiration=60, compress=False, indexes=None):
+def push_transactions(aaa, expiration=60, compress=False, indices=None):
 ```
 
 ### ChainApi().set_abi
@@ -339,6 +339,6 @@ def transfer(
     token_name=None,
     token_precision=4,
     permission='active',
-    indexes=None,
+    indices=None,
 ):
 ```
