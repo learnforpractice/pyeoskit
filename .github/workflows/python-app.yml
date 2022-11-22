@@ -67,10 +67,10 @@ jobs:
       - name: get whl file
         id: whlfile
         run: |
-          echo "::set-output name=value::$(python scripts/get_whl_file.py dist)"
+          echo "value=`find dist -name *.whl`" >> $GITHUB_OUTPUT
       - name: Install pyeoskit
         run: |
-          python -m pip uninstall pyeoskit -y;python -m pip install ./dist/${{ steps.whlfile.outputs.value }}
+          python -m pip uninstall pyeoskit -y;python -m pip install ./dist/`python scripts/get_whl_file.py dist`
       - name: Test
         working-directory: ./pytest
         run: |
@@ -81,7 +81,7 @@ jobs:
         working-directory: ./dist
         run: |
           python -m auditwheel repair --plat manylinux_2_17_x86_64 ${{ steps.whlfile.outputs.value }}
-          echo "::set-output name=value::$(python ../scripts/get_whl_file.py ./wheelhouse manylinux)"
+          echo "value=`python ../scripts/get_whl_file.py ./wheelhouse manylinux`" >> $GITHUB_OUTPUT
           echo "+++manylinuxwhlfile: ${{ steps.manylinuxwhlfile.outputs.value }}"
       - name: Release
         uses: softprops/action-gh-release@v1
