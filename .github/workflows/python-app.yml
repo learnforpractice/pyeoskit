@@ -5,7 +5,7 @@ name: Python application
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master, debugging ]
     tags:
       - "v*.*.*"
   pull_request:
@@ -66,11 +66,12 @@ jobs:
           python setup.py sdist bdist_wheel
       - name: get whl file
         id: whlfile
+        shell: bash
         run: |
-          echo "value=`find dist -name *.whl`" >> $GITHUB_OUTPUT
+          echo "value=`python scripts/get_whl_file.py dist`" >> $GITHUB_OUTPUT
       - name: Install pyeoskit
         run: |
-          python -m pip uninstall pyeoskit -y;python -m pip install ./dist/`python scripts/get_whl_file.py dist`
+          python -m pip uninstall pyeoskit -y;python -m pip install ./dist/${{ steps.whlfile.outputs.value }}
       - name: Test
         working-directory: ./pytest
         run: |
