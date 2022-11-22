@@ -21,7 +21,7 @@ jobs:
         # python-version: [3.7, 3.8, 3.9, "3.10"]
         # os: ['windows-latest', 'ubuntu-latest', 'macos-latest']
         # os: ['ubuntu-latest', 'macos-10.15', 'macos-latest']
-        python-version: [3.7, 3.8, 3.9, "3.10"]
+        python-version: [3.7, 3.8, 3.9, "3.10", "3.11"]
         os: ['ubuntu-18.04', 'macos-10.15', 'windows-2019']
       fail-fast: false
 
@@ -45,7 +45,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install flake8 pytest scikit-build cython ninja auditwheel
+          python -m pip install -U flake8 pytest scikit-build cython ninja auditwheel
       # - name: Lint with flake8
       #   run: |
       #     # stop the build if there are Python syntax errors or undefined names
@@ -71,6 +71,7 @@ jobs:
         id: manylinuxwhlfile
         working-directory: ./dist
         run: |
+          python -m pip install -U patchelf
           python -m auditwheel repair --plat manylinux_2_17_x86_64 ${{ steps.whlfile.outputs.value }}
           echo "::set-output name=value::$(python ../scripts/get_whl_file.py ./wheelhouse manylinux)"
           echo "+++manylinuxwhlfile: ${{ steps.manylinuxwhlfile.outputs.value }}"
