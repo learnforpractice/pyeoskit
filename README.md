@@ -7,18 +7,84 @@ Python Toolkit for EOS
 # Installation
 
 ```bash
-python3 -m pip install --upgrade pip
+python3 -m pip install -U pip
 python3 -m pip install pyeoskit
 ```
 
 On Windows platform:
 
 ```bash
-python -m pip install --upgrade pip
+python -m pip install -U pip
 python -m pip install pyeoskit
 ```
 
-# [Full List of Pyeoskit Project Modules.](https://learnforpractice.github.io/pyeoskit/#/MODULES?id=pyeoskit-modules)
+# Code Examples
+
+## Example1
+```python
+import os
+from pyeoskit import eosapi, wallet
+#import your account private key here
+wallet.import_key('mywallet', '5K463ynhZoCDDa4RDcr63cUwWLTnKqmdcoTKTHBjqoKfv4u5V7p')
+
+eosapi.set_node('https://eos.greymass.com')
+info = eosapi.get_info()
+print(info)
+args = {
+    'from': 'test1',
+    'to': 'test2',
+    'quantity': '1.0000 EOS',
+    'memo': 'hello,world'
+}
+eosapi.push_action('eosio.token', 'transfer', args, {'test1':'active'})
+```
+
+## Async Example
+```python
+import os
+import asyncio
+from pyeoskit import wallet
+from pyeoskit.chainapi import ChainApiAsync
+
+#import your account private key here
+wallet.import_key('mywallet', '5K463ynhZoCDDa4RDcr63cUwWLTnKqmdcoTKTHBjqoKfv4u5V7p')
+
+async def test():
+    eosapi = ChainApiAsync('https://eos.greymass.com')
+    info = await eosapi.get_info()
+    print(info)
+    args = {
+        'from': 'test1',
+        'to': 'test2',
+        'quantity': '1.0000 EOS',
+        'memo': 'hello,world'
+    }
+    r = await eosapi.push_action('eosio.token', 'transfer', args, {'test1':'active'})
+    print(r)
+
+asyncio.run(test())
+```
+
+## Sign With Ledger Hardware Wallet Example
+```python
+import os
+from pyeoskit import eosapi
+eosapi.set_node('https://eos.greymass.com')
+args = {
+    'from': 'test1',
+    'to': 'test2',
+    'quantity': '1.0000 EOS',
+    'memo': 'hello,world'
+}
+
+#indices is an array of ledger signing key indices
+eosapi.push_action('eosio.token', 'transfer', args, {'test1':'active'}, indices=[0])
+```
+
+
+
+
+# [Docs](https://learnforpractice.github.io/pyeoskit/#/MODULES?id=pyeoskit-modules)
 
 # Building from Source Code
 
@@ -73,67 +139,6 @@ python setup.py sdist bdist_wheel
 For Windows platform
 ```
 python -m pip uninstall pyeoskit -y;python -m pip install .\dist\pyeoskit-[SUFFIX].whl
-```
-
-### Example1
-```python
-import os
-from pyeoskit import eosapi, wallet
-#import your account private key here
-wallet.import_key('mywallet', '5K463ynhZoCDDa4RDcr63cUwWLTnKqmdcoTKTHBjqoKfv4u5V7p')
-
-eosapi.set_node('https://eos.greymass.com')
-info = eosapi.get_info()
-print(info)
-args = {
-    'from': 'test1',
-    'to': 'test2',
-    'quantity': '1.0000 EOS',
-    'memo': 'hello,world'
-}
-eosapi.push_action('eosio.token', 'transfer', args, {'test1':'active'})
-```
-
-### Async Example
-```python
-import os
-import asyncio
-from pyeoskit import wallet
-from pyeoskit.chainapi import ChainApiAsync
-
-#import your account private key here
-wallet.import_key('mywallet', '5K463ynhZoCDDa4RDcr63cUwWLTnKqmdcoTKTHBjqoKfv4u5V7p')
-
-async def test():
-    eosapi = ChainApiAsync('https://eos.greymass.com')
-    info = await eosapi.get_info()
-    print(info)
-    args = {
-        'from': 'test1',
-        'to': 'test2',
-        'quantity': '1.0000 EOS',
-        'memo': 'hello,world'
-    }
-    r = await eosapi.push_action('eosio.token', 'transfer', args, {'test1':'active'})
-    print(r)
-
-asyncio.run(test())
-```
-
-### Sign With Ledger Hardware Wallet Example
-```python
-import os
-from pyeoskit import eosapi
-eosapi.set_node('https://eos.greymass.com')
-args = {
-    'from': 'test1',
-    'to': 'test2',
-    'quantity': '1.0000 EOS',
-    'memo': 'hello,world'
-}
-
-#indices is an array of ledger signing key indices
-eosapi.push_action('eosio.token', 'transfer', args, {'test1':'active'}, indices=[0])
 ```
 
 ### License
