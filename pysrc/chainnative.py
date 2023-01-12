@@ -192,8 +192,8 @@ class ChainNative(object):
         return Transaction.unpack(chain_index, trx)
 
     @staticmethod
-    def create_key():
-        return crypto.create_key()
+    def create_key(old_format=True):
+        return crypto.create_key(old_format)
 
     @staticmethod
     def get_public_key(priv, eos_pub = True):
