@@ -2,6 +2,7 @@ import json
 import copy
 import time
 import base64
+import asyncio
 
 from . import config
 from . import wallet
@@ -30,6 +31,16 @@ class ChainApiAsync(RPCInterface, ChainNative):
         self.db = ChainCache(self, network)
         self.set_node(node_url)
         self.chain_id = None
+
+        async def close_async_client():
+            try:
+                while True:
+                    await asyncio.sleep(1000.0)
+            except asyncio.CancelledError:
+                if self.async_client:
+                    await self.async_client.aclose()
+                    self.async_client = None
+        asyncio.create_task(close_async_client())
 
     def enable_decode(self, json_format):
         super().json_decode = json_format
