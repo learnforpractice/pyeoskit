@@ -5,16 +5,32 @@ Python Toolkit for EOS
 
 # Installation
 
+## On Linux platform
+
 ```bash
 python3 -m pip install -U pip
 python3 -m pip install pyeoskit
 ```
 
-On Windows platform:
+## On Windows platform:
 
 ```bash
 python -m pip install -U pip
 python -m pip install pyeoskit
+```
+
+## On Apple M1 hardware
+
+pyeoskit does not have pre-built versions available for ARM chips. in order to build it from source code, you need to install `cmake`, `go`, `scikit-build`, `cython`.
+
+```bash
+brew install go
+brew install cython
+xcode-select --install
+python3 -m pip install -U pip
+python3 -m pip install cmake
+python3 -m pip install scikit-build
+python3 -m pip install pyeoskit
 ```
 
 # Code Examples
