@@ -19,7 +19,7 @@ jobs:
   run:
     runs-on: ${{ matrix.os }}
     env:
-      VERSION: 1.1.9
+      VERSION: 1.1.10
     strategy:
       matrix:
         # python-version: [3.7, 3.8, 3.9, "3.10"]
