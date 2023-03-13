@@ -1,4 +1,4 @@
-V1.1.10 Release
-1. Fix parsing asset 
+V1.1.11 Release
 
-
+1.Fix Pack/Unpack variant array
+2.Add support for private key with prefix PVT_K1_
