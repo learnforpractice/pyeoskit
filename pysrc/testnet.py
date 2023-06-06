@@ -16,6 +16,7 @@ from pyeoskit import wallet
 from pyeoskit import utils
 from pyeoskit import eosapi
 from pyeoskit import log
+from pyeoskit.exceptions import ChainException
 
 logger = log.get_logger(__name__)
 
@@ -84,18 +85,32 @@ class Testnet(object):
             configs = f'--data-dir ./{self.tmp_dir}/dd --config-dir ./{self.tmp_dir}/cd -l {self.log_config} {self.extra}'
         else:
             configs = f'--data-dir ./{self.tmp_dir}/dd --config-dir ./{self.tmp_dir}/cd {self.extra}'
-        args = f'nodeos --verbose-http-errors  --http-max-response-time-ms 100 --p2p-listen-endpoint {self.host}:9100 {configs} -p eosio --plugin eosio::producer_plugin --plugin eosio::chain_api_plugin --plugin eosio::producer_api_plugin --plugin eosio::history_api_plugin -e --resource-monitor-space-threshold 99 --http-server-address {self.host}:9000 --contracts-console --access-control-allow-origin="*"' # --backing-store rocksdb'
+        options = [
+            '--verbose-http-errors',
+            '--http-max-response-time-ms 100',
+            f'--http-server-address {self.host}:9000',
+            f'--p2p-listen-endpoint {self.host}:9100',
+            f'{configs}',
+            '-p eosio',
+            '-e',
+            '--resource-monitor-space-threshold 99',
+            '--contracts-console',
+            '--access-control-allow-origin="*"',
+
+            "--plugin eosio::producer_plugin",
+            "--plugin eosio::chain_api_plugin",
+            "--plugin eosio::producer_api_plugin",
+            "--plugin eosio::trace_api_plugin",
+            "--trace-no-abis",
+            "--wasm-runtime eos-vm-jit",
+        ]
+        args = f"ipyeos -m ipyeos eosnode {' '.join(options)}"
         logger.info(args)
         args = shlex.split(args)
-        # if self.show_log:
-        #     f = sys.stdout
-        # else:
-        #     f = open('log.txt', 'a')
-        # f = sys.stdout
         if self.show_log:
             p = subprocess.Popen(args)
         else:
-            f = open('log.txt', 'a')
+            f = open('node.log', 'a')
             p = subprocess.Popen(args, stdout=f, stderr=f)
 
         self.nodes.append(p)
@@ -180,14 +195,7 @@ class Testnet(object):
 
     def run(self):
         p = self.start_nodes()
-        # p.wait()
-        # return
-        try:
-            self.init_testnet()
-        except Exception as e:
-            logger.exception(e)
-        # p.wait()
-        # print('done!')
+        self.init_testnet()
 
     def stop(self):
         for p in self.nodes:
@@ -308,8 +316,12 @@ def apply(a, b, c):
         self.init_producer()
 
     def init_accounts(self):
-        if eosapi.get_account('helloworld11'):
-            return
+        try:
+            if eosapi.get_account('helloworld11'):
+                return
+        except ChainException:
+            pass
+
         # formatter = logging.Formatter('%(asctime)s %(levelname)s %(module)s %(lineno)d %(message)s')
         # handler = logging.StreamHandler()
         # handler.setFormatter(formatter)
@@ -391,20 +403,22 @@ def apply(a, b, c):
             self.deploy_contract('eosio', 'eosio.bios')
         time.sleep(1.0)
         feature_digests = [
-            '1a99a59d87e06e09ec5b028a9cbb7749b4a5ad8819004365d02dc4379a8b7241', #'ONLY_LINK_TO_EXISTING_PERMISSION' 
-            '2652f5f96006294109b3dd0bbde63693f55324af452b799ee137a81a905eed25', #'FORWARD_SETCODE' 
-            '299dcb6af692324b899b39f16d5a530a33062804e41f09dc97e9f156b4476707', #'WTMSIG_BLOCK_SIGNATURES' 
-            'ef43112c6543b88db2283a2e077278c315ae2c84719a8b25f25cc88565fbea99', #'REPLACE_DEFERRED' 
-            '4a90c00d55454dc5b059055ca213579c6ea856967712a56017487886a4d4cc0f', #'NO_DUPLICATE_DEFERRED_ID' 
-            '4e7bf348da00a945489b2a681749eb56f5de00b900014e137ddae39f48f69d67', #'RAM_RESTRICTIONS' 
+            '1a99a59d87e06e09ec5b028a9cbb7749b4a5ad8819004365d02dc4379a8b7241', #ONLY_LINK_TO_EXISTING_PERMISSION' 
+            '2652f5f96006294109b3dd0bbde63693f55324af452b799ee137a81a905eed25', #'FORWARD_SETCODE'
+            '299dcb6af692324b899b39f16d5a530a33062804e41f09dc97e9f156b4476707', #'WTMSIG_BLOCK_SIGNATURES'
+            '35c2186cc36f7bb4aeaf4487b36e57039ccf45a9136aa856a5d569ecca55ef2b', #'GET_BLOCK_NUM'
+            'ef43112c6543b88db2283a2e077278c315ae2c84719a8b25f25cc88565fbea99', #'REPLACE_DEFERRED'
+            '4a90c00d55454dc5b059055ca213579c6ea856967712a56017487886a4d4cc0f', #'NO_DUPLICATE_DEFERRED_ID'
+            '4e7bf348da00a945489b2a681749eb56f5de00b900014e137ddae39f48f69d67', #'RAM_RESTRICTIONS'
             '4fca8bd82bbd181e714e283f83e1b45d95ca5af40fb89ad3977b653c448f78c2', #'WEBAUTHN_KEY'
             '5443fcf88330c586bc0e5f3dee10e7f63c76c00249c87fe4fbf7f38c082006b4', #'BLOCKCHAIN_PARAMETERS'
             '68dcaa34c0517d19666e6b33add67351d8c5f69e999ca1e37931bc410a297428', #'DISALLOW_EMPTY_PRODUCER_SCHEDULE'
-            '825ee6288fb1373eab1b5187ec2f04f6eacb39cb3a97f356a07c91622dd61d16', #'KV_DATABASE'
+            '6bcb40a24e49c26d0a60513b6aeb8551d264e4717f306b81a37a5afb3b47cedc', #'CRYPTO_PRIMITIVES'
             '8ba52fe7a3956c5cd3a656a3174b931d3bb2abb45578befc59f283ecd816a405', #'ONLY_BILL_FIRST_AUTHORIZER'
             'ad9e3d8f650687709fd68f4b90b41f7d825a365b02c23a636cef88ac2ac00c43', #'RESTRICT_ACTION_TO_SELF'
-            'bf61537fd21c61a60e542a5d66c3f6a78da0589336868307f94a82bccea84e88', #'CONFIGURABLE_WASM_LIMITS'
+            'bcd2a26394b36614fd4894241d3c451ab0f6fd110958c3423073621a70826e99', #'GET_CODE_HASH'
             'c3a6138c5061cf291310887c0b5c71fcaffeab90d5deb50d3b9e687cead45071', #'ACTION_RETURN_VALUE'
+            'd528b9f6e9693f45ed277af93474fd473ce7d831dae2180cca35d907bd10cb40', #'CONFIGURABLE_WASM_LIMITS2'
             'e0fb64b1085cc5538970158d05a009c24e276fb94e1a0bf6a528b48fbc4ff526', #'FIX_LINKAUTH_RESTRICTION'
             'f0af56d2c5a48d60a4a5b5c903edfb7db3a736a94ed589d0b797df33ff9d3e1d', #'GET_SENDER'
         ]
@@ -417,7 +431,7 @@ def apply(a, b, c):
             except Exception as e:
                 logger.error(e)
 
-        self.deploy_micropython_contract()
+        # self.deploy_micropython_contract()
 
         try:
             self.deploy_contract('eosio.token', 'eosio.token')
