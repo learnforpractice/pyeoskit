@@ -201,8 +201,8 @@ class ChainNative(object):
         return check_result(ret)
 
     @staticmethod
-    def recover_key(digest, sign):
-        ret = _pyeoskit.crypto_recover_key(digest, sign)
+    def recover_key(hex_digest, sign):
+        ret = _pyeoskit.crypto_recover_key(hex_digest, sign)
         return check_result(ret)
 
     @staticmethod

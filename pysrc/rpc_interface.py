@@ -45,7 +45,7 @@ class RPCInterface(HttpClient):
     # ---------------------------
     # /v1/chain/*
     # ---------------------------
-    def get_currency_balance(self, code, account, symbol) -> dict:
+    def get_currency_balance(self, code, account, symbol) -> Dict:
         """ get_currency_balance """
 
         body = dict(
@@ -60,7 +60,7 @@ class RPCInterface(HttpClient):
             body=body
         )
 
-    def get_currency_stats(self, code, symbol) -> dict:
+    def get_currency_stats(self, code, symbol) -> Dict:
         """ get_currency_stats """
 
         body = dict(
@@ -74,7 +74,7 @@ class RPCInterface(HttpClient):
             body=body
         )
 
-    def get_info(self) -> dict:
+    def get_info(self) -> Dict:
         """ Return general network information. """
 
         body = dict(
@@ -100,7 +100,7 @@ class RPCInterface(HttpClient):
             body=body
         )
 
-    def get_block_trace(self, block_num) -> dict:
+    def get_block_trace(self, block_num) -> Dict:
         """ Fetch a block trace from the blockchain. """
 
         body = dict(
@@ -113,7 +113,7 @@ class RPCInterface(HttpClient):
             body=body
         )
 
-    def get_block(self, block_num_or_id) -> dict:
+    def get_block(self, block_num_or_id) -> Dict:
         """ Fetch a block from the blockchain. """
 
         body = dict(
@@ -139,7 +139,7 @@ class RPCInterface(HttpClient):
             body=body
         )
 
-    def get_account(self, account_name) -> dict:
+    def get_account(self, account_name) -> Dict:
         """ Fetch a blockchain account """
 
         body = dict(
@@ -152,7 +152,7 @@ class RPCInterface(HttpClient):
             body=body
         )
 
-    def get_code(self, account_name, code_as_wasm=True) -> dict:
+    def get_code(self, account_name, code_as_wasm=True) -> Dict:
         """ Fetch smart contract code """
 
         body = dict(
@@ -166,7 +166,7 @@ class RPCInterface(HttpClient):
             body=body
         )
 
-    def get_code_hash(self, account_name) -> dict:
+    def get_code_hash(self, account_name) -> Dict:
         """ Fetch smart contract code """
 
         body = dict(
@@ -179,7 +179,7 @@ class RPCInterface(HttpClient):
             body=body
         )
 
-    def get_abi(self, account_name) -> dict:
+    def get_abi(self, account_name) -> Dict:
         """ Fetch a blockchain account """
 
         body = dict(
@@ -192,7 +192,7 @@ class RPCInterface(HttpClient):
             body=body
         )
 
-    def get_raw_code_and_abi(self, account_name) -> dict:
+    def get_raw_code_and_abi(self, account_name) -> Dict:
         """ Fetch blockchain code and abi of an account """
 
         body = dict(
@@ -205,7 +205,7 @@ class RPCInterface(HttpClient):
             body=body
         )
 
-    def get_raw_abi(self, account_name, abi_hash=None) -> dict:
+    def get_raw_abi(self, account_name, abi_hash=None) -> Dict:
         """ Fetch blockchain account abi info """
 
         body = dict(
@@ -221,7 +221,7 @@ class RPCInterface(HttpClient):
 
     def get_table_rows(self, json, code, scope, table, lower_bound,
                        upper_bound, limit, key_type='', index_position='', 
-                       reverse = False, show_payer = False) -> dict:
+                       reverse = False, show_payer = False) -> Dict:
         """ Fetch smart contract data from an account. 
         key_type: "i64"|"i128"|"i256"|"float64"|"float128"|"sha256"|"ripemd160"
         index_position: "2"|"3"|"4"|"5"|"6"|"7"|"8"|"9"|"10"
@@ -247,7 +247,7 @@ class RPCInterface(HttpClient):
             body=body
         )
 
-    def get_table_by_scope(self, code, table, lower_bound, upper_bound) -> dict:
+    def get_table_by_scope(self, code, table, lower_bound, upper_bound) -> Dict:
         """ Fetch smart contract data from an account. """
 
         body = dict(
@@ -264,7 +264,7 @@ class RPCInterface(HttpClient):
             body=body
         )
 
-    def get_currency_balance(self, code, account, symbol) -> dict:
+    def get_currency_balance(self, code, account, symbol) -> Dict:
         """ Get balance from an account. """
 
         body = dict(
@@ -279,7 +279,7 @@ class RPCInterface(HttpClient):
             body=body
         )
 
-    def get_currency_stats(self, code, symbol) -> dict:
+    def get_currency_stats(self, code, symbol) -> Dict:
 
         body = dict(
             code=code,
@@ -292,7 +292,7 @@ class RPCInterface(HttpClient):
             body=body
         )
 
-    def get_producers(self, json, lower_bound, limit) -> dict:
+    def get_producers(self, json, lower_bound, limit) -> Dict:
         """
         Example: eosapi.get_producers(True, "", 100)
         """
@@ -308,7 +308,7 @@ class RPCInterface(HttpClient):
             body=body
         )
 
-    def get_producer_schedule(self) -> dict:
+    def get_producer_schedule(self) -> Dict:
 
         body = dict(
         )
@@ -319,7 +319,7 @@ class RPCInterface(HttpClient):
             body=body
         )
 
-    def get_scheduled_transactions(self, json, lower_bound, limit=50) -> dict:
+    def get_scheduled_transactions(self, json, lower_bound, limit=50) -> Dict:
 
         body = dict(
             json=json,
@@ -333,7 +333,7 @@ class RPCInterface(HttpClient):
             body=body
         )
 
-    def abi_json_to_bin(self, code, action, args) -> dict:
+    def abi_json_to_bin(self, code, action, args) -> Dict:
         """ Manually serialize json into binary hex.  The binayargs is usually stored in Message.data. """
 
         body = dict(
@@ -348,7 +348,7 @@ class RPCInterface(HttpClient):
             body=body
         )
 
-    def abi_bin_to_json(self, code, action, binargs) -> dict:
+    def abi_bin_to_json(self, code, action, binargs) -> Dict:
         """ Convert bin hex back into Abi json definition. """
 
         body = dict(
@@ -364,7 +364,7 @@ class RPCInterface(HttpClient):
         )
 
 
-    def call_contract(self, code, action, args) -> dict:
+    def call_contract(self, code, action, args) -> Dict:
         """ Convert bin hex back into Abi json definition. """
 
         body = dict(
@@ -379,7 +379,7 @@ class RPCInterface(HttpClient):
             body=body
         )
 
-    def get_required_keys(self, transaction: Union[dict, str], available_keys) -> dict:
+    def get_required_keys(self, transaction: Union[dict, str], available_keys) -> Dict:
         """ get_required_keys """
         if isinstance(transaction, str):
             transaction = json.loads(transaction)
@@ -396,7 +396,7 @@ class RPCInterface(HttpClient):
             body=body
         )
 
-    def push_block(self, block) -> dict:
+    def push_block(self, block) -> Dict:
         """ Append a block to the chain database. """
 
         body = dict(
@@ -409,7 +409,7 @@ class RPCInterface(HttpClient):
             body=body
         )
 
-    def push_transaction(self, signed_transaction) -> dict:
+    def push_transaction(self, signed_transaction) -> Dict:
         """ Attempts to push the transaction into the pending queue. """
 
         return self.rpc_request(
@@ -418,7 +418,7 @@ class RPCInterface(HttpClient):
             body=signed_transaction
         )
 
-    def push_transactions(self, signed_transactions) -> dict:
+    def push_transactions(self, signed_transactions) -> Dict:
         """ Attempts to push transactions into the pending queue. """
         trxs = []
         for trx in signed_transactions:
@@ -437,7 +437,7 @@ class RPCInterface(HttpClient):
     # ---------------------------
     # /v1/history/*
     # ---------------------------
-    def get_actions(self, account_name, pos, offset) -> dict:
+    def get_actions(self, account_name, pos, offset) -> Dict:
         """ get_actions """
 
         body = dict(
@@ -452,7 +452,7 @@ class RPCInterface(HttpClient):
             body=body
         )
 
-    def get_transaction(self, id, block_num_hint=0) -> dict:
+    def get_transaction(self, id, block_num_hint=0) -> Dict:
         """ Retrieve a transaction from the blockchain. """
 
         body = dict(
@@ -466,7 +466,7 @@ class RPCInterface(HttpClient):
             body=body
         )
 
-    def get_key_accounts(self, public_key) -> dict:
+    def get_key_accounts(self, public_key) -> Dict:
         """ Retrieve accounts has the specified key. """
         body = dict(
             public_key=public_key,
@@ -478,7 +478,7 @@ class RPCInterface(HttpClient):
             body=body
         )
 
-    def get_key_accounts_ex(self, public_key) -> dict:
+    def get_key_accounts_ex(self, public_key) -> Dict:
         """ Retrieve accounts has the specified key. """
         body = dict(
             public_key=public_key,
@@ -490,7 +490,23 @@ class RPCInterface(HttpClient):
             body=body
         )
 
-    def get_controlled_accounts(self, controlling_account) -> dict:
+    def get_accounts_by_authorizers(self, keys: List[str], accounts: List[str]) -> Dict:
+        """
+        example:
+            get_accounts_by_authorizers([], [{'actor':'eosio', 'permission':'eosio.code'}])
+        """
+        body = dict(
+            accounts=accounts,
+            keys=keys
+        )
+
+        return self.rpc_request(
+            api='chain',
+            endpoint='get_accounts_by_authorizers',
+            body=body
+        )
+
+    def get_controlled_accounts(self, controlling_account) -> Dict:
         """ Retrieve accounts has the specified key. """
         body = dict(
             controlling_account=controlling_account,
@@ -502,7 +518,7 @@ class RPCInterface(HttpClient):
             body=body
         )
 
-    def get_history_db_size(self) -> dict:
+    def get_history_db_size(self) -> Dict:
         body = None
         return self.rpc_request(
             api='history',
@@ -510,7 +526,7 @@ class RPCInterface(HttpClient):
             body=body
         )
 
-    def get_db_size(self) -> dict:
+    def get_db_size(self) -> Dict:
         """ Retrieve accounts has the specified key. """
         body = dict()
 
@@ -520,7 +536,7 @@ class RPCInterface(HttpClient):
             body=body
         )
 
-    def net_connect(self, address) -> dict:
+    def net_connect(self, address) -> Dict:
         """ Connect to a node address. """
         body = json.dumps(address)
 
@@ -530,7 +546,7 @@ class RPCInterface(HttpClient):
             body=body
         )
 
-    def net_disconnect(self, address) -> dict:
+    def net_disconnect(self, address) -> Dict:
         """ Disconnect from a node address. """
         body = json.dumps(address)
 
@@ -540,7 +556,7 @@ class RPCInterface(HttpClient):
             body=body
         )
 
-    def net_status(self, address) -> dict:
+    def net_status(self, address) -> Dict:
         """ Retrieve connection status. """
         body = json.dumps(address)
 
@@ -550,7 +566,7 @@ class RPCInterface(HttpClient):
             body=body
         )
 
-    def net_connections(self) -> dict:
+    def net_connections(self) -> Dict:
         """ Get node connections. """
         body = dict()
 
@@ -560,7 +576,7 @@ class RPCInterface(HttpClient):
             body=body
         )
 
-    def get_supported_apis(self) -> dict:
+    def get_supported_apis(self) -> Dict:
         """ Retrieve supported apis. """
         body = dict()
 
@@ -570,7 +586,7 @@ class RPCInterface(HttpClient):
             body=body
         )
 
-    def enable_debug(self, enable) -> dict:
+    def enable_debug(self, enable) -> Dict:
         """ Retrieve supported apis. """
         body = json.dumps(enable)
 
@@ -580,7 +596,7 @@ class RPCInterface(HttpClient):
             body=body
         )
 
-    def is_debug_enabled(self) -> dict:
+    def is_debug_enabled(self) -> Dict:
         """  """
         body = dict()
 
@@ -590,7 +606,7 @@ class RPCInterface(HttpClient):
             body=body
         )
 
-    def add_debug_contract(self, name, shared_lib_path) -> dict:
+    def add_debug_contract(self, name, shared_lib_path) -> Dict:
         """  """
         body = dict(
             name=name,
@@ -602,7 +618,7 @@ class RPCInterface(HttpClient):
             body=body
         )
 
-    def clear_debug_contract(self, name) -> dict:
+    def clear_debug_contract(self, name) -> Dict:
         """ """
         body = json.dumps(name)
 
@@ -612,7 +628,7 @@ class RPCInterface(HttpClient):
             body=body
         )
 
-    def set_logger_level(self, logger='default', level='info') -> dict:
+    def set_logger_level(self, logger='default', level='info') -> Dict:
         """
         logger: default
         level: debug, info, warn, error, off
@@ -665,7 +681,7 @@ class RPCInterface(HttpClient):
                                     last_block_time_offset_us=None,
                                     max_scheduled_transaction_time_per_block_ms=None,
                                     subjective_cpu_leeway_us=None,
-                                    incoming_defer_ratio=None) -> dict:
+                                    incoming_defer_ratio=None) -> Dict:
         '''
             struct runtime_options {
                 fc::optional<int32_t> max_transaction_time;
@@ -705,7 +721,7 @@ class RPCInterface(HttpClient):
             body=body
         )
 
-    def add_greylist_accounts(self, accounts) -> dict:
+    def add_greylist_accounts(self, accounts) -> Dict:
         """ """
         body = dict(
             accounts=accounts
@@ -717,7 +733,7 @@ class RPCInterface(HttpClient):
             body=body
         )
 
-    def remove_greylist_accounts(self, accounts) -> dict:
+    def remove_greylist_accounts(self, accounts) -> Dict:
         """ """
         body = dict(
             accounts=accounts
@@ -729,7 +745,7 @@ class RPCInterface(HttpClient):
             body=body
         )
 
-    def get_greylist(self) -> dict:
+    def get_greylist(self) -> Dict:
         """ """
         body = None
 
@@ -739,7 +755,7 @@ class RPCInterface(HttpClient):
             body=body
         )
 
-    def get_whitelist_blacklist(self) -> dict:
+    def get_whitelist_blacklist(self) -> Dict:
         """ """
         body = None
 
@@ -749,7 +765,7 @@ class RPCInterface(HttpClient):
             body=body
         )
 
-    def set_whitelist_blacklist(self, actor_whitelist, actor_blacklist, contract_whitelist, contract_blacklist, action_blacklist, key_blacklist) -> dict:
+    def set_whitelist_blacklist(self, actor_whitelist, actor_blacklist, contract_whitelist, contract_blacklist, action_blacklist, key_blacklist) -> Dict:
         '''
         fc::optional< flat_set<account_name> > actor_whitelist;
         fc::optional< flat_set<account_name> > actor_blacklist;
@@ -772,7 +788,7 @@ class RPCInterface(HttpClient):
             body=body
         )
 
-    def get_integrity_hash(self) -> dict:
+    def get_integrity_hash(self) -> Dict:
         """  """
         body = None
         return self.rpc_request(
@@ -781,7 +797,7 @@ class RPCInterface(HttpClient):
             body=body
         )
 
-    def create_snapshot(self, head_block_id, snapshot_name) -> dict:
+    def create_snapshot(self, head_block_id, snapshot_name) -> Dict:
         """  """
         body = dict(
             head_block_id=head_block_id,
@@ -793,7 +809,7 @@ class RPCInterface(HttpClient):
             body=body
         )
 
-    def schedule_protocol_feature_activations(self, protocol_features) -> dict:
+    def schedule_protocol_feature_activations(self, protocol_features) -> Dict:
         """  """
         body = dict(
             protocol_features_to_activate=protocol_features,
@@ -804,7 +820,7 @@ class RPCInterface(HttpClient):
             body=body
         )
 
-    def get_scheduled_protocol_feature_activations(self) -> dict:
+    def get_scheduled_protocol_feature_activations(self) -> Dict:
         """  """
         body = dict()
         return self.rpc_request(
@@ -813,7 +829,7 @@ class RPCInterface(HttpClient):
             body=body
         )
 
-    def get_supported_protocol_features(self, exclude_disabled=False, exclude_unactivatable=False) -> dict:
+    def get_supported_protocol_features(self, exclude_disabled=False, exclude_unactivatable=False) -> Dict:
         """  """
         body = dict(exclude_disabled=exclude_disabled, exclude_unactivatable=exclude_unactivatable)
         return self.rpc_request(
@@ -822,7 +838,7 @@ class RPCInterface(HttpClient):
             body=body
         )
 
-    def get_account_ram_corrections(self, lower_bound='', upper_bound='', limit=10) -> dict:
+    def get_account_ram_corrections(self, lower_bound='', upper_bound='', limit=10) -> Dict:
         """  """
         body = dict(
             lower_bound=lower_bound,
@@ -835,7 +851,7 @@ class RPCInterface(HttpClient):
             body=body
         )
 
-    def set_filter_on(self, filter_in) -> dict:
+    def set_filter_on(self, filter_in) -> Dict:
         """
         receiver:action:actor
         * to pass all actions
@@ -847,7 +863,7 @@ class RPCInterface(HttpClient):
             body=body
         )
 
-    def set_filter_out(self, filter_out) -> dict:
+    def set_filter_out(self, filter_out) -> Dict:
         """
         receiver:action:actor
         * to pass all action
@@ -859,7 +875,7 @@ class RPCInterface(HttpClient):
             body=body
         )
 
-    def clear_filter_on(self) -> dict:
+    def clear_filter_on(self) -> Dict:
         """
         """
         body = None
@@ -869,7 +885,7 @@ class RPCInterface(HttpClient):
             body=body
         )
 
-    def clear_filter_out(self) -> dict:
+    def clear_filter_out(self) -> Dict:
         """
         """
         body = None

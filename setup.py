@@ -26,8 +26,7 @@ setup(
     packages=['pyeoskit'],
     # The extra '/' was *only* added to check that scikit-build can handle it.
     package_dir={'pyeoskit': 'pysrc'},
-    package_data={'pyeoskit': data
-    },
+    package_data={'pyeoskit': data},
     install_requires=[
         'requests_unixsocket>=0.2.0',
         'httpx>=0.19.0',

@@ -57,7 +57,11 @@ class Test(object):
         chain_id = '00' * 32
         ref_block = '11' * 32
 
-        _pyeoskit.wallet_import("test", "5JRYimgLBrRLCBAcjHUWCYRv3asNedTYYzVgmiU4q2ZVxMBiJXL")
+        r = _pyeoskit.wallet_import("test", "5JRYimgLBrRLCBAcjHUWCYRv3asNedTYYzVgmiU4q2ZVxMBiJXL")
+        assert r == '{"data":"ok"}'
+
+        r = _pyeoskit.wallet_import("test", "PVT_K1_2bfGi9rYsXQSXXTvJbDAPhHLQUojjaNLomdm3cEJ1XTzMqUt3V")
+        assert r == '{"data":"ok"}'
 
         idxes = []
         for i in range(1024):
