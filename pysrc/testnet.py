@@ -211,8 +211,14 @@ class Testnet(object):
             shutil.rmtree(self.tmp_dir)
 
     def wait(self):
-        for p in self.nodes:
-            p.wait()
+        try:
+            for p in self.nodes:
+                p.wait()
+        except KeyboardInterrupt:
+            for p in self.nodes:
+                p.terminate()
+            for p in self.nodes:
+                p.wait()
 
     def deploy_contract(self, account_name, contract_name, contracts_path=None):
         logger.info('++++deploy_contract %s %s', account_name, contract_name)
