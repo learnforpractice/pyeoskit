@@ -10,7 +10,7 @@ class Transaction(object):
             return
         self.idx = _pyeoskit.transaction_new(chain_index, expiration, ref_block, chain_id)
         if self.idx == -1:
-            raise Exception("too many transactions has been created!")
+            raise Exception("transactions creation has been rich the max limit of 1024, please free some old txs before creating new!")
 
     def __enter__(self):
         return self
