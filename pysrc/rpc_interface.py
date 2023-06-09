@@ -3,7 +3,7 @@ import json
 
 from .http_client import HttpClient
 from . import config
-from typing import Dict, List, Union
+from typing import Dict, List, Union, Optional
 
 class RPCInterface(HttpClient):
     def __init__(self, nodes=None, _async=False, **kwargs):
@@ -492,11 +492,20 @@ class RPCInterface(HttpClient):
             body=body
         )
 
-    def get_accounts_by_authorizers(self, keys: List[str], accounts: List[str]) -> Dict:
+    def get_accounts_by_authorizers(self, keys: Optional[List[str]], accounts: Optional[List[str]] = None) -> Dict:
         """
         example:
             get_accounts_by_authorizers([], [{'actor':'eosio', 'permission':'eosio.code'}])
         """
+        if not keys and not accounts:
+            raise Exception("keys and accounts are all empty")
+
+        if keys is None:
+            keys = []
+
+        if accounts is None:
+            accounts = []
+        
         body = dict(
             accounts=accounts,
             keys=keys
