@@ -18,7 +18,7 @@ from .chainnative import ChainNative
 from .exceptions import ChainException
 from . import wallet
 
-from typing import Union, Any, Dict, List
+from typing import Union, Any, Dict, List, Optional
 
 logger = log.get_logger(__name__)
 
@@ -30,12 +30,15 @@ class ChainApiAsync(RPCInterface, ChainNative):
 
         self.db = ChainCache(self, network)
         self.set_node(node_url)
-        self.chain_id = None
+
+        self.chain_info: Optional[Dict] = None
+        self.chain_id: Optional[str] = None
+        self.refresh_time = 0.0
 
         async def close_async_client():
             try:
                 while True:
-                    await asyncio.sleep(1000.0)
+                    await asyncio.sleep(100000000.0)
             except asyncio.CancelledError:
                 if self.async_client:
                     await self.async_client.aclose()
@@ -49,8 +52,26 @@ class ChainApiAsync(RPCInterface, ChainNative):
         self.get_code(config.system_contract)
         self.get_code(config.main_token_contract)
 
-    def get_chain_id(self):
-        return self.get_info()['chain_id']
+    def set_node(self, url):
+        super().set_node(url)
+        self.reset_chain_info()
+
+    def reset_chain_info(self):
+        self.refresh_time = 0.0
+        self.chain_id = 0.0
+        self.chain_info = None
+
+    async def refresh_chain_info(self):
+        if time.time() < self.refresh_time + 60:
+            return self.chain_info
+
+        self.chain_info = await self.get_info()
+        self.chain_id = self.chain_info['chain_id']
+        self.refresh_time = time.time()
+        return self.chain_info
+
+    async def get_chain_id(self):
+        return await self.get_info()['chain_id']
 
     def push_transaction(self, trx: Union[str, dict]):
         return super().push_transaction(trx)
@@ -169,7 +190,7 @@ class ChainApiAsync(RPCInterface, ChainNative):
         try:
             chain_info = None
             if not self.chain_id or not ref_block_id:
-                chain_info = await self.get_info()
+                chain_info = await self.refresh_chain_info()
                 if not self.chain_id:
                     self.chain_id = chain_info['chain_id']
                 if not ref_block_id:
@@ -182,7 +203,7 @@ class ChainApiAsync(RPCInterface, ChainNative):
             ledger.close_dongle()
 
     async def push_transactions(self, aaa, expiration=60, compress=False, indices=None):
-        chain_info = await self.get_info()
+        chain_info = await self.refresh_chain_info()
         ref_block = chain_info['last_irreversible_block_id']
         chain_id = chain_info['chain_id']
 

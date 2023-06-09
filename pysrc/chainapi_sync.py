@@ -17,7 +17,7 @@ from .chainnative import ChainNative
 from .exceptions import ChainException
 from . import wallet
 
-from typing import Union, Any, Dict, List
+from typing import Union, Any, Dict, List, Optional
 
 logger = log.get_logger(__name__)
 
@@ -29,7 +29,11 @@ class ChainApi(RPCInterface, ChainNative):
 
         self.db = ChainCache(self, network)
         self.set_node(node_url)
-        self.chain_id = None
+
+        self.chain_info: Optional[Dict] = None
+        self.chain_id: Optional[str] = None
+        self.refresh_time = 0.0
+
 
     def enable_decode(self, json_format):
         super().json_decode = json_format
@@ -38,8 +42,26 @@ class ChainApi(RPCInterface, ChainNative):
         self.get_code(config.system_contract)
         self.get_code(config.main_token_contract)
 
+    def set_node(self, url):
+        super().set_node(url)
+        self.reset_chain_info()
+
+    def reset_chain_info(self):
+        self.refresh_time = 0.0
+        self.chain_id = 0.0
+        self.chain_info = None
+
+    def refresh_chain_info(self):
+        if time.time() < self.refresh_time + 60:
+            return self.chain_info
+
+        self.chain_info = self.get_info()
+        self.chain_id = self.chain_info['chain_id']
+        self.refresh_time = time.time()
+        return self.chain_info
+
     def get_chain_id(self):
-        return self.get_info()['chain_id']
+        return self.refresh_chain_info()['chain_id']
 
     def push_transaction(self, trx: Union[str, dict]):
         return super().push_transaction(trx)
@@ -157,7 +179,7 @@ class ChainApi(RPCInterface, ChainNative):
         try:
             chain_info = None
             if not self.chain_id or not ref_block_id:
-                chain_info = self.get_info()
+                chain_info = self.refresh_chain_info()
                 if not self.chain_id:
                     self.chain_id = chain_info['chain_id']
                 if not ref_block_id:
@@ -170,7 +192,7 @@ class ChainApi(RPCInterface, ChainNative):
             ledger.close_dongle()
 
     def push_transactions(self, aaa, expiration=60, compress=False, indices=None):
-        chain_info = self.get_info()
+        chain_info = self.refresh_chain_info()
         ref_block = chain_info['last_irreversible_block_id']
         chain_id = chain_info['chain_id']
         txs = []
