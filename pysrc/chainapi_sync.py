@@ -388,7 +388,7 @@ class ChainApi(RPCInterface, ChainNative):
         setabi = self.pack_args(config.system_contract, 'setabi', {'account':account, 'abi':abi.hex()})    
         ret = self.push_action(config.system_contract, 'setabi', setabi, {account:'active'}, indices=indices, payer=payer, payer_permission=payer_permission)
         self.db.remove_abi(account)
-        self.clear_abi_cache(account)
+        self.clear_abi_cache(self.chain_index, account)
         return ret
 
 
