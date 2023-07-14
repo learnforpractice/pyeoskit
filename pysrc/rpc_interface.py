@@ -808,7 +808,7 @@ class RPCInterface(HttpClient):
             body=body
         )
 
-    def create_snapshot(self, head_block_id, snapshot_name) -> Dict:
+    def create_snapshot(self, head_block_id="", snapshot_name="") -> Dict:
         """  """
         body = dict(
             head_block_id=head_block_id,
