@@ -6,6 +6,7 @@ import hashlib
 
 version = sys.argv[1]
 files = [
+ f'pyeoskit-{version}-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl',
  f'pyeoskit-{version}-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl',
  f'pyeoskit-{version}-cp310-cp310-win_amd64.whl',
  f'pyeoskit-{version}-cp310-cp310-macosx_10_15_x86_64.whl',
