@@ -194,8 +194,9 @@ class HttpClient(object):
     @staticmethod
     def _body(body):
         if type(body) not in [str, dict, list, type(None)]:
-            raise ValueError(
-                'Request body is of an invalid type %s' % type(body))
+            raise ValueError('Request body is of an invalid type %s' % type(body))
+        if not body:
+            return None
         if type(body) in [dict, list]:
             return json.dumps(body)
         return body
